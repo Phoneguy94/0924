@@ -1,1 +1,38 @@
+body {
+    background-color: #0b1b2b;
+    color: white;
+    font-family: Arial, sans-serif;
+    margin: 40px;
+}
 
+h1 {
+    color: #f4c542;
+    font-size: 48px;
+    margin-bottom: 5px;
+}
+
+h2 {
+    color: #c0c0c0;
+    margin-top: 0;
+}
+
+.metric {
+    display: inline-block;
+    width: 220px;
+    padding: 20px;
+    margin: 10px;
+    background-color: #13283f;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.metric-label {
+    font-size: 14px;
+    color: #cccccc;
+}
+
+.metric-value {
+    font-size: 42px;
+    font-weight: bold;
+    color: #f4c542;
+}
