@@ -1,52 +1,44 @@
 {
   "title": "Contact Center Scoreboard",
   "subtitle": "Live Operations Snapshot",
-  "interval": "June 1, 2026 • 10:00 AM - 10:15 AM",
-  "lastUpdated": "June 1, 2026 • 10:15 AM",
-
+  "interval": "06/03/2026 12:00 PM - 12:15 PM",
+  "lastUpdated": "June 3, 2026 \u2022 12:11 PM",
   "summary": {
-    "callsPresented": 34,
-    "callsHandled": 33,
-    "avgQueueTime": "05:52",
-    "serviceLevel": 69
+    "callsPresented": 1,
+    "callsHandled": 0,
+    "avgQueueTime": "00:00",
+    "serviceLevel": 0
   },
-
   "queueStandings": [
     {
-      "queue": "Eng_Billing",
-      "callsPresented": 25,
-      "callsHandled": 21,
-      "avgQueueTime": "04:12",
-      "serviceLevel": 72
-    },
-    {
-      "queue": "Eng_Service",
-      "callsPresented": 16,
-      "callsHandled": 12,
-      "avgQueueTime": "07:31",
-      "serviceLevel": 64
+      "queue": "Eng_Bus_All",
+      "callsPresented": 1,
+      "callsHandled": 0,
+      "avgQueueTime": "00:00"
     }
   ],
-
   "bullpenReport": [
     {
       "status": "Available",
-      "count": 8
+      "count": 0
+    },
+    {
+      "status": "Connected",
+      "count": 0
     },
     {
       "status": "Idle",
-      "count": 3
+      "count": 0
     },
     {
-      "status": "Wrap Up",
-      "count": 2
+      "status": "Break",
+      "count": 0
     },
     {
-      "status": "On Contact",
-      "count": 7
+      "status": "Meeting",
+      "count": 0
     }
   ],
-
   "source": {
     "system": "WxCC Analyzer",
     "reports": [
