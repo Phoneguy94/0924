@@ -1,10 +1,32 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Webex Ballpark Dashboard</title>
+  <title>Webex Ballpark Dashboard</title>
 </head>
 <body>
-    <h1>Webex Ballpark Dashboard</h1>
-    <p>If you can read this, Anthony is making progress.</p>
+  <h1 id="title">Loading...</h1>
+  <h2 id="subtitle"></h2>
+  <p id="interval"></p>
+
+  <hr>
+
+  <h3>Calls Presented</h3>
+  <div id="callsPresented"></div>
+
+  <h3>Calls Handled</h3>
+  <div id="callsHandled"></div>
+
+  <h3>Avg Queue Time</h3>
+  <div id="avgQueueTime"></div>
+
+  <h3>Service Level</h3>
+  <div id="serviceLevel"></div>
+
+  <hr>
+
+  <p><strong>Source:</strong> <span id="source"></span></p>
+  <p><strong>Refresh Mode:</strong> <span id="refreshMode"></span></p>
+
+  <script src="app.js"></script>
 </body>
 </html>
