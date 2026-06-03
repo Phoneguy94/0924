@@ -1,43 +1,79 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <link rel="stylesheet" href="style.css">
-  <title>Webex Ballpark Dashboard</title>
+    <link rel="stylesheet" href="style.css">
+    <title>Webex Ballpark Dashboard</title>
 </head>
 <body>
-  <h1 id="title">Loading...</h1>
-  <h2 id="subtitle"></h2>
-  <p id="interval"></p>
 
-  <hr>
+    <h1 id="title">Loading...</h1>
+    <h2 id="subtitle"></h2>
+    <p id="interval"></p>
 
-  <div class="metrics-container">
+    <hr>
 
-    <div class="metric">
-        <div class="metric-label">Calls Presented</div>
-        <div class="metric-value" id="callsPresented"></div>
+    <div class="metrics-container">
+
+        <div class="metric">
+            <div class="metric-label">Calls Presented</div>
+            <div class="metric-value" id="callsPresented"></div>
+        </div>
+
+        <div class="metric">
+            <div class="metric-label">Calls Handled</div>
+            <div class="metric-value" id="callsHandled"></div>
+        </div>
+
+        <div class="metric">
+            <div class="metric-label">Avg Queue Time</div>
+            <div class="metric-value" id="avgQueueTime"></div>
+        </div>
+
+        <div class="metric">
+            <div class="metric-label">Service Level</div>
+            <div class="metric-value" id="serviceLevel"></div>
+        </div>
+
     </div>
 
-    <div class="metric">
-        <div class="metric-label">Calls Handled</div>
-        <div class="metric-value" id="callsHandled"></div>
-    </div>
+    <h2>Queue Standings</h2>
 
-    <div class="metric">
-        <div class="metric-label">Avg Queue Time</div>
-        <div class="metric-value" id="avgQueueTime"></div>
-    </div>
+    <table class="queue-table">
+        <tr>
+            <th>Queue</th>
+            <th>Presented</th>
+            <th>Handled</th>
+            <th>Avg Wait</th>
+        </tr>
 
-    <div class="metric">
-        <div class="metric-label">Service Level</div>
-        <div class="metric-value" id="serviceLevel"></div>
-    </div>
+        <tr>
+            <td>Eng_Res_Billing</td>
+            <td>16</td>
+            <td>15</td>
+            <td>6:16</td>
+        </tr>
 
-  <hr>
+        <tr>
+            <td>Eng_Res_Start</td>
+            <td>13</td>
+            <td>10</td>
+            <td>5:45</td>
+        </tr>
 
-  <p><strong>Source:</strong> <span id="source"></span></p>
-  <p><strong>Refresh Mode:</strong> <span id="refreshMode"></span></p>
+        <tr>
+            <td>Eng_Res_Stop</td>
+            <td>7</td>
+            <td>4</td>
+            <td>4:40</td>
+        </tr>
+    </table>
 
-  <script src="app.js"></script>
+    <hr>
+
+    <p><strong>Source:</strong> <span id="source"></span></p>
+    <p><strong>Refresh Mode:</strong> <span id="refreshMode"></span></p>
+
+    <script src="app.js"></script>
+
 </body>
 </html>
