@@ -2,12 +2,50 @@
   "title": "Contact Center Scoreboard",
   "subtitle": "Live Operations Snapshot",
   "interval": "June 1, 2026 • 10:00 AM - 10:15 AM",
+
   "summary": {
     "callsPresented": 41,
     "callsHandled": 33,
     "avgQueueTime": "05:52",
     "serviceLevel": 69
   },
+
+  "queueStandings": [
+    {
+      "queue": "Eng_Billing",
+      "callsPresented": 25,
+      "callsHandled": 21,
+      "avgQueueTime": "04:12",
+      "serviceLevel": 72
+    },
+    {
+      "queue": "Eng_Service",
+      "callsPresented": 16,
+      "callsHandled": 12,
+      "avgQueueTime": "07:31",
+      "serviceLevel": 64
+    }
+  ],
+
+  "bullpenReport": [
+    {
+      "status": "Available",
+      "count": 8
+    },
+    {
+      "status": "Idle",
+      "count": 3
+    },
+    {
+      "status": "Wrap Up",
+      "count": 2
+    },
+    {
+      "status": "On Contact",
+      "count": 7
+    }
+  ],
+
   "source": {
     "system": "WxCC Analyzer",
     "reports": [
