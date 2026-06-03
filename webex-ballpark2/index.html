@@ -9,18 +9,30 @@
 <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0a0e14; --panel:#121822; --panel-2:#0e131b; --panel-edge:#1f2a3a;
-  --ink:#e9eef5; --ink-dim:#8b97a8; --ink-faint:#5b6675;
-  --accent:#ffc629; --accent-2:#1ba1e2;
-  --good:#4caf50; --warn:#ff9800; --bad:#ef4444;
+  /* warm dusk-at-the-ballpark palette */
+  --bg:#1a1410; --panel:#241b14; --panel-2:#1c1510; --panel-edge:#4a3624;
+  --ink:#f5ecdf; --ink-dim:#b89c80; --ink-faint:#7d6450;
+  --accent:#ffc629; --accent-2:#ff8c3b;
+  --good:#7cc24a; --warn:#ff9800; --bad:#ef5350;
   --radius:14px; --gap:14px;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-body{background:radial-gradient(1200px 600px at 50% -10%, #16202e 0%, var(--bg) 60%), var(--bg);
-  color:var(--ink); font-family:'Barlow',sans-serif; min-height:100vh; padding:18px; -webkit-font-smoothing:antialiased;}
+body{
+  color:var(--ink); font-family:'Barlow',sans-serif; min-height:100vh; padding:18px;
+  -webkit-font-smoothing:antialiased; position:relative; overflow-x:hidden;
+}
+/* fixed stadium backdrop sits behind everything */
+#backdrop{position:fixed; inset:0; z-index:-2; width:100%; height:100%}
+#backdrop svg{width:100%; height:100%; display:block}
+/* warm vignette + readability scrim over the scene */
+body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(140% 90% at 50% 8%, transparent 0%, rgba(20,12,8,.35) 55%, rgba(12,8,5,.72) 100%),
+    linear-gradient(180deg, rgba(20,12,8,.30) 0%, rgba(20,12,8,.10) 35%, rgba(12,8,5,.55) 100%);}
 .scoreboard{max-width:1480px;margin:0 auto;display:flex;flex-direction:column;gap:var(--gap)}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 22px;
-  background:linear-gradient(180deg,#131b27,var(--panel));border:1px solid var(--panel-edge);border-radius:var(--radius)}
+  background:linear-gradient(180deg, rgba(40,29,20,.88), rgba(30,22,16,.92));border:1px solid var(--panel-edge);border-radius:var(--radius);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 10px 30px rgba(0,0,0,.45)}
 .brand{display:flex;align-items:center;gap:16px}
 .brand .bats{font-size:30px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
 .brand h1{font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;font-size:clamp(22px,3vw,38px);line-height:1}
@@ -34,8 +46,11 @@ body{background:radial-gradient(1200px 600px at 50% -10%, #16202e 0%, var(--bg) 
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap)}
 @media (max-width:900px){.grid{grid-template-columns:1fr}}
-.panel{background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--panel-edge);
-  border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden}
+.panel{background:linear-gradient(180deg, rgba(36,27,20,.86), rgba(28,21,16,.90));
+  border:1px solid var(--panel-edge);
+  border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  box-shadow:0 10px 30px rgba(0,0,0,.45)}
 .panel::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;
   background:linear-gradient(90deg,var(--accent),transparent 70%);opacity:.6}
 .panel-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
@@ -103,7 +118,8 @@ svg.field{width:100%;max-width:560px;height:auto}
 .csat-row .bg{height:10px;background:var(--panel-2);border-radius:6px;overflow:hidden}
 .csat-row .fill{height:100%;border-radius:6px;transition:width .6s ease}
 .controls{display:flex;align-items:center;gap:12px;justify-content:center;padding:10px;
-  background:var(--panel-2);border:1px solid var(--panel-edge);border-radius:var(--radius);flex-wrap:wrap}
+  background:linear-gradient(180deg, rgba(36,27,20,.82), rgba(28,21,16,.88));border:1px solid var(--panel-edge);border-radius:var(--radius);flex-wrap:wrap;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
 .controls button{font-family:'Oswald',sans-serif;letter-spacing:1px;background:var(--panel);color:var(--ink);
   border:1px solid var(--panel-edge);border-radius:8px;padding:8px 16px;cursor:pointer;font-size:13px}
 .controls button:hover{border-color:var(--accent);color:var(--accent)}
@@ -111,7 +127,8 @@ svg.field{width:100%;max-width:560px;height:auto}
 .controls .scrub{flex:1;min-width:200px}
 .controls .lbl{font-size:12px;color:var(--ink-dim);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
 .footer{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:14px 22px;
-  background:linear-gradient(180deg,var(--panel),var(--panel-2));border:1px solid var(--panel-edge);border-radius:var(--radius);
+  background:linear-gradient(180deg, rgba(36,27,20,.86), rgba(28,21,16,.90));border:1px solid var(--panel-edge);border-radius:var(--radius);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
   font-size:13px;color:var(--ink-dim)}
 .footer b{color:var(--ink)}
 .footer .source-chip{font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
@@ -120,6 +137,145 @@ svg.field{width:100%;max-width:560px;height:auto}
 </style>
 </head>
 <body>
+<!-- ============================================================
+     STADIUM BACKDROP (placeholder, stylized SVG).
+     To swap in a generated MLB-The-Show-style image later:
+       1) put your image (e.g. stadium.jpg) next to index.html
+       2) DELETE this whole <div id="backdrop">...</div> block
+       3) in the CSS, change  #backdrop{...}  to:
+            #backdrop{position:fixed;inset:0;z-index:-2;
+              background:url('stadium.jpg') center/cover no-repeat;}
+          and add an empty <div id="backdrop"></div> here instead.
+     The warm scrim (body::after) and translucent panels work with either.
+     ============================================================ -->
+<div id="backdrop">
+<svg viewBox="0 0 1600 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- dusk sky: warm sunset top-right fading to deep blue -->
+    <linearGradient id="sky" x1="0" y1="0" x2="0.35" y2="1">
+      <stop offset="0%"  stop-color="#2a3a6b"/>
+      <stop offset="38%" stop-color="#7a4a6b"/>
+      <stop offset="62%" stop-color="#c9683f"/>
+      <stop offset="82%" stop-color="#e89a4a"/>
+      <stop offset="100%" stop-color="#f2b85c"/>
+    </linearGradient>
+    <radialGradient id="sunGlow" cx="68%" cy="64%" r="40%">
+      <stop offset="0%" stop-color="#ffd98a" stop-opacity="0.85"/>
+      <stop offset="100%" stop-color="#ffd98a" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="grass" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#3f7a44"/>
+      <stop offset="100%" stop-color="#214a28"/>
+    </linearGradient>
+    <linearGradient id="river" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#c97a45"/>
+      <stop offset="100%" stop-color="#5a4a6b"/>
+    </linearGradient>
+    <radialGradient id="towerGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#fff7d6" stop-opacity="0.9"/>
+      <stop offset="100%" stop-color="#fff7d6" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="soft"><feGaussianBlur stdDeviation="3"/></filter>
+  </defs>
+
+  <!-- sky -->
+  <rect width="1600" height="900" fill="url(#sky)"/>
+  <ellipse cx="1090" cy="560" rx="620" ry="420" fill="url(#sunGlow)"/>
+
+  <!-- distant city skyline silhouette -->
+  <g fill="#2b2740" opacity="0.92">
+    <rect x="120" y="300" width="60" height="200"/>
+    <rect x="195" y="250" width="48" height="250"/>
+    <rect x="255" y="330" width="40" height="170"/>
+    <rect x="305" y="200" width="70" height="300"/>  <!-- tall one (US Steel-ish) -->
+    <rect x="385" y="290" width="44" height="210"/>
+    <rect x="440" y="240" width="56" height="260"/>   <!-- pointed top -->
+    <polygon points="440,240 468,205 496,240"/>
+    <rect x="505" y="320" width="38" height="180"/>
+    <rect x="552" y="270" width="50" height="230"/>
+    <rect x="612" y="310" width="42" height="190"/>
+    <rect x="662" y="255" width="46" height="245"/>
+    <rect x="718" y="335" width="40" height="165"/>
+  </g>
+  <!-- skyline lit windows -->
+  <g fill="#ffd98a" opacity="0.8">
+    <rect x="318" y="220" width="6" height="8"/><rect x="332" y="220" width="6" height="8"/>
+    <rect x="346" y="220" width="6" height="8"/><rect x="318" y="242" width="6" height="8"/>
+    <rect x="346" y="242" width="6" height="8"/><rect x="332" y="264" width="6" height="8"/>
+    <rect x="206" y="270" width="5" height="7"/><rect x="220" y="270" width="5" height="7"/>
+    <rect x="206" y="290" width="5" height="7"/><rect x="565" y="290" width="5" height="7"/>
+    <rect x="578" y="290" width="5" height="7"/><rect x="565" y="312" width="5" height="7"/>
+    <rect x="675" y="278" width="5" height="7"/><rect x="688" y="278" width="5" height="7"/>
+  </g>
+
+  <!-- the yellow Clemente bridge, spanning beyond the outfield -->
+  <g>
+    <!-- river under it -->
+    <rect x="0" y="470" width="1600" height="70" fill="url(#river)" opacity="0.85"/>
+    <!-- suspension arches -->
+    <g stroke="#f5c518" stroke-width="7" fill="none" stroke-linecap="round">
+      <path d="M 90 470 Q 250 388 410 470"/>
+      <path d="M 410 470 Q 570 388 730 470"/>
+      <path d="M 730 470 Q 890 388 1050 470"/>
+    </g>
+    <!-- deck -->
+    <rect x="80" y="468" width="980" height="9" fill="#e8bb16"/>
+    <!-- vertical suspender cables -->
+    <g stroke="#f5c518" stroke-width="2" opacity="0.85">
+      <line x1="170" y1="430" x2="170" y2="468"/><line x1="250" y1="412" x2="250" y2="468"/>
+      <line x1="330" y1="430" x2="330" y2="468"/><line x1="490" y1="430" x2="490" y2="468"/>
+      <line x1="570" y1="412" x2="570" y2="468"/><line x1="650" y1="430" x2="650" y2="468"/>
+      <line x1="810" y1="430" x2="810" y2="468"/><line x1="890" y1="412" x2="890" y2="468"/>
+      <line x1="970" y1="430" x2="970" y2="468"/>
+    </g>
+    <!-- towers -->
+    <rect x="406" y="378" width="9" height="92" fill="#e8bb16"/>
+    <rect x="726" y="378" width="9" height="92" fill="#e8bb16"/>
+  </g>
+
+  <!-- seating bowl (dark, sweeping around the back of the field) -->
+  <path d="M 0 560 Q 800 430 1600 560 L 1600 720 Q 800 600 0 720 Z" fill="#241c2e" opacity="0.96"/>
+  <path d="M 0 560 Q 800 430 1600 560 L 1600 600 Q 800 480 0 600 Z" fill="#312640" opacity="0.9"/>
+  <!-- speckle of crowd / seats -->
+  <g fill="#6b5a7a" opacity="0.5">
+    <circle cx="200" cy="585" r="2"/><circle cx="260" cy="572" r="2"/><circle cx="330" cy="560" r="2"/>
+    <circle cx="430" cy="548" r="2"/><circle cx="560" cy="538" r="2"/><circle cx="700" cy="532" r="2"/>
+    <circle cx="850" cy="532" r="2"/><circle cx="1000" cy="538" r="2"/><circle cx="1140" cy="548" r="2"/>
+    <circle cx="1260" cy="560" r="2"/><circle cx="1360" cy="574" r="2"/><circle cx="1440" cy="588" r="2"/>
+  </g>
+
+  <!-- stadium light towers with glow -->
+  <g>
+    <!-- left tower -->
+    <ellipse cx="250" cy="250" rx="120" ry="90" fill="url(#towerGlow)"/>
+    <rect x="244" y="250" width="8" height="180" fill="#1a1622"/>
+    <rect x="214" y="222" width="72" height="34" rx="5" fill="#2a2436"/>
+    <g fill="#fff7d6"><circle cx="228" cy="232" r="4"/><circle cx="244" cy="232" r="4"/><circle cx="260" cy="232" r="4"/><circle cx="276" cy="232" r="4"/>
+      <circle cx="228" cy="246" r="4"/><circle cx="244" cy="246" r="4"/><circle cx="260" cy="246" r="4"/><circle cx="276" cy="246" r="4"/></g>
+    <!-- right tower -->
+    <ellipse cx="1330" cy="220" rx="130" ry="95" fill="url(#towerGlow)"/>
+    <rect x="1324" y="220" width="8" height="200" fill="#1a1622"/>
+    <rect x="1292" y="190" width="76" height="36" rx="5" fill="#2a2436"/>
+    <g fill="#fff7d6"><circle cx="1306" cy="201" r="4"/><circle cx="1322" cy="201" r="4"/><circle cx="1338" cy="201" r="4"/><circle cx="1354" cy="201" r="4"/>
+      <circle cx="1306" cy="215" r="4"/><circle cx="1322" cy="215" r="4"/><circle cx="1338" cy="215" r="4"/><circle cx="1354" cy="215" r="4"/></g>
+  </g>
+
+  <!-- the field: outfield grass sweeping up to the foreground -->
+  <path d="M 0 640 Q 800 540 1600 640 L 1600 900 L 0 900 Z" fill="url(#grass)"/>
+  <!-- mowing stripes -->
+  <g stroke="#356b3a" stroke-width="40" opacity="0.35">
+    <line x1="200" y1="900" x2="500" y2="660"/>
+    <line x1="500" y1="900" x2="720" y2="650"/>
+    <line x1="800" y1="900" x2="800" y2="648"/>
+    <line x1="1100" y1="900" x2="880" y2="650"/>
+    <line x1="1400" y1="900" x2="1100" y2="660"/>
+  </g>
+  <!-- infield dirt arc + base path hint, low and centered -->
+  <ellipse cx="800" cy="900" rx="430" ry="190" fill="#9c6b3f" opacity="0.55"/>
+  <ellipse cx="800" cy="912" rx="300" ry="120" fill="#3f7a44" opacity="0.5"/>
+</svg>
+</div>
+
 <div class="scoreboard" id="app">Loading…</div>
 <script>
 /* ===== PLAYBACK & THEME CONFIG — tweak for the demo ===== */
