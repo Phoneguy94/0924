@@ -1,4 +1,4 @@
-fetch('./data/page1.json')
+fetch('./data/page1.json?v=' + Date.now())
   .then(response => response.json())
   .then(data => {
 
@@ -19,14 +19,10 @@ fetch('./data/page1.json')
     document.getElementById('serviceLevel').textContent =
       data.summary.serviceLevel + '%';
 
-    //
-    // Queue Standings
-    //
-    const queueBody =
-      document.getElementById('queueStandingsBody');
+    const queueBody = document.getElementById('queueStandingsBody');
+    queueBody.innerHTML = '';
 
     data.queueStandings.forEach(queue => {
-
       const row = document.createElement('tr');
 
       row.innerHTML = `
@@ -37,17 +33,12 @@ fetch('./data/page1.json')
       `;
 
       queueBody.appendChild(row);
-
     });
 
-    //
-    // Bullpen Report
-    //
-    const bullpenContainer =
-      document.getElementById('bullpenReport');
+    const bullpenContainer = document.getElementById('bullpenReport');
+    bullpenContainer.innerHTML = '';
 
     data.bullpenReport.forEach(status => {
-
       const card = document.createElement('div');
 
       card.className = 'agent-card';
@@ -58,12 +49,40 @@ fetch('./data/page1.json')
       `;
 
       bullpenContainer.appendChild(card);
-
     });
 
-    //
-    // Footer
-    //
+    const activeStates = [
+      'available',
+      'connected',
+      'wrapup',
+      'ringing',
+      'on-hold',
+      'consulting',
+      'hold-done'
+    ];
+
+    const activeDetails = document.getElementById('activeDetails');
+    const inactiveDetails = document.getElementById('inactiveDetails');
+
+    activeDetails.innerHTML = '';
+    inactiveDetails.innerHTML = '';
+
+    data.agentStateSummary.forEach(item => {
+      const detailRow = document.createElement('div');
+      detailRow.className = 'detail-row';
+
+      detailRow.innerHTML = `
+        <span>${formatStateName(item.state)}</span>
+        <strong>${item.count}</strong>
+      `;
+
+      if (activeStates.includes(item.state)) {
+        activeDetails.appendChild(detailRow);
+      } else {
+        inactiveDetails.appendChild(detailRow);
+      }
+    });
+
     document.getElementById('source').textContent =
       data.source.system +
       ' — ' +
@@ -76,3 +95,19 @@ fetch('./data/page1.json')
   .catch(error => {
     console.error('Error loading dashboard data:', error);
   });
+
+function formatStateName(state) {
+  const names = {
+    'available': 'Available',
+    'connected': 'Connected',
+    'wrapup': 'Wrap Up',
+    'ringing': 'Ringing',
+    'on-hold': 'On Hold',
+    'consulting': 'Consulting',
+    'hold-done': 'Hold Done',
+    'idle': 'Idle',
+    'logged-out': 'Logged Out'
+  };
+
+  return names[state] || state;
+}
