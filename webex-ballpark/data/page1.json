@@ -2,7 +2,7 @@
   "title": "Contact Center Scoreboard",
   "subtitle": "Live Operations Snapshot",
   "interval": "06/03/2026 11:15 AM - 11:30 AM through 06/03/2026 12:00 PM - 12:15 PM",
-  "lastUpdated": "June 3, 2026 \u2022 12:23 PM",
+  "lastUpdated": "June 3, 2026 \u2022 12:45 PM",
   "summary": {
     "callsPresented": 85,
     "callsHandled": 28,
@@ -51,98 +51,63 @@
       "callsHandled": 0,
       "avgQueueTime": "06:03",
       "serviceLevel": 0
-    },
-    {
-      "queue": "Spn_Res_Start",
-      "callsPresented": 4,
-      "callsHandled": 1,
-      "avgQueueTime": "10:20",
-      "serviceLevel": 0
-    },
-    {
-      "queue": "Spn_Products",
-      "callsPresented": 3,
-      "callsHandled": 0,
-      "avgQueueTime": "07:25",
-      "serviceLevel": 0
-    },
-    {
-      "queue": "Eng_Products",
-      "callsPresented": 2,
-      "callsHandled": 1,
-      "avgQueueTime": "09:44",
-      "serviceLevel": 0
-    },
-    {
-      "queue": "Eng_Build_All",
-      "callsPresented": 2,
-      "callsHandled": 2,
-      "avgQueueTime": "09:51",
-      "serviceLevel": 100
-    },
-    {
-      "queue": "Spn_Bus_All",
-      "callsPresented": 2,
-      "callsHandled": 0,
-      "avgQueueTime": "20:36",
-      "serviceLevel": 0
-    },
-    {
-      "queue": "Eng_Dim_Light",
-      "callsPresented": 1,
-      "callsHandled": 1,
-      "avgQueueTime": "00:03",
-      "serviceLevel": 100
-    },
-    {
-      "queue": "Eng_Street_Light",
-      "callsPresented": 1,
-      "callsHandled": 0,
-      "avgQueueTime": "00:00",
-      "serviceLevel": 0
-    },
-    {
-      "queue": "QA_AIAgent_Queue",
-      "callsPresented": 1,
-      "callsHandled": 1,
-      "avgQueueTime": "00:00",
-      "serviceLevel": 100
-    },
-    {
-      "queue": "Spn_Build_All",
-      "callsPresented": 0,
-      "callsHandled": 0,
-      "avgQueueTime": "00:00",
-      "serviceLevel": 0
     }
   ],
   "bullpenReport": [
     {
-      "status": "Available",
-      "count": 0
+      "status": "Active",
+      "count": 17
     },
     {
-      "status": "Connected",
-      "count": 0
+      "status": "Inactive",
+      "count": 33
+    }
+  ],
+  "idleBreakdown": [],
+  "agentStateSummary": [
+    {
+      "state": "idle",
+      "count": 32
     },
     {
-      "status": "Idle",
-      "count": 0
+      "state": "connected",
+      "count": 5
     },
     {
-      "status": "Break",
-      "count": 0
+      "state": "wrapup",
+      "count": 3
     },
     {
-      "status": "Meeting",
-      "count": 0
+      "state": "available",
+      "count": 3
+    },
+    {
+      "state": "on-hold",
+      "count": 2
+    },
+    {
+      "state": "consulting",
+      "count": 2
+    },
+    {
+      "state": "logged-out",
+      "count": 1
+    },
+    {
+      "state": "ringing",
+      "count": 1
+    },
+    {
+      "state": "hold-done",
+      "count": 1
     }
   ],
   "source": {
     "system": "WxCC Analyzer",
     "reports": [
-      "Queue All Fields Report"
+      "Queue All Fields Report",
+      "Agent State Report"
     ],
-    "refreshMode": "Last 4 intervals"
+    "refreshMode": "Last 4 queue intervals + latest agent state per agent"
   }
 }
