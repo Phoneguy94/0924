@@ -39,67 +39,25 @@
     <h2>Queue Standings</h2>
 
     <table class="queue-table">
-        <tr>
-            <th>Queue</th>
-            <th>Presented</th>
-            <th>Handled</th>
-            <th>Avg Wait</th>
-        </tr>
-
-        <tr>
-            <td>Eng_Res_Billing</td>
-            <td>16</td>
-            <td>15</td>
-            <td>6:16</td>
-        </tr>
-
-        <tr>
-            <td>Eng_Res_Start</td>
-            <td>13</td>
-            <td>10</td>
-            <td>5:45</td>
-        </tr>
-
-        <tr>
-            <td>Eng_Res_Stop</td>
-            <td>7</td>
-            <td>4</td>
-            <td>4:40</td>
-        </tr>
+        <thead>
+            <tr>
+                <th>Queue</th>
+                <th>Presented</th>
+                <th>Handled</th>
+                <th>Avg Wait</th>
+            </tr>
+        </thead>
+        <tbody id="queueStandingsBody">
+        </tbody>
     </table>
 
     <hr>
 
     <h2>Bullpen Report</h2>
 
-<div class="agent-container">
-
-    <div class="agent-card">
-        <div class="agent-label">Available</div>
-        <div class="agent-value">42</div>
+    <div class="agent-container" id="bullpenReport">
     </div>
 
-    <div class="agent-card">
-        <div class="agent-label">Connected</div>
-        <div class="agent-value">31</div>
-    </div>
-
-    <div class="agent-card">
-        <div class="agent-label">Idle</div>
-        <div class="agent-value">12</div>
-    </div>
-
-    <div class="agent-card">
-        <div class="agent-label">Break</div>
-        <div class="agent-value">5</div>
-    </div>
-
-    <div class="agent-card">
-        <div class="agent-label">Meeting</div>
-        <div class="agent-value">3</div>
-    </div>
-
-</div>
     <p><strong>Source:</strong> <span id="source"></span></p>
     <p><strong>Refresh Mode:</strong> <span id="refreshMode"></span></p>
 
