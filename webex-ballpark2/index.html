@@ -411,11 +411,31 @@ function renderInterval(i){
 function sprayChart(items){
   const W=560,H=360,hx=W/2,hy=H-40;
   const max=Math.max(...items.map(q=>q.volume),1);
-  const spread=150,start=90+spread/2;
   const colors=["#ffc629","#1ba1e2","#4caf50","#ff9800","#9c27b0","#00bcd4","#ff5a63","#7e8a9c"];
-  const hits=items.map((q,i)=>{const ang=(start-(spread*i/Math.max(items.length-1,1)))*Math.PI/180;
-    const len=90+(q.volume/max)*180;
-    return {...q,x:hx+Math.cos(ang)*len,y:hy-Math.sin(ang)*len,c:colors[i%colors.length]};});
+
+  // Rank by volume (desc). Biggest -> center field (straight up, 90deg).
+  // Remaining alternate right/left of center, working outward, so big hits
+  // stay near center and smaller ones drift toward the gaps/lines.
+  const ranked=[...items].map((q,i)=>({...q,c:colors[i%colors.length]}))
+    .sort((a,b)=>b.volume-a.volume);
+
+  const HALF_FAN=40;          // degrees each side of center -> stays in fair territory
+  const n=ranked.length;
+  const placed=ranked.map((q,r)=>{
+    let ang;
+    if(r===0){ ang=90; }                              // biggest = dead center
+    else{
+      const side=(r%2===1)?1:-1;                      // alternate R,L,R,L...
+      const step=Math.ceil(r/2);                      // 1,1,2,2,3,3...
+      const maxStep=Math.ceil((n-1)/2)||1;
+      ang=90 + side*(HALF_FAN*step/maxStep);
+    }
+    // length scales with volume but is clamped to stay inside the outfield wall
+    const len=120 + (q.volume/max)*150;               // 120..270 (center reaches deep)
+    const rad=ang*Math.PI/180;
+    return {...q, x:hx+Math.cos(rad)*len*1.0, y:hy-Math.sin(rad)*len};
+  });
+
   return `<div class="field-wrap"><svg class="field" viewBox="0 0 ${W} ${H}">
     <defs><radialGradient id="grass" cx="50%" cy="90%" r="90%">
       <stop offset="0%" stop-color="#357a48"/><stop offset="100%" stop-color="#1d4a2c"/></radialGradient></defs>
@@ -423,7 +443,7 @@ function sprayChart(items){
     <path d="M ${hx} ${hy} L ${hx-95} ${hy-95} L ${hx} ${hy-150} L ${hx+95} ${hy-95} Z" fill="#9c6b3f" opacity="0.85"/>
     <path d="M ${hx} ${hy-20} L ${hx-62} ${hy-82} L ${hx} ${hy-128} L ${hx+62} ${hy-82} Z" fill="#357a48"/>
     ${[[hx,hy],[hx-95,hy-95],[hx,hy-150],[hx+95,hy-95]].map(([x,y])=>`<rect x="${x-5}" y="${y-5}" width="10" height="10" fill="#fff" transform="rotate(45 ${x} ${y})"/>`).join("")}
-    ${hits.map(h=>`<line x1="${hx}" y1="${hy}" x2="${h.x}" y2="${h.y}" stroke="${h.c}" stroke-width="${1.5+(h.volume/max)*3}" opacity="0.85"/>
+    ${placed.map(h=>`<line x1="${hx}" y1="${hy}" x2="${h.x}" y2="${h.y}" stroke="${h.c}" stroke-width="${1.5+(h.volume/max)*3}" opacity="0.85"/>
       <circle cx="${h.x}" cy="${h.y}" r="${4+(h.volume/max)*6}" fill="${h.c}"/>
       <text x="${h.x}" y="${h.y-13}" fill="#e9eef5" font-size="11" font-family="Barlow Condensed" text-anchor="middle">${h.intent}</text>
       <text x="${h.x}" y="${h.y+19}" fill="${h.c}" font-size="13" font-weight="700" font-family="Oswald" text-anchor="middle">${h.volume}</text>`).join("")}
