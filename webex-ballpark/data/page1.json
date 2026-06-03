@@ -1,0 +1,18 @@
+{
+  "title": "Contact Center Scoreboard",
+  "subtitle": "Live Operations Snapshot",
+  "interval": "June 1, 2026 • 10:00 AM - 10:15 AM",
+  "summary": {
+    "callsPresented": 41,
+    "callsHandled": 33,
+    "avgQueueTime": "05:52",
+    "serviceLevel": 69
+  },
+  "source": {
+    "system": "WxCC Analyzer",
+    "reports": [
+      "Queue All Fields Report"
+    ],
+    "refreshMode": "15-minute interval"
+  }
+}
