@@ -1,0 +1,8062 @@
+{
+  "title": "Webex Ballpark",
+  "subtitle": "Contact Center Operations",
+  "demoDate": "Tuesday, May 27, 2026",
+  "season": {
+    "metrics": [
+      {
+        "label": "AI Sessions",
+        "value": 35850,
+        "delta": "+52%",
+        "trend": [
+          22100,
+          29400,
+          35850
+        ],
+        "fmt": "int"
+      },
+      {
+        "label": "AI Minutes",
+        "value": 31204,
+        "delta": "+48%",
+        "trend": [
+          18900,
+          25600,
+          31204
+        ],
+        "fmt": "int"
+      },
+      {
+        "label": "Containment Rate",
+        "value": 91,
+        "delta": "+3pts",
+        "trend": [
+          85,
+          88,
+          91
+        ],
+        "fmt": "pct"
+      },
+      {
+        "label": "Agent Handovers",
+        "value": 8901,
+        "delta": "-11%",
+        "trend": [
+          11200,
+          10050,
+          8901
+        ],
+        "fmt": "int"
+      }
+    ],
+    "months": [
+      "MAR",
+      "APR",
+      "MAY"
+    ]
+  },
+  "source": {
+    "system": "WxCC Analyzer",
+    "reports": [
+      "Queue All Fields Report",
+      "Agent State Report",
+      "AI Agent Analytics",
+      "Post-Call Survey"
+    ],
+    "refreshMode": "Simulated workday replay \u2014 15-min intervals"
+  },
+  "timeline": [
+    {
+      "intervalLabel": "7:00 AM - 7:15 AM",
+      "summary": {
+        "callsPresented": 14,
+        "callsHandled": 10,
+        "avgQueueTime": "03:11",
+        "serviceLevel": 54
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 4,
+          "callsHandled": 3,
+          "avgQueueTime": "02:33",
+          "serviceLevel": 68
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 4,
+          "callsHandled": 3,
+          "avgQueueTime": "02:58",
+          "serviceLevel": 58
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 0,
+          "callsHandled": 0,
+          "avgQueueTime": "03:56",
+          "serviceLevel": 52
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 4,
+          "callsHandled": 3,
+          "avgQueueTime": "03:24",
+          "serviceLevel": 63
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 0,
+          "callsHandled": 0,
+          "avgQueueTime": "02:41",
+          "serviceLevel": 43
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "03:34",
+          "serviceLevel": 42
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 78
+        },
+        {
+          "status": "Inactive",
+          "count": 48
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 24
+        },
+        {
+          "state": "connected",
+          "count": 37
+        },
+        {
+          "state": "wrapup",
+          "count": 12
+        },
+        {
+          "state": "on-hold",
+          "count": 1
+        },
+        {
+          "state": "consulting",
+          "count": 1
+        },
+        {
+          "state": "ringing",
+          "count": 1
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 47
+        },
+        {
+          "state": "logged-out",
+          "count": 1
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 4
+        },
+        {
+          "intent": "Billing",
+          "volume": 3
+        },
+        {
+          "intent": "Claims",
+          "volume": 3
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 2
+        },
+        {
+          "intent": "Account Update",
+          "volume": 1
+        },
+        {
+          "intent": "Other",
+          "volume": 1
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 60
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 27
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 9
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 4
+        }
+      ],
+      "csat": {
+        "score": 4.6,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 57
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "7:15 AM - 7:30 AM",
+      "summary": {
+        "callsPresented": 22,
+        "callsHandled": 17,
+        "avgQueueTime": "03:46",
+        "serviceLevel": 55
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 8,
+          "callsHandled": 6,
+          "avgQueueTime": "03:52",
+          "serviceLevel": 65
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 5,
+          "callsHandled": 4,
+          "avgQueueTime": "03:36",
+          "serviceLevel": 61
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 1,
+          "callsHandled": 1,
+          "avgQueueTime": "03:20",
+          "serviceLevel": 59
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 0,
+          "callsHandled": 0,
+          "avgQueueTime": "03:54",
+          "serviceLevel": 70
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 4,
+          "callsHandled": 3,
+          "avgQueueTime": "03:42",
+          "serviceLevel": 35
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 4,
+          "callsHandled": 3,
+          "avgQueueTime": "04:17",
+          "serviceLevel": 42
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 81
+        },
+        {
+          "status": "Inactive",
+          "count": 45
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 22
+        },
+        {
+          "state": "connected",
+          "count": 42
+        },
+        {
+          "state": "wrapup",
+          "count": 13
+        },
+        {
+          "state": "on-hold",
+          "count": 1
+        },
+        {
+          "state": "consulting",
+          "count": 1
+        },
+        {
+          "state": "ringing",
+          "count": 1
+        },
+        {
+          "state": "hold-done",
+          "count": 1
+        },
+        {
+          "state": "idle",
+          "count": 45
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 6
+        },
+        {
+          "intent": "Billing",
+          "volume": 6
+        },
+        {
+          "intent": "Claims",
+          "volume": 4
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 3
+        },
+        {
+          "intent": "Account Update",
+          "volume": 2
+        },
+        {
+          "intent": "Other",
+          "volume": 2
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 59
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 27
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 9
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.3,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 58
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "7:30 AM - 7:45 AM",
+      "summary": {
+        "callsPresented": 25,
+        "callsHandled": 16,
+        "avgQueueTime": "04:46",
+        "serviceLevel": 53
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 9,
+          "callsHandled": 6,
+          "avgQueueTime": "03:58",
+          "serviceLevel": 61
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 6,
+          "callsHandled": 4,
+          "avgQueueTime": "04:36",
+          "serviceLevel": 56
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "05:09",
+          "serviceLevel": 55
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 1,
+          "callsHandled": 1,
+          "avgQueueTime": "04:35",
+          "serviceLevel": 67
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "05:13",
+          "serviceLevel": 39
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "05:05",
+          "serviceLevel": 41
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 90
+        },
+        {
+          "status": "Inactive",
+          "count": 36
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 21
+        },
+        {
+          "state": "connected",
+          "count": 48
+        },
+        {
+          "state": "wrapup",
+          "count": 14
+        },
+        {
+          "state": "on-hold",
+          "count": 2
+        },
+        {
+          "state": "consulting",
+          "count": 2
+        },
+        {
+          "state": "ringing",
+          "count": 1
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 35
+        },
+        {
+          "state": "logged-out",
+          "count": 1
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 6
+        },
+        {
+          "intent": "Billing",
+          "volume": 6
+        },
+        {
+          "intent": "Claims",
+          "volume": 5
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 3
+        },
+        {
+          "intent": "Account Update",
+          "volume": 3
+        },
+        {
+          "intent": "Other",
+          "volume": 2
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 59
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 27
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 9
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.6,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 55
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "7:45 AM - 8:00 AM",
+      "summary": {
+        "callsPresented": 25,
+        "callsHandled": 17,
+        "avgQueueTime": "05:23",
+        "serviceLevel": 52
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 6,
+          "callsHandled": 4,
+          "avgQueueTime": "05:07",
+          "serviceLevel": 63
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 6,
+          "callsHandled": 4,
+          "avgQueueTime": "04:35",
+          "serviceLevel": 51
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "05:58",
+          "serviceLevel": 51
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 1,
+          "callsHandled": 1,
+          "avgQueueTime": "05:50",
+          "serviceLevel": 68
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 4,
+          "callsHandled": 3,
+          "avgQueueTime": "05:49",
+          "serviceLevel": 42
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "05:00",
+          "serviceLevel": 37
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 92
+        },
+        {
+          "status": "Inactive",
+          "count": 34
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 19
+        },
+        {
+          "state": "connected",
+          "count": 53
+        },
+        {
+          "state": "wrapup",
+          "count": 15
+        },
+        {
+          "state": "on-hold",
+          "count": 2
+        },
+        {
+          "state": "consulting",
+          "count": 2
+        },
+        {
+          "state": "ringing",
+          "count": 1
+        },
+        {
+          "state": "idle",
+          "count": 30
+        },
+        {
+          "state": "logged-out",
+          "count": 4
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 7
+        },
+        {
+          "intent": "Billing",
+          "volume": 6
+        },
+        {
+          "intent": "Claims",
+          "volume": 5
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 3
+        },
+        {
+          "intent": "Account Update",
+          "volume": 2
+        },
+        {
+          "intent": "Other",
+          "volume": 2
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 58
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 27
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 9
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.4,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 62
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "8:00 AM - 8:15 AM",
+      "summary": {
+        "callsPresented": 27,
+        "callsHandled": 17,
+        "avgQueueTime": "05:56",
+        "serviceLevel": 47
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 6,
+          "callsHandled": 4,
+          "avgQueueTime": "05:20",
+          "serviceLevel": 52
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 6,
+          "callsHandled": 4,
+          "avgQueueTime": "06:33",
+          "serviceLevel": 55
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "05:14",
+          "serviceLevel": 50
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "06:22",
+          "serviceLevel": 64
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "05:38",
+          "serviceLevel": 25
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "06:33",
+          "serviceLevel": 38
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 100
+        },
+        {
+          "status": "Inactive",
+          "count": 26
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 17
+        },
+        {
+          "state": "connected",
+          "count": 58
+        },
+        {
+          "state": "wrapup",
+          "count": 16
+        },
+        {
+          "state": "on-hold",
+          "count": 3
+        },
+        {
+          "state": "consulting",
+          "count": 2
+        },
+        {
+          "state": "ringing",
+          "count": 2
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 24
+        },
+        {
+          "state": "logged-out",
+          "count": 2
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 6
+        },
+        {
+          "intent": "Billing",
+          "volume": 6
+        },
+        {
+          "intent": "Claims",
+          "volume": 5
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 4
+        },
+        {
+          "intent": "Account Update",
+          "volume": 3
+        },
+        {
+          "intent": "Other",
+          "volume": 2
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 58
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 4
+        }
+      ],
+      "csat": {
+        "score": 4.5,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 57
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "8:15 AM - 8:30 AM",
+      "summary": {
+        "callsPresented": 39,
+        "callsHandled": 22,
+        "avgQueueTime": "06:48",
+        "serviceLevel": 44
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 10,
+          "callsHandled": 6,
+          "avgQueueTime": "07:05",
+          "serviceLevel": 54
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 12,
+          "callsHandled": 7,
+          "avgQueueTime": "07:02",
+          "serviceLevel": 45
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "06:32",
+          "serviceLevel": 40
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "07:24",
+          "serviceLevel": 63
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "07:01",
+          "serviceLevel": 32
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "05:47",
+          "serviceLevel": 30
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 106
+        },
+        {
+          "status": "Inactive",
+          "count": 20
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 16
+        },
+        {
+          "state": "connected",
+          "count": 63
+        },
+        {
+          "state": "wrapup",
+          "count": 18
+        },
+        {
+          "state": "on-hold",
+          "count": 3
+        },
+        {
+          "state": "consulting",
+          "count": 3
+        },
+        {
+          "state": "ringing",
+          "count": 2
+        },
+        {
+          "state": "hold-done",
+          "count": 1
+        },
+        {
+          "state": "idle",
+          "count": 18
+        },
+        {
+          "state": "logged-out",
+          "count": 2
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 10
+        },
+        {
+          "intent": "Billing",
+          "volume": 8
+        },
+        {
+          "intent": "Claims",
+          "volume": 8
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 4
+        },
+        {
+          "intent": "Account Update",
+          "volume": 4
+        },
+        {
+          "intent": "Other",
+          "volume": 3
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 57
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.7,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 57
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "8:30 AM - 8:45 AM",
+      "summary": {
+        "callsPresented": 37,
+        "callsHandled": 20,
+        "avgQueueTime": "07:23",
+        "serviceLevel": 42
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 12,
+          "callsHandled": 6,
+          "avgQueueTime": "07:34",
+          "serviceLevel": 47
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 10,
+          "callsHandled": 5,
+          "avgQueueTime": "07:31",
+          "serviceLevel": 49
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "07:33",
+          "serviceLevel": 38
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "07:15",
+          "serviceLevel": 55
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "07:30",
+          "serviceLevel": 33
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "06:55",
+          "serviceLevel": 31
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 111
+        },
+        {
+          "status": "Inactive",
+          "count": 15
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 14
+        },
+        {
+          "state": "connected",
+          "count": 69
+        },
+        {
+          "state": "wrapup",
+          "count": 19
+        },
+        {
+          "state": "on-hold",
+          "count": 4
+        },
+        {
+          "state": "consulting",
+          "count": 3
+        },
+        {
+          "state": "ringing",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 13
+        },
+        {
+          "state": "logged-out",
+          "count": 2
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 9
+        },
+        {
+          "intent": "Billing",
+          "volume": 9
+        },
+        {
+          "intent": "Claims",
+          "volume": 7
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 4
+        },
+        {
+          "intent": "Account Update",
+          "volume": 4
+        },
+        {
+          "intent": "Other",
+          "volume": 3
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 56
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.3,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 55
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "8:45 AM - 9:00 AM",
+      "summary": {
+        "callsPresented": 45,
+        "callsHandled": 23,
+        "avgQueueTime": "08:12",
+        "serviceLevel": 40
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 12,
+          "callsHandled": 6,
+          "avgQueueTime": "08:08",
+          "serviceLevel": 46
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 12,
+          "callsHandled": 6,
+          "avgQueueTime": "08:28",
+          "serviceLevel": 48
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "08:12",
+          "serviceLevel": 33
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "08:16",
+          "serviceLevel": 56
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "08:43",
+          "serviceLevel": 31
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 7,
+          "callsHandled": 4,
+          "avgQueueTime": "07:27",
+          "serviceLevel": 24
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 116
+        },
+        {
+          "status": "Inactive",
+          "count": 10
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 12
+        },
+        {
+          "state": "connected",
+          "count": 74
+        },
+        {
+          "state": "wrapup",
+          "count": 20
+        },
+        {
+          "state": "on-hold",
+          "count": 4
+        },
+        {
+          "state": "consulting",
+          "count": 3
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "idle",
+          "count": 7
+        },
+        {
+          "state": "logged-out",
+          "count": 3
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 12
+        },
+        {
+          "intent": "Billing",
+          "volume": 10
+        },
+        {
+          "intent": "Claims",
+          "volume": 9
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 5
+        },
+        {
+          "intent": "Account Update",
+          "volume": 5
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 56
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.3,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 60
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "9:00 AM - 9:15 AM",
+      "summary": {
+        "callsPresented": 50,
+        "callsHandled": 24,
+        "avgQueueTime": "08:40",
+        "serviceLevel": 33
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 15,
+          "callsHandled": 7,
+          "avgQueueTime": "08:13",
+          "serviceLevel": 42
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 14,
+          "callsHandled": 7,
+          "avgQueueTime": "08:50",
+          "serviceLevel": 44
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "08:36",
+          "serviceLevel": 31
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 5,
+          "callsHandled": 2,
+          "avgQueueTime": "08:41",
+          "serviceLevel": 45
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "08:38",
+          "serviceLevel": 16
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "09:05",
+          "serviceLevel": 18
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 123
+        },
+        {
+          "status": "Inactive",
+          "count": 3
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 11
+        },
+        {
+          "state": "connected",
+          "count": 79
+        },
+        {
+          "state": "wrapup",
+          "count": 21
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "idle",
+          "count": 2
+        },
+        {
+          "state": "logged-out",
+          "count": 1
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 12
+        },
+        {
+          "intent": "Billing",
+          "volume": 11
+        },
+        {
+          "intent": "Claims",
+          "volume": 9
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 6
+        },
+        {
+          "intent": "Account Update",
+          "volume": 4
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 55
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.7,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 59
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "9:15 AM - 9:30 AM",
+      "summary": {
+        "callsPresented": 62,
+        "callsHandled": 30,
+        "avgQueueTime": "08:37",
+        "serviceLevel": 35
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 19,
+          "callsHandled": 9,
+          "avgQueueTime": "08:37",
+          "serviceLevel": 48
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 17,
+          "callsHandled": 8,
+          "avgQueueTime": "09:25",
+          "serviceLevel": 44
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "08:25",
+          "serviceLevel": 34
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "08:08",
+          "serviceLevel": 38
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "08:08",
+          "serviceLevel": 12
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 10,
+          "callsHandled": 5,
+          "avgQueueTime": "09:02",
+          "serviceLevel": 32
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 128
+        },
+        {
+          "status": "Inactive",
+          "count": -2
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 10
+        },
+        {
+          "state": "connected",
+          "count": 82
+        },
+        {
+          "state": "wrapup",
+          "count": 22
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "logged-out",
+          "count": 1
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 15
+        },
+        {
+          "intent": "Billing",
+          "volume": 14
+        },
+        {
+          "intent": "Claims",
+          "volume": 13
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 7
+        },
+        {
+          "intent": "Account Update",
+          "volume": 5
+        },
+        {
+          "intent": "Other",
+          "volume": 5
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 55
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.5,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 58
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "9:30 AM - 9:45 AM",
+      "summary": {
+        "callsPresented": 63,
+        "callsHandled": 27,
+        "avgQueueTime": "08:55",
+        "serviceLevel": 31
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 19,
+          "callsHandled": 8,
+          "avgQueueTime": "08:26",
+          "serviceLevel": 35
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 16,
+          "callsHandled": 7,
+          "avgQueueTime": "09:45",
+          "serviceLevel": 43
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "08:54",
+          "serviceLevel": 29
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 5,
+          "callsHandled": 2,
+          "avgQueueTime": "08:51",
+          "serviceLevel": 43
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "08:37",
+          "serviceLevel": 19
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 9,
+          "callsHandled": 4,
+          "avgQueueTime": "09:01",
+          "serviceLevel": 17
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 127
+        },
+        {
+          "status": "Inactive",
+          "count": -1
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 9
+        },
+        {
+          "state": "connected",
+          "count": 84
+        },
+        {
+          "state": "wrapup",
+          "count": 22
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "logged-out",
+          "count": 3
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 18
+        },
+        {
+          "intent": "Billing",
+          "volume": 15
+        },
+        {
+          "intent": "Claims",
+          "volume": 11
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 8
+        },
+        {
+          "intent": "Account Update",
+          "volume": 6
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 55
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.4,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 56
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "9:45 AM - 10:00 AM",
+      "summary": {
+        "callsPresented": 50,
+        "callsHandled": 21,
+        "avgQueueTime": "09:30",
+        "serviceLevel": 31
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 16,
+          "callsHandled": 7,
+          "avgQueueTime": "09:16",
+          "serviceLevel": 36
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 15,
+          "callsHandled": 6,
+          "avgQueueTime": "09:49",
+          "serviceLevel": 34
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 8,
+          "callsHandled": 3,
+          "avgQueueTime": "10:03",
+          "serviceLevel": 38
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "10:05",
+          "serviceLevel": 42
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 3,
+          "callsHandled": 1,
+          "avgQueueTime": "08:57",
+          "serviceLevel": 16
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "08:53",
+          "serviceLevel": 18
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 131
+        },
+        {
+          "status": "Inactive",
+          "count": -5
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 8
+        },
+        {
+          "state": "connected",
+          "count": 87
+        },
+        {
+          "state": "wrapup",
+          "count": 23
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "hold-done",
+          "count": 1
+        },
+        {
+          "state": "logged-out",
+          "count": 2
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 14
+        },
+        {
+          "intent": "Billing",
+          "volume": 12
+        },
+        {
+          "intent": "Claims",
+          "volume": 9
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 7
+        },
+        {
+          "intent": "Account Update",
+          "volume": 5
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 54
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.7,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 55
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "10:00 AM - 10:15 AM",
+      "summary": {
+        "callsPresented": 57,
+        "callsHandled": 22,
+        "avgQueueTime": "09:46",
+        "serviceLevel": 27
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 18,
+          "callsHandled": 7,
+          "avgQueueTime": "09:35",
+          "serviceLevel": 31
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 12,
+          "callsHandled": 5,
+          "avgQueueTime": "09:42",
+          "serviceLevel": 28
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "09:20",
+          "serviceLevel": 34
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 6,
+          "callsHandled": 2,
+          "avgQueueTime": "10:30",
+          "serviceLevel": 45
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 8,
+          "callsHandled": 3,
+          "avgQueueTime": "09:01",
+          "serviceLevel": 10
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 6,
+          "callsHandled": 2,
+          "avgQueueTime": "10:28",
+          "serviceLevel": 16
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 139
+        },
+        {
+          "status": "Inactive",
+          "count": -13
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 8
+        },
+        {
+          "state": "connected",
+          "count": 90
+        },
+        {
+          "state": "wrapup",
+          "count": 24
+        },
+        {
+          "state": "on-hold",
+          "count": 6
+        },
+        {
+          "state": "consulting",
+          "count": 5
+        },
+        {
+          "state": "ringing",
+          "count": 4
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 17
+        },
+        {
+          "intent": "Billing",
+          "volume": 13
+        },
+        {
+          "intent": "Claims",
+          "volume": 10
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 7
+        },
+        {
+          "intent": "Account Update",
+          "volume": 5
+        },
+        {
+          "intent": "Other",
+          "volume": 5
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 54
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.6,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 55
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "10:15 AM - 10:30 AM",
+      "summary": {
+        "callsPresented": 57,
+        "callsHandled": 23,
+        "avgQueueTime": "09:51",
+        "serviceLevel": 29
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 16,
+          "callsHandled": 6,
+          "avgQueueTime": "10:20",
+          "serviceLevel": 38
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 13,
+          "callsHandled": 5,
+          "avgQueueTime": "09:38",
+          "serviceLevel": 38
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 9,
+          "callsHandled": 4,
+          "avgQueueTime": "10:28",
+          "serviceLevel": 24
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "09:13",
+          "serviceLevel": 38
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "08:56",
+          "serviceLevel": 12
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 8,
+          "callsHandled": 3,
+          "avgQueueTime": "10:33",
+          "serviceLevel": 26
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 134
+        },
+        {
+          "status": "Inactive",
+          "count": -8
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 8
+        },
+        {
+          "state": "connected",
+          "count": 89
+        },
+        {
+          "state": "wrapup",
+          "count": 23
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "logged-out",
+          "count": 1
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 14
+        },
+        {
+          "intent": "Billing",
+          "volume": 14
+        },
+        {
+          "intent": "Claims",
+          "volume": 10
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 8
+        },
+        {
+          "intent": "Account Update",
+          "volume": 6
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 54
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.6,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 62
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "10:30 AM - 10:45 AM",
+      "summary": {
+        "callsPresented": 56,
+        "callsHandled": 22,
+        "avgQueueTime": "09:57",
+        "serviceLevel": 31
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 17,
+          "callsHandled": 7,
+          "avgQueueTime": "09:16",
+          "serviceLevel": 38
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 13,
+          "callsHandled": 5,
+          "avgQueueTime": "10:11",
+          "serviceLevel": 31
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 8,
+          "callsHandled": 3,
+          "avgQueueTime": "09:29",
+          "serviceLevel": 29
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 3,
+          "callsHandled": 1,
+          "avgQueueTime": "10:25",
+          "serviceLevel": 41
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 6,
+          "callsHandled": 2,
+          "avgQueueTime": "10:09",
+          "serviceLevel": 24
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 9,
+          "callsHandled": 4,
+          "avgQueueTime": "10:13",
+          "serviceLevel": 23
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 131
+        },
+        {
+          "status": "Inactive",
+          "count": -5
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 8
+        },
+        {
+          "state": "connected",
+          "count": 88
+        },
+        {
+          "state": "wrapup",
+          "count": 23
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 17
+        },
+        {
+          "intent": "Billing",
+          "volume": 12
+        },
+        {
+          "intent": "Claims",
+          "volume": 11
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 8
+        },
+        {
+          "intent": "Account Update",
+          "volume": 5
+        },
+        {
+          "intent": "Other",
+          "volume": 5
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 54
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.4,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 60
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "10:45 AM - 11:00 AM",
+      "summary": {
+        "callsPresented": 59,
+        "callsHandled": 25,
+        "avgQueueTime": "09:37",
+        "serviceLevel": 29
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 19,
+          "callsHandled": 8,
+          "avgQueueTime": "09:45",
+          "serviceLevel": 34
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 16,
+          "callsHandled": 7,
+          "avgQueueTime": "09:53",
+          "serviceLevel": 32
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "08:45",
+          "serviceLevel": 34
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 3,
+          "callsHandled": 1,
+          "avgQueueTime": "09:46",
+          "serviceLevel": 40
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "09:35",
+          "serviceLevel": 10
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 8,
+          "callsHandled": 3,
+          "avgQueueTime": "09:59",
+          "serviceLevel": 24
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 132
+        },
+        {
+          "status": "Inactive",
+          "count": -6
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 8
+        },
+        {
+          "state": "connected",
+          "count": 87
+        },
+        {
+          "state": "wrapup",
+          "count": 23
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 17
+        },
+        {
+          "intent": "Billing",
+          "volume": 13
+        },
+        {
+          "intent": "Claims",
+          "volume": 11
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 7
+        },
+        {
+          "intent": "Account Update",
+          "volume": 6
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 54
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.4,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 61
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "11:00 AM - 11:15 AM",
+      "summary": {
+        "callsPresented": 67,
+        "callsHandled": 28,
+        "avgQueueTime": "09:44",
+        "serviceLevel": 30
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 19,
+          "callsHandled": 8,
+          "avgQueueTime": "10:00",
+          "serviceLevel": 37
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 18,
+          "callsHandled": 8,
+          "avgQueueTime": "09:46",
+          "serviceLevel": 35
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 8,
+          "callsHandled": 3,
+          "avgQueueTime": "09:44",
+          "serviceLevel": 22
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 5,
+          "callsHandled": 2,
+          "avgQueueTime": "09:10",
+          "serviceLevel": 40
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "10:14",
+          "serviceLevel": 19
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 10,
+          "callsHandled": 4,
+          "avgQueueTime": "09:30",
+          "serviceLevel": 28
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 132
+        },
+        {
+          "status": "Inactive",
+          "count": -6
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 9
+        },
+        {
+          "state": "connected",
+          "count": 86
+        },
+        {
+          "state": "wrapup",
+          "count": 23
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "logged-out",
+          "count": 1
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 18
+        },
+        {
+          "intent": "Billing",
+          "volume": 17
+        },
+        {
+          "intent": "Claims",
+          "volume": 14
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 9
+        },
+        {
+          "intent": "Account Update",
+          "volume": 7
+        },
+        {
+          "intent": "Other",
+          "volume": 5
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 54
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.6,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 60
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "11:15 AM - 11:30 AM",
+      "summary": {
+        "callsPresented": 46,
+        "callsHandled": 21,
+        "avgQueueTime": "08:39",
+        "serviceLevel": 33
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 13,
+          "callsHandled": 6,
+          "avgQueueTime": "09:14",
+          "serviceLevel": 44
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 11,
+          "callsHandled": 5,
+          "avgQueueTime": "08:13",
+          "serviceLevel": 34
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "07:53",
+          "serviceLevel": 32
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 5,
+          "callsHandled": 2,
+          "avgQueueTime": "09:06",
+          "serviceLevel": 40
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "08:41",
+          "serviceLevel": 18
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "08:51",
+          "serviceLevel": 30
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 124
+        },
+        {
+          "status": "Inactive",
+          "count": 2
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 11
+        },
+        {
+          "state": "connected",
+          "count": 80
+        },
+        {
+          "state": "wrapup",
+          "count": 21
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "idle",
+          "count": 1
+        },
+        {
+          "state": "logged-out",
+          "count": 1
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 13
+        },
+        {
+          "intent": "Billing",
+          "volume": 9
+        },
+        {
+          "intent": "Claims",
+          "volume": 9
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 6
+        },
+        {
+          "intent": "Account Update",
+          "volume": 4
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 55
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.4,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 62
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "11:30 AM - 11:45 AM",
+      "summary": {
+        "callsPresented": 46,
+        "callsHandled": 25,
+        "avgQueueTime": "08:02",
+        "serviceLevel": 42
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 14,
+          "callsHandled": 7,
+          "avgQueueTime": "07:33",
+          "serviceLevel": 42
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 11,
+          "callsHandled": 6,
+          "avgQueueTime": "07:19",
+          "serviceLevel": 47
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 7,
+          "callsHandled": 4,
+          "avgQueueTime": "08:13",
+          "serviceLevel": 39
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "08:20",
+          "serviceLevel": 57
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "08:12",
+          "serviceLevel": 30
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "08:38",
+          "serviceLevel": 36
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 117
+        },
+        {
+          "status": "Inactive",
+          "count": 9
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 12
+        },
+        {
+          "state": "connected",
+          "count": 74
+        },
+        {
+          "state": "wrapup",
+          "count": 20
+        },
+        {
+          "state": "on-hold",
+          "count": 4
+        },
+        {
+          "state": "consulting",
+          "count": 3
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "hold-done",
+          "count": 1
+        },
+        {
+          "state": "idle",
+          "count": 7
+        },
+        {
+          "state": "logged-out",
+          "count": 2
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 13
+        },
+        {
+          "intent": "Billing",
+          "volume": 12
+        },
+        {
+          "intent": "Claims",
+          "volume": 8
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 6
+        },
+        {
+          "intent": "Account Update",
+          "volume": 5
+        },
+        {
+          "intent": "Other",
+          "volume": 3
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 56
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.5,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 59
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "11:45 AM - 12:00 PM",
+      "summary": {
+        "callsPresented": 36,
+        "callsHandled": 19,
+        "avgQueueTime": "07:05",
+        "serviceLevel": 43
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 11,
+          "callsHandled": 6,
+          "avgQueueTime": "06:59",
+          "serviceLevel": 52
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 12,
+          "callsHandled": 6,
+          "avgQueueTime": "06:27",
+          "serviceLevel": 40
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "06:46",
+          "serviceLevel": 44
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "07:47",
+          "serviceLevel": 50
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "07:10",
+          "serviceLevel": 32
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "07:26",
+          "serviceLevel": 38
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 111
+        },
+        {
+          "status": "Inactive",
+          "count": 15
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 14
+        },
+        {
+          "state": "connected",
+          "count": 68
+        },
+        {
+          "state": "wrapup",
+          "count": 19
+        },
+        {
+          "state": "on-hold",
+          "count": 4
+        },
+        {
+          "state": "consulting",
+          "count": 3
+        },
+        {
+          "state": "ringing",
+          "count": 2
+        },
+        {
+          "state": "hold-done",
+          "count": 1
+        },
+        {
+          "state": "idle",
+          "count": 15
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 9
+        },
+        {
+          "intent": "Billing",
+          "volume": 8
+        },
+        {
+          "intent": "Claims",
+          "volume": 8
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 5
+        },
+        {
+          "intent": "Account Update",
+          "volume": 4
+        },
+        {
+          "intent": "Other",
+          "volume": 3
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 56
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.6,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 61
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "12:00 PM - 12:15 PM",
+      "summary": {
+        "callsPresented": 38,
+        "callsHandled": 21,
+        "avgQueueTime": "06:20",
+        "serviceLevel": 44
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 9,
+          "callsHandled": 5,
+          "avgQueueTime": "06:17",
+          "serviceLevel": 55
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 11,
+          "callsHandled": 6,
+          "avgQueueTime": "06:25",
+          "serviceLevel": 47
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "06:00",
+          "serviceLevel": 44
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "06:34",
+          "serviceLevel": 48
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "06:15",
+          "serviceLevel": 35
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "06:31",
+          "serviceLevel": 32
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 105
+        },
+        {
+          "status": "Inactive",
+          "count": 21
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 16
+        },
+        {
+          "state": "connected",
+          "count": 62
+        },
+        {
+          "state": "wrapup",
+          "count": 17
+        },
+        {
+          "state": "on-hold",
+          "count": 3
+        },
+        {
+          "state": "consulting",
+          "count": 3
+        },
+        {
+          "state": "ringing",
+          "count": 2
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 17
+        },
+        {
+          "state": "logged-out",
+          "count": 4
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 9
+        },
+        {
+          "intent": "Billing",
+          "volume": 8
+        },
+        {
+          "intent": "Claims",
+          "volume": 7
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 4
+        },
+        {
+          "intent": "Account Update",
+          "volume": 4
+        },
+        {
+          "intent": "Other",
+          "volume": 3
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 57
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.5,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 55
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "12:15 PM - 12:30 PM",
+      "summary": {
+        "callsPresented": 37,
+        "callsHandled": 22,
+        "avgQueueTime": "06:26",
+        "serviceLevel": 44
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 12,
+          "callsHandled": 7,
+          "avgQueueTime": "06:26",
+          "serviceLevel": 51
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 10,
+          "callsHandled": 6,
+          "avgQueueTime": "06:26",
+          "serviceLevel": 49
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "06:20",
+          "serviceLevel": 48
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "05:55",
+          "serviceLevel": 62
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "07:20",
+          "serviceLevel": 23
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "06:13",
+          "serviceLevel": 29
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 107
+        },
+        {
+          "status": "Inactive",
+          "count": 19
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 16
+        },
+        {
+          "state": "connected",
+          "count": 63
+        },
+        {
+          "state": "wrapup",
+          "count": 18
+        },
+        {
+          "state": "on-hold",
+          "count": 3
+        },
+        {
+          "state": "consulting",
+          "count": 3
+        },
+        {
+          "state": "ringing",
+          "count": 2
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 19
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 11
+        },
+        {
+          "intent": "Billing",
+          "volume": 10
+        },
+        {
+          "intent": "Claims",
+          "volume": 6
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 4
+        },
+        {
+          "intent": "Account Update",
+          "volume": 3
+        },
+        {
+          "intent": "Other",
+          "volume": 3
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 57
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.6,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 58
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "12:30 PM - 12:45 PM",
+      "summary": {
+        "callsPresented": 42,
+        "callsHandled": 23,
+        "avgQueueTime": "07:02",
+        "serviceLevel": 42
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 12,
+          "callsHandled": 7,
+          "avgQueueTime": "07:35",
+          "serviceLevel": 55
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 9,
+          "callsHandled": 5,
+          "avgQueueTime": "07:14",
+          "serviceLevel": 41
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "06:36",
+          "serviceLevel": 37
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "06:00",
+          "serviceLevel": 55
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "07:23",
+          "serviceLevel": 33
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "07:28",
+          "serviceLevel": 32
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 106
+        },
+        {
+          "status": "Inactive",
+          "count": 20
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 15
+        },
+        {
+          "state": "connected",
+          "count": 65
+        },
+        {
+          "state": "wrapup",
+          "count": 18
+        },
+        {
+          "state": "on-hold",
+          "count": 3
+        },
+        {
+          "state": "consulting",
+          "count": 3
+        },
+        {
+          "state": "ringing",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 16
+        },
+        {
+          "state": "logged-out",
+          "count": 4
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 12
+        },
+        {
+          "intent": "Billing",
+          "volume": 10
+        },
+        {
+          "intent": "Claims",
+          "volume": 7
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 6
+        },
+        {
+          "intent": "Account Update",
+          "volume": 5
+        },
+        {
+          "intent": "Other",
+          "volume": 3
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 57
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.3,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 55
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "12:45 PM - 1:00 PM",
+      "summary": {
+        "callsPresented": 37,
+        "callsHandled": 21,
+        "avgQueueTime": "07:06",
+        "serviceLevel": 45
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 14,
+          "callsHandled": 8,
+          "avgQueueTime": "07:04",
+          "serviceLevel": 54
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 8,
+          "callsHandled": 4,
+          "avgQueueTime": "07:14",
+          "serviceLevel": 47
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "07:03",
+          "serviceLevel": 48
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 1,
+          "callsHandled": 1,
+          "avgQueueTime": "07:05",
+          "serviceLevel": 56
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "07:40",
+          "serviceLevel": 24
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "06:32",
+          "serviceLevel": 41
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 111
+        },
+        {
+          "status": "Inactive",
+          "count": 15
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 15
+        },
+        {
+          "state": "connected",
+          "count": 67
+        },
+        {
+          "state": "wrapup",
+          "count": 18
+        },
+        {
+          "state": "on-hold",
+          "count": 4
+        },
+        {
+          "state": "consulting",
+          "count": 3
+        },
+        {
+          "state": "ringing",
+          "count": 2
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 13
+        },
+        {
+          "state": "logged-out",
+          "count": 2
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 10
+        },
+        {
+          "intent": "Billing",
+          "volume": 10
+        },
+        {
+          "intent": "Claims",
+          "volume": 8
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 5
+        },
+        {
+          "intent": "Account Update",
+          "volume": 4
+        },
+        {
+          "intent": "Other",
+          "volume": 3
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 57
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.4,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 58
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "1:00 PM - 1:15 PM",
+      "summary": {
+        "callsPresented": 37,
+        "callsHandled": 21,
+        "avgQueueTime": "07:03",
+        "serviceLevel": 44
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 11,
+          "callsHandled": 6,
+          "avgQueueTime": "07:21",
+          "serviceLevel": 49
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 11,
+          "callsHandled": 6,
+          "avgQueueTime": "07:36",
+          "serviceLevel": 48
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "06:27",
+          "serviceLevel": 47
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "06:47",
+          "serviceLevel": 59
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "07:09",
+          "serviceLevel": 27
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "06:59",
+          "serviceLevel": 32
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 113
+        },
+        {
+          "status": "Inactive",
+          "count": 13
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 14
+        },
+        {
+          "state": "connected",
+          "count": 69
+        },
+        {
+          "state": "wrapup",
+          "count": 19
+        },
+        {
+          "state": "on-hold",
+          "count": 4
+        },
+        {
+          "state": "consulting",
+          "count": 3
+        },
+        {
+          "state": "ringing",
+          "count": 2
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 13
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 10
+        },
+        {
+          "intent": "Billing",
+          "volume": 8
+        },
+        {
+          "intent": "Claims",
+          "volume": 6
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 5
+        },
+        {
+          "intent": "Account Update",
+          "volume": 4
+        },
+        {
+          "intent": "Other",
+          "volume": 3
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 56
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.5,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 62
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "1:15 PM - 1:30 PM",
+      "summary": {
+        "callsPresented": 45,
+        "callsHandled": 24,
+        "avgQueueTime": "07:51",
+        "serviceLevel": 42
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 12,
+          "callsHandled": 6,
+          "avgQueueTime": "07:03",
+          "serviceLevel": 49
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 11,
+          "callsHandled": 6,
+          "avgQueueTime": "07:43",
+          "serviceLevel": 41
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "08:16",
+          "serviceLevel": 41
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "08:02",
+          "serviceLevel": 58
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "07:46",
+          "serviceLevel": 27
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "08:21",
+          "serviceLevel": 36
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 116
+        },
+        {
+          "status": "Inactive",
+          "count": 10
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 13
+        },
+        {
+          "state": "connected",
+          "count": 72
+        },
+        {
+          "state": "wrapup",
+          "count": 20
+        },
+        {
+          "state": "on-hold",
+          "count": 4
+        },
+        {
+          "state": "consulting",
+          "count": 3
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "hold-done",
+          "count": 1
+        },
+        {
+          "state": "idle",
+          "count": 8
+        },
+        {
+          "state": "logged-out",
+          "count": 2
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 11
+        },
+        {
+          "intent": "Billing",
+          "volume": 9
+        },
+        {
+          "intent": "Claims",
+          "volume": 8
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 5
+        },
+        {
+          "intent": "Account Update",
+          "volume": 5
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 56
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.4,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 58
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "1:30 PM - 1:45 PM",
+      "summary": {
+        "callsPresented": 52,
+        "callsHandled": 24,
+        "avgQueueTime": "07:58",
+        "serviceLevel": 36
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 17,
+          "callsHandled": 8,
+          "avgQueueTime": "07:56",
+          "serviceLevel": 54
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 16,
+          "callsHandled": 8,
+          "avgQueueTime": "07:57",
+          "serviceLevel": 35
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 5,
+          "callsHandled": 2,
+          "avgQueueTime": "07:58",
+          "serviceLevel": 35
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "07:43",
+          "serviceLevel": 49
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 3,
+          "callsHandled": 1,
+          "avgQueueTime": "08:51",
+          "serviceLevel": 19
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "07:26",
+          "serviceLevel": 21
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 121
+        },
+        {
+          "status": "Inactive",
+          "count": 5
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 12
+        },
+        {
+          "state": "connected",
+          "count": 76
+        },
+        {
+          "state": "wrapup",
+          "count": 20
+        },
+        {
+          "state": "on-hold",
+          "count": 4
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 3
+        },
+        {
+          "state": "logged-out",
+          "count": 2
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 15
+        },
+        {
+          "intent": "Billing",
+          "volume": 11
+        },
+        {
+          "intent": "Claims",
+          "volume": 11
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 7
+        },
+        {
+          "intent": "Account Update",
+          "volume": 6
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 56
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.5,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 62
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "1:45 PM - 2:00 PM",
+      "summary": {
+        "callsPresented": 50,
+        "callsHandled": 22,
+        "avgQueueTime": "08:24",
+        "serviceLevel": 30
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 14,
+          "callsHandled": 6,
+          "avgQueueTime": "07:55",
+          "serviceLevel": 43
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 14,
+          "callsHandled": 6,
+          "avgQueueTime": "08:03",
+          "serviceLevel": 31
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "08:51",
+          "serviceLevel": 27
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "09:09",
+          "serviceLevel": 38
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "08:08",
+          "serviceLevel": 21
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 5,
+          "callsHandled": 2,
+          "avgQueueTime": "08:20",
+          "serviceLevel": 20
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 125
+        },
+        {
+          "status": "Inactive",
+          "count": 1
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 10
+        },
+        {
+          "state": "connected",
+          "count": 80
+        },
+        {
+          "state": "wrapup",
+          "count": 21
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "logged-out",
+          "count": 3
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 14
+        },
+        {
+          "intent": "Billing",
+          "volume": 13
+        },
+        {
+          "intent": "Claims",
+          "volume": 9
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 7
+        },
+        {
+          "intent": "Account Update",
+          "volume": 5
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 55
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.6,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 61
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "2:00 PM - 2:15 PM",
+      "summary": {
+        "callsPresented": 56,
+        "callsHandled": 25,
+        "avgQueueTime": "09:20",
+        "serviceLevel": 28
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 18,
+          "callsHandled": 8,
+          "avgQueueTime": "09:37",
+          "serviceLevel": 34
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 16,
+          "callsHandled": 7,
+          "avgQueueTime": "09:52",
+          "serviceLevel": 30
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 5,
+          "callsHandled": 2,
+          "avgQueueTime": "09:38",
+          "serviceLevel": 29
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "09:42",
+          "serviceLevel": 37
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "08:48",
+          "serviceLevel": 15
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 9,
+          "callsHandled": 4,
+          "avgQueueTime": "08:27",
+          "serviceLevel": 20
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 127
+        },
+        {
+          "status": "Inactive",
+          "count": -1
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 9
+        },
+        {
+          "state": "connected",
+          "count": 84
+        },
+        {
+          "state": "wrapup",
+          "count": 22
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "logged-out",
+          "count": 3
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 15
+        },
+        {
+          "intent": "Billing",
+          "volume": 13
+        },
+        {
+          "intent": "Claims",
+          "volume": 10
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 7
+        },
+        {
+          "intent": "Account Update",
+          "volume": 6
+        },
+        {
+          "intent": "Other",
+          "volume": 5
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 55
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.5,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 58
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "2:15 PM - 2:30 PM",
+      "summary": {
+        "callsPresented": 54,
+        "callsHandled": 23,
+        "avgQueueTime": "09:06",
+        "serviceLevel": 30
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 18,
+          "callsHandled": 8,
+          "avgQueueTime": "09:52",
+          "serviceLevel": 38
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 15,
+          "callsHandled": 6,
+          "avgQueueTime": "08:42",
+          "serviceLevel": 33
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 5,
+          "callsHandled": 2,
+          "avgQueueTime": "09:02",
+          "serviceLevel": 26
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "08:35",
+          "serviceLevel": 39
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 5,
+          "callsHandled": 2,
+          "avgQueueTime": "09:44",
+          "serviceLevel": 18
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 9,
+          "callsHandled": 4,
+          "avgQueueTime": "08:43",
+          "serviceLevel": 28
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 131
+        },
+        {
+          "status": "Inactive",
+          "count": -5
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 9
+        },
+        {
+          "state": "connected",
+          "count": 85
+        },
+        {
+          "state": "wrapup",
+          "count": 23
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "logged-out",
+          "count": 2
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 15
+        },
+        {
+          "intent": "Billing",
+          "volume": 14
+        },
+        {
+          "intent": "Claims",
+          "volume": 10
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 7
+        },
+        {
+          "intent": "Account Update",
+          "volume": 5
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 54
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.5,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 60
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "2:30 PM - 2:45 PM",
+      "summary": {
+        "callsPresented": 61,
+        "callsHandled": 26,
+        "avgQueueTime": "09:31",
+        "serviceLevel": 29
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 18,
+          "callsHandled": 8,
+          "avgQueueTime": "08:42",
+          "serviceLevel": 34
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 15,
+          "callsHandled": 6,
+          "avgQueueTime": "10:05",
+          "serviceLevel": 26
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "09:52",
+          "serviceLevel": 23
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "09:39",
+          "serviceLevel": 50
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "09:14",
+          "serviceLevel": 14
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 10,
+          "callsHandled": 4,
+          "avgQueueTime": "09:34",
+          "serviceLevel": 29
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 130
+        },
+        {
+          "status": "Inactive",
+          "count": -4
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 8
+        },
+        {
+          "state": "connected",
+          "count": 87
+        },
+        {
+          "state": "wrapup",
+          "count": 23
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "logged-out",
+          "count": 3
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 16
+        },
+        {
+          "intent": "Billing",
+          "volume": 13
+        },
+        {
+          "intent": "Claims",
+          "volume": 12
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 9
+        },
+        {
+          "intent": "Account Update",
+          "volume": 6
+        },
+        {
+          "intent": "Other",
+          "volume": 5
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 54
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.4,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 61
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "2:45 PM - 3:00 PM",
+      "summary": {
+        "callsPresented": 69,
+        "callsHandled": 28,
+        "avgQueueTime": "09:07",
+        "serviceLevel": 33
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 21,
+          "callsHandled": 9,
+          "avgQueueTime": "08:53",
+          "serviceLevel": 45
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 15,
+          "callsHandled": 6,
+          "avgQueueTime": "09:29",
+          "serviceLevel": 33
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 8,
+          "callsHandled": 3,
+          "avgQueueTime": "09:03",
+          "serviceLevel": 33
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "08:49",
+          "serviceLevel": 47
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "08:55",
+          "serviceLevel": 14
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 11,
+          "callsHandled": 4,
+          "avgQueueTime": "09:35",
+          "serviceLevel": 28
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 133
+        },
+        {
+          "status": "Inactive",
+          "count": -7
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 8
+        },
+        {
+          "state": "connected",
+          "count": 88
+        },
+        {
+          "state": "wrapup",
+          "count": 23
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "logged-out",
+          "count": 3
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 20
+        },
+        {
+          "intent": "Billing",
+          "volume": 14
+        },
+        {
+          "intent": "Claims",
+          "volume": 13
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 10
+        },
+        {
+          "intent": "Account Update",
+          "volume": 7
+        },
+        {
+          "intent": "Other",
+          "volume": 6
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 54
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.3,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 58
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "3:00 PM - 3:15 PM",
+      "summary": {
+        "callsPresented": 66,
+        "callsHandled": 26,
+        "avgQueueTime": "10:01",
+        "serviceLevel": 27
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 18,
+          "callsHandled": 7,
+          "avgQueueTime": "09:39",
+          "serviceLevel": 30
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 19,
+          "callsHandled": 8,
+          "avgQueueTime": "09:52",
+          "serviceLevel": 26
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "09:14",
+          "serviceLevel": 34
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 3,
+          "callsHandled": 1,
+          "avgQueueTime": "10:22",
+          "serviceLevel": 36
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 8,
+          "callsHandled": 3,
+          "avgQueueTime": "10:31",
+          "serviceLevel": 16
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 11,
+          "callsHandled": 4,
+          "avgQueueTime": "10:30",
+          "serviceLevel": 20
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 138
+        },
+        {
+          "status": "Inactive",
+          "count": -12
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 8
+        },
+        {
+          "state": "connected",
+          "count": 90
+        },
+        {
+          "state": "wrapup",
+          "count": 24
+        },
+        {
+          "state": "on-hold",
+          "count": 6
+        },
+        {
+          "state": "consulting",
+          "count": 5
+        },
+        {
+          "state": "ringing",
+          "count": 4
+        },
+        {
+          "state": "hold-done",
+          "count": 1
+        },
+        {
+          "state": "logged-out",
+          "count": 3
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 20
+        },
+        {
+          "intent": "Billing",
+          "volume": 14
+        },
+        {
+          "intent": "Claims",
+          "volume": 13
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 8
+        },
+        {
+          "intent": "Account Update",
+          "volume": 7
+        },
+        {
+          "intent": "Other",
+          "volume": 5
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 54
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.7,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 56
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "3:15 PM - 3:30 PM",
+      "summary": {
+        "callsPresented": 58,
+        "callsHandled": 23,
+        "avgQueueTime": "09:30",
+        "serviceLevel": 34
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 18,
+          "callsHandled": 7,
+          "avgQueueTime": "09:30",
+          "serviceLevel": 47
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 15,
+          "callsHandled": 6,
+          "avgQueueTime": "08:47",
+          "serviceLevel": 34
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "10:02",
+          "serviceLevel": 36
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 3,
+          "callsHandled": 1,
+          "avgQueueTime": "09:44",
+          "serviceLevel": 48
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 6,
+          "callsHandled": 2,
+          "avgQueueTime": "09:29",
+          "serviceLevel": 20
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 9,
+          "callsHandled": 4,
+          "avgQueueTime": "09:28",
+          "serviceLevel": 19
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 133
+        },
+        {
+          "status": "Inactive",
+          "count": -7
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 8
+        },
+        {
+          "state": "connected",
+          "count": 88
+        },
+        {
+          "state": "wrapup",
+          "count": 23
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "logged-out",
+          "count": 1
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 16
+        },
+        {
+          "intent": "Billing",
+          "volume": 12
+        },
+        {
+          "intent": "Claims",
+          "volume": 12
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 7
+        },
+        {
+          "intent": "Account Update",
+          "volume": 6
+        },
+        {
+          "intent": "Other",
+          "volume": 5
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 54
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.6,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 61
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "3:30 PM - 3:45 PM",
+      "summary": {
+        "callsPresented": 56,
+        "callsHandled": 23,
+        "avgQueueTime": "09:32",
+        "serviceLevel": 27
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 17,
+          "callsHandled": 7,
+          "avgQueueTime": "09:37",
+          "serviceLevel": 33
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 15,
+          "callsHandled": 6,
+          "avgQueueTime": "09:38",
+          "serviceLevel": 36
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 5,
+          "callsHandled": 2,
+          "avgQueueTime": "09:30",
+          "serviceLevel": 25
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "09:32",
+          "serviceLevel": 34
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 5,
+          "callsHandled": 2,
+          "avgQueueTime": "09:26",
+          "serviceLevel": 13
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "09:34",
+          "serviceLevel": 22
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 131
+        },
+        {
+          "status": "Inactive",
+          "count": -5
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 9
+        },
+        {
+          "state": "connected",
+          "count": 86
+        },
+        {
+          "state": "wrapup",
+          "count": 23
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "hold-done",
+          "count": 1
+        },
+        {
+          "state": "logged-out",
+          "count": 4
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 16
+        },
+        {
+          "intent": "Billing",
+          "volume": 13
+        },
+        {
+          "intent": "Claims",
+          "volume": 12
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 8
+        },
+        {
+          "intent": "Account Update",
+          "volume": 6
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 54
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.4,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 62
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "3:45 PM - 4:00 PM",
+      "summary": {
+        "callsPresented": 54,
+        "callsHandled": 25,
+        "avgQueueTime": "09:09",
+        "serviceLevel": 30
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 15,
+          "callsHandled": 7,
+          "avgQueueTime": "09:40",
+          "serviceLevel": 35
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 14,
+          "callsHandled": 6,
+          "avgQueueTime": "09:41",
+          "serviceLevel": 36
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "09:56",
+          "serviceLevel": 25
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "08:33",
+          "serviceLevel": 38
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "08:42",
+          "serviceLevel": 19
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "08:26",
+          "serviceLevel": 25
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 127
+        },
+        {
+          "status": "Inactive",
+          "count": -1
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 9
+        },
+        {
+          "state": "connected",
+          "count": 84
+        },
+        {
+          "state": "wrapup",
+          "count": 22
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "logged-out",
+          "count": 2
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 14
+        },
+        {
+          "intent": "Billing",
+          "volume": 12
+        },
+        {
+          "intent": "Claims",
+          "volume": 9
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 7
+        },
+        {
+          "intent": "Account Update",
+          "volume": 6
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 55
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.4,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 61
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "4:00 PM - 4:15 PM",
+      "summary": {
+        "callsPresented": 58,
+        "callsHandled": 26,
+        "avgQueueTime": "08:55",
+        "serviceLevel": 32
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 16,
+          "callsHandled": 7,
+          "avgQueueTime": "09:11",
+          "serviceLevel": 38
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 14,
+          "callsHandled": 6,
+          "avgQueueTime": "09:07",
+          "serviceLevel": 36
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 8,
+          "callsHandled": 4,
+          "avgQueueTime": "08:40",
+          "serviceLevel": 24
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "08:44",
+          "serviceLevel": 41
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "09:04",
+          "serviceLevel": 22
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 10,
+          "callsHandled": 4,
+          "avgQueueTime": "08:46",
+          "serviceLevel": 29
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 129
+        },
+        {
+          "status": "Inactive",
+          "count": -3
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 10
+        },
+        {
+          "state": "connected",
+          "count": 83
+        },
+        {
+          "state": "wrapup",
+          "count": 22
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "logged-out",
+          "count": 2
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 15
+        },
+        {
+          "intent": "Billing",
+          "volume": 13
+        },
+        {
+          "intent": "Claims",
+          "volume": 13
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 8
+        },
+        {
+          "intent": "Account Update",
+          "volume": 5
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 55
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.4,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 59
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "4:15 PM - 4:30 PM",
+      "summary": {
+        "callsPresented": 60,
+        "callsHandled": 28,
+        "avgQueueTime": "08:35",
+        "serviceLevel": 35
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 17,
+          "callsHandled": 8,
+          "avgQueueTime": "07:44",
+          "serviceLevel": 48
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 15,
+          "callsHandled": 7,
+          "avgQueueTime": "07:43",
+          "serviceLevel": 31
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 9,
+          "callsHandled": 4,
+          "avgQueueTime": "09:17",
+          "serviceLevel": 41
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "09:21",
+          "serviceLevel": 45
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 8,
+          "callsHandled": 4,
+          "avgQueueTime": "08:27",
+          "serviceLevel": 20
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 7,
+          "callsHandled": 3,
+          "avgQueueTime": "09:01",
+          "serviceLevel": 26
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 125
+        },
+        {
+          "status": "Inactive",
+          "count": 1
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 11
+        },
+        {
+          "state": "connected",
+          "count": 79
+        },
+        {
+          "state": "wrapup",
+          "count": 21
+        },
+        {
+          "state": "on-hold",
+          "count": 5
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "logged-out",
+          "count": 1
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 17
+        },
+        {
+          "intent": "Billing",
+          "volume": 15
+        },
+        {
+          "intent": "Claims",
+          "volume": 12
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 7
+        },
+        {
+          "intent": "Account Update",
+          "volume": 6
+        },
+        {
+          "intent": "Other",
+          "volume": 5
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 55
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 29
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 11
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.6,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 56
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "4:30 PM - 4:45 PM",
+      "summary": {
+        "callsPresented": 50,
+        "callsHandled": 24,
+        "avgQueueTime": "08:01",
+        "serviceLevel": 39
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 14,
+          "callsHandled": 7,
+          "avgQueueTime": "08:51",
+          "serviceLevel": 51
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 11,
+          "callsHandled": 5,
+          "avgQueueTime": "07:41",
+          "serviceLevel": 36
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 8,
+          "callsHandled": 4,
+          "avgQueueTime": "08:02",
+          "serviceLevel": 44
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "07:50",
+          "serviceLevel": 45
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 5,
+          "callsHandled": 2,
+          "avgQueueTime": "08:17",
+          "serviceLevel": 24
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "07:30",
+          "serviceLevel": 34
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 119
+        },
+        {
+          "status": "Inactive",
+          "count": 7
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 12
+        },
+        {
+          "state": "connected",
+          "count": 76
+        },
+        {
+          "state": "wrapup",
+          "count": 20
+        },
+        {
+          "state": "on-hold",
+          "count": 4
+        },
+        {
+          "state": "consulting",
+          "count": 4
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "idle",
+          "count": 6
+        },
+        {
+          "state": "logged-out",
+          "count": 1
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 15
+        },
+        {
+          "intent": "Billing",
+          "volume": 11
+        },
+        {
+          "intent": "Claims",
+          "volume": 10
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 7
+        },
+        {
+          "intent": "Account Update",
+          "volume": 5
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 56
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.5,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 56
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "4:45 PM - 5:00 PM",
+      "summary": {
+        "callsPresented": 54,
+        "callsHandled": 28,
+        "avgQueueTime": "07:29",
+        "serviceLevel": 40
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 16,
+          "callsHandled": 8,
+          "avgQueueTime": "06:51",
+          "serviceLevel": 48
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 15,
+          "callsHandled": 8,
+          "avgQueueTime": "07:05",
+          "serviceLevel": 48
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "08:16",
+          "serviceLevel": 38
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "07:38",
+          "serviceLevel": 53
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "08:16",
+          "serviceLevel": 24
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 8,
+          "callsHandled": 4,
+          "avgQueueTime": "06:53",
+          "serviceLevel": 32
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 117
+        },
+        {
+          "status": "Inactive",
+          "count": 9
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 13
+        },
+        {
+          "state": "connected",
+          "count": 72
+        },
+        {
+          "state": "wrapup",
+          "count": 20
+        },
+        {
+          "state": "on-hold",
+          "count": 4
+        },
+        {
+          "state": "consulting",
+          "count": 3
+        },
+        {
+          "state": "ringing",
+          "count": 3
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 8
+        },
+        {
+          "state": "logged-out",
+          "count": 1
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 15
+        },
+        {
+          "intent": "Billing",
+          "volume": 13
+        },
+        {
+          "intent": "Claims",
+          "volume": 10
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 7
+        },
+        {
+          "intent": "Account Update",
+          "volume": 6
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 56
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.3,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 55
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "5:00 PM - 5:15 PM",
+      "summary": {
+        "callsPresented": 45,
+        "callsHandled": 25,
+        "avgQueueTime": "07:23",
+        "serviceLevel": 39
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 13,
+          "callsHandled": 7,
+          "avgQueueTime": "06:38",
+          "serviceLevel": 45
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 9,
+          "callsHandled": 5,
+          "avgQueueTime": "07:32",
+          "serviceLevel": 40
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "07:22",
+          "serviceLevel": 43
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "07:17",
+          "serviceLevel": 48
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "07:47",
+          "serviceLevel": 22
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 7,
+          "callsHandled": 4,
+          "avgQueueTime": "07:42",
+          "serviceLevel": 37
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 112
+        },
+        {
+          "status": "Inactive",
+          "count": 14
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 14
+        },
+        {
+          "state": "connected",
+          "count": 69
+        },
+        {
+          "state": "wrapup",
+          "count": 19
+        },
+        {
+          "state": "on-hold",
+          "count": 4
+        },
+        {
+          "state": "consulting",
+          "count": 3
+        },
+        {
+          "state": "ringing",
+          "count": 2
+        },
+        {
+          "state": "hold-done",
+          "count": 1
+        },
+        {
+          "state": "idle",
+          "count": 14
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 13
+        },
+        {
+          "intent": "Billing",
+          "volume": 9
+        },
+        {
+          "intent": "Claims",
+          "volume": 8
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 5
+        },
+        {
+          "intent": "Account Update",
+          "volume": 4
+        },
+        {
+          "intent": "Other",
+          "volume": 4
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 56
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.4,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 60
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "5:15 PM - 5:30 PM",
+      "summary": {
+        "callsPresented": 25,
+        "callsHandled": 14,
+        "avgQueueTime": "06:55",
+        "serviceLevel": 40
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 11,
+          "callsHandled": 6,
+          "avgQueueTime": "06:26",
+          "serviceLevel": 50
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 6,
+          "callsHandled": 3,
+          "avgQueueTime": "06:49",
+          "serviceLevel": 40
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "07:13",
+          "serviceLevel": 34
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 1,
+          "callsHandled": 1,
+          "avgQueueTime": "07:31",
+          "serviceLevel": 56
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "06:07",
+          "serviceLevel": 28
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "07:28",
+          "serviceLevel": 32
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 107
+        },
+        {
+          "status": "Inactive",
+          "count": 19
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 15
+        },
+        {
+          "state": "connected",
+          "count": 64
+        },
+        {
+          "state": "wrapup",
+          "count": 18
+        },
+        {
+          "state": "on-hold",
+          "count": 3
+        },
+        {
+          "state": "consulting",
+          "count": 3
+        },
+        {
+          "state": "ringing",
+          "count": 2
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 18
+        },
+        {
+          "state": "logged-out",
+          "count": 1
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 7
+        },
+        {
+          "intent": "Billing",
+          "volume": 5
+        },
+        {
+          "intent": "Claims",
+          "volume": 5
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 4
+        },
+        {
+          "intent": "Account Update",
+          "volume": 3
+        },
+        {
+          "intent": "Other",
+          "volume": 2
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 57
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.7,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 57
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "5:30 PM - 5:45 PM",
+      "summary": {
+        "callsPresented": 34,
+        "callsHandled": 20,
+        "avgQueueTime": "06:10",
+        "serviceLevel": 42
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 11,
+          "callsHandled": 7,
+          "avgQueueTime": "05:41",
+          "serviceLevel": 50
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 7,
+          "callsHandled": 4,
+          "avgQueueTime": "05:35",
+          "serviceLevel": 41
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "06:59",
+          "serviceLevel": 44
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "06:00",
+          "serviceLevel": 49
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "05:52",
+          "serviceLevel": 25
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "06:53",
+          "serviceLevel": 42
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 103
+        },
+        {
+          "status": "Inactive",
+          "count": 23
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 17
+        },
+        {
+          "state": "connected",
+          "count": 60
+        },
+        {
+          "state": "wrapup",
+          "count": 17
+        },
+        {
+          "state": "on-hold",
+          "count": 3
+        },
+        {
+          "state": "consulting",
+          "count": 2
+        },
+        {
+          "state": "ringing",
+          "count": 2
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 23
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 10
+        },
+        {
+          "intent": "Billing",
+          "volume": 8
+        },
+        {
+          "intent": "Claims",
+          "volume": 7
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 4
+        },
+        {
+          "intent": "Account Update",
+          "volume": 3
+        },
+        {
+          "intent": "Other",
+          "volume": 3
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 57
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.7,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 55
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "5:45 PM - 6:00 PM",
+      "summary": {
+        "callsPresented": 37,
+        "callsHandled": 21,
+        "avgQueueTime": "05:22",
+        "serviceLevel": 50
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 12,
+          "callsHandled": 7,
+          "avgQueueTime": "05:24",
+          "serviceLevel": 64
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 7,
+          "callsHandled": 4,
+          "avgQueueTime": "04:53",
+          "serviceLevel": 58
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "05:40",
+          "serviceLevel": 42
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 4,
+          "callsHandled": 2,
+          "avgQueueTime": "06:17",
+          "serviceLevel": 66
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "04:56",
+          "serviceLevel": 36
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 7,
+          "callsHandled": 4,
+          "avgQueueTime": "05:04",
+          "serviceLevel": 34
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 96
+        },
+        {
+          "status": "Inactive",
+          "count": 30
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 18
+        },
+        {
+          "state": "connected",
+          "count": 55
+        },
+        {
+          "state": "wrapup",
+          "count": 16
+        },
+        {
+          "state": "on-hold",
+          "count": 3
+        },
+        {
+          "state": "consulting",
+          "count": 2
+        },
+        {
+          "state": "ringing",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 28
+        },
+        {
+          "state": "logged-out",
+          "count": 2
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 10
+        },
+        {
+          "intent": "Billing",
+          "volume": 9
+        },
+        {
+          "intent": "Claims",
+          "volume": 7
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 5
+        },
+        {
+          "intent": "Account Update",
+          "volume": 4
+        },
+        {
+          "intent": "Other",
+          "volume": 3
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 58
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 28
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 10
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 4
+        }
+      ],
+      "csat": {
+        "score": 4.5,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 61
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "6:00 PM - 6:15 PM",
+      "summary": {
+        "callsPresented": 24,
+        "callsHandled": 16,
+        "avgQueueTime": "05:10",
+        "serviceLevel": 50
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 5,
+          "callsHandled": 3,
+          "avgQueueTime": "05:37",
+          "serviceLevel": 58
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 7,
+          "callsHandled": 5,
+          "avgQueueTime": "05:11",
+          "serviceLevel": 53
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 4,
+          "callsHandled": 3,
+          "avgQueueTime": "04:57",
+          "serviceLevel": 56
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "05:07",
+          "serviceLevel": 57
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "05:08",
+          "serviceLevel": 39
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "05:01",
+          "serviceLevel": 38
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 93
+        },
+        {
+          "status": "Inactive",
+          "count": 33
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 20
+        },
+        {
+          "state": "connected",
+          "count": 51
+        },
+        {
+          "state": "wrapup",
+          "count": 15
+        },
+        {
+          "state": "on-hold",
+          "count": 2
+        },
+        {
+          "state": "consulting",
+          "count": 2
+        },
+        {
+          "state": "ringing",
+          "count": 1
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 30
+        },
+        {
+          "state": "logged-out",
+          "count": 3
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 6
+        },
+        {
+          "intent": "Billing",
+          "volume": 6
+        },
+        {
+          "intent": "Claims",
+          "volume": 4
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 3
+        },
+        {
+          "intent": "Account Update",
+          "volume": 3
+        },
+        {
+          "intent": "Other",
+          "volume": 2
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 58
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 27
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 9
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 6
+        }
+      ],
+      "csat": {
+        "score": 4.5,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 60
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "6:15 PM - 6:30 PM",
+      "summary": {
+        "callsPresented": 24,
+        "callsHandled": 15,
+        "avgQueueTime": "04:32",
+        "serviceLevel": 55
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 6,
+          "callsHandled": 4,
+          "avgQueueTime": "04:40",
+          "serviceLevel": 65
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 8,
+          "callsHandled": 5,
+          "avgQueueTime": "05:20",
+          "serviceLevel": 49
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "05:04",
+          "serviceLevel": 53
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "04:01",
+          "serviceLevel": 72
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "04:07",
+          "serviceLevel": 46
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "04:01",
+          "serviceLevel": 47
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 90
+        },
+        {
+          "status": "Inactive",
+          "count": 36
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 21
+        },
+        {
+          "state": "connected",
+          "count": 48
+        },
+        {
+          "state": "wrapup",
+          "count": 14
+        },
+        {
+          "state": "on-hold",
+          "count": 2
+        },
+        {
+          "state": "consulting",
+          "count": 2
+        },
+        {
+          "state": "ringing",
+          "count": 1
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 34
+        },
+        {
+          "state": "logged-out",
+          "count": 2
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 6
+        },
+        {
+          "intent": "Billing",
+          "volume": 5
+        },
+        {
+          "intent": "Claims",
+          "volume": 4
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 3
+        },
+        {
+          "intent": "Account Update",
+          "volume": 2
+        },
+        {
+          "intent": "Other",
+          "volume": 2
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 59
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 27
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 9
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.5,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 55
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "6:30 PM - 6:45 PM",
+      "summary": {
+        "callsPresented": 18,
+        "callsHandled": 13,
+        "avgQueueTime": "04:06",
+        "serviceLevel": 54
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 7,
+          "callsHandled": 5,
+          "avgQueueTime": "03:25",
+          "serviceLevel": 61
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 6,
+          "callsHandled": 4,
+          "avgQueueTime": "04:51",
+          "serviceLevel": 59
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "04:06",
+          "serviceLevel": 46
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 1,
+          "callsHandled": 1,
+          "avgQueueTime": "03:40",
+          "serviceLevel": 70
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 0,
+          "callsHandled": 0,
+          "avgQueueTime": "03:40",
+          "serviceLevel": 33
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 1,
+          "callsHandled": 1,
+          "avgQueueTime": "04:57",
+          "serviceLevel": 54
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 83
+        },
+        {
+          "status": "Inactive",
+          "count": 43
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 22
+        },
+        {
+          "state": "connected",
+          "count": 44
+        },
+        {
+          "state": "wrapup",
+          "count": 13
+        },
+        {
+          "state": "on-hold",
+          "count": 2
+        },
+        {
+          "state": "consulting",
+          "count": 1
+        },
+        {
+          "state": "ringing",
+          "count": 1
+        },
+        {
+          "state": "idle",
+          "count": 40
+        },
+        {
+          "state": "logged-out",
+          "count": 3
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 5
+        },
+        {
+          "intent": "Billing",
+          "volume": 4
+        },
+        {
+          "intent": "Claims",
+          "volume": 3
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 2
+        },
+        {
+          "intent": "Account Update",
+          "volume": 2
+        },
+        {
+          "intent": "Other",
+          "volume": 1
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 59
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 27
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 9
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 5
+        }
+      ],
+      "csat": {
+        "score": 4.3,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 55
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    },
+    {
+      "intervalLabel": "6:45 PM - 7:00 PM",
+      "summary": {
+        "callsPresented": 16,
+        "callsHandled": 10,
+        "avgQueueTime": "03:38",
+        "serviceLevel": 58
+      },
+      "queueStandings": [
+        {
+          "queue": "Eng_Res_Start",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "04:32",
+          "serviceLevel": 59
+        },
+        {
+          "queue": "Eng_Res_Billing",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "03:30",
+          "serviceLevel": 66
+        },
+        {
+          "queue": "Eng_Bus_All",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "03:58",
+          "serviceLevel": 62
+        },
+        {
+          "queue": "Eng_Equity",
+          "callsPresented": 2,
+          "callsHandled": 1,
+          "avgQueueTime": "03:30",
+          "serviceLevel": 66
+        },
+        {
+          "queue": "Spn_Res_Billing",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "03:10",
+          "serviceLevel": 46
+        },
+        {
+          "queue": "Eng_Res_Stop",
+          "callsPresented": 3,
+          "callsHandled": 2,
+          "avgQueueTime": "03:10",
+          "serviceLevel": 49
+        }
+      ],
+      "bullpenReport": [
+        {
+          "status": "Active",
+          "count": 81
+        },
+        {
+          "status": "Inactive",
+          "count": 45
+        }
+      ],
+      "agentStateSummary": [
+        {
+          "state": "available",
+          "count": 23
+        },
+        {
+          "state": "connected",
+          "count": 41
+        },
+        {
+          "state": "wrapup",
+          "count": 12
+        },
+        {
+          "state": "on-hold",
+          "count": 1
+        },
+        {
+          "state": "consulting",
+          "count": 1
+        },
+        {
+          "state": "ringing",
+          "count": 1
+        },
+        {
+          "state": "hold-done",
+          "count": 2
+        },
+        {
+          "state": "idle",
+          "count": 41
+        },
+        {
+          "state": "logged-out",
+          "count": 4
+        }
+      ],
+      "intentVolume": [
+        {
+          "intent": "Payment",
+          "volume": 4
+        },
+        {
+          "intent": "Billing",
+          "volume": 4
+        },
+        {
+          "intent": "Claims",
+          "volume": 3
+        },
+        {
+          "intent": "Tech Support",
+          "volume": 2
+        },
+        {
+          "intent": "Account Update",
+          "volume": 2
+        },
+        {
+          "intent": "Other",
+          "volume": 1
+        }
+      ],
+      "strikeZone": [
+        {
+          "bucket": "Perfect Match (95-100%)",
+          "pct": 60
+        },
+        {
+          "bucket": "Good Match (85-94%)",
+          "pct": 27
+        },
+        {
+          "bucket": "Lower Match (70-84%)",
+          "pct": 9
+        },
+        {
+          "bucket": "No Match / Handover (<70%)",
+          "pct": 4
+        }
+      ],
+      "csat": {
+        "score": 4.4,
+        "distribution": [
+          {
+            "stars": 5,
+            "pct": 58
+          },
+          {
+            "stars": 4,
+            "pct": 27
+          },
+          {
+            "stars": 3,
+            "pct": 10
+          },
+          {
+            "stars": 2,
+            "pct": 3
+          },
+          {
+            "stars": 1,
+            "pct": 2
+          }
+        ]
+      }
+    }
+  ]
+}
