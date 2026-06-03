@@ -5,6 +5,7 @@ fetch('./data/page1.json')
     document.getElementById('title').textContent = data.title;
     document.getElementById('subtitle').textContent = data.subtitle;
     document.getElementById('interval').textContent = data.interval;
+    document.getElementById('lastUpdated').textContent = data.lastUpdated;
 
     document.getElementById('callsPresented').textContent =
       data.summary.callsPresented;
