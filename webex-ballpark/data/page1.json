@@ -1,20 +1,119 @@
 {
   "title": "Contact Center Scoreboard",
   "subtitle": "Live Operations Snapshot",
-  "interval": "06/03/2026 12:00 PM - 12:15 PM",
-  "lastUpdated": "June 3, 2026 \u2022 12:19 PM",
+  "interval": "06/03/2026 11:15 AM - 11:30 AM through 06/03/2026 12:00 PM - 12:15 PM",
+  "lastUpdated": "June 3, 2026 \u2022 12:23 PM",
   "summary": {
-    "callsPresented": 1,
-    "callsHandled": 0,
-    "avgQueueTime": "00:00",
-    "serviceLevel": 0
+    "callsPresented": 85,
+    "callsHandled": 28,
+    "avgQueueTime": "09:07",
+    "serviceLevel": 50
   },
   "queueStandings": [
     {
+      "queue": "Eng_Res_Start",
+      "callsPresented": 25,
+      "callsHandled": 11,
+      "avgQueueTime": "10:36",
+      "serviceLevel": 64
+    },
+    {
+      "queue": "Eng_Res_Billing",
+      "callsPresented": 22,
+      "callsHandled": 7,
+      "avgQueueTime": "08:41",
+      "serviceLevel": 43
+    },
+    {
       "queue": "Eng_Bus_All",
+      "callsPresented": 9,
+      "callsHandled": 2,
+      "avgQueueTime": "10:00",
+      "serviceLevel": 0
+    },
+    {
+      "queue": "Eng_Equity",
+      "callsPresented": 5,
+      "callsHandled": 2,
+      "avgQueueTime": "10:56",
+      "serviceLevel": 0
+    },
+    {
+      "queue": "Spn_Res_Billing",
+      "callsPresented": 4,
+      "callsHandled": 0,
+      "avgQueueTime": "01:24",
+      "serviceLevel": 0
+    },
+    {
+      "queue": "Eng_Res_Stop",
+      "callsPresented": 4,
+      "callsHandled": 0,
+      "avgQueueTime": "06:03",
+      "serviceLevel": 0
+    },
+    {
+      "queue": "Spn_Res_Start",
+      "callsPresented": 4,
+      "callsHandled": 1,
+      "avgQueueTime": "10:20",
+      "serviceLevel": 0
+    },
+    {
+      "queue": "Spn_Products",
+      "callsPresented": 3,
+      "callsHandled": 0,
+      "avgQueueTime": "07:25",
+      "serviceLevel": 0
+    },
+    {
+      "queue": "Eng_Products",
+      "callsPresented": 2,
+      "callsHandled": 1,
+      "avgQueueTime": "09:44",
+      "serviceLevel": 0
+    },
+    {
+      "queue": "Eng_Build_All",
+      "callsPresented": 2,
+      "callsHandled": 2,
+      "avgQueueTime": "09:51",
+      "serviceLevel": 100
+    },
+    {
+      "queue": "Spn_Bus_All",
+      "callsPresented": 2,
+      "callsHandled": 0,
+      "avgQueueTime": "20:36",
+      "serviceLevel": 0
+    },
+    {
+      "queue": "Eng_Dim_Light",
+      "callsPresented": 1,
+      "callsHandled": 1,
+      "avgQueueTime": "00:03",
+      "serviceLevel": 100
+    },
+    {
+      "queue": "Eng_Street_Light",
       "callsPresented": 1,
       "callsHandled": 0,
-      "avgQueueTime": "00:00"
+      "avgQueueTime": "00:00",
+      "serviceLevel": 0
+    },
+    {
+      "queue": "QA_AIAgent_Queue",
+      "callsPresented": 1,
+      "callsHandled": 1,
+      "avgQueueTime": "00:00",
+      "serviceLevel": 100
+    },
+    {
+      "queue": "Spn_Build_All",
+      "callsPresented": 0,
+      "callsHandled": 0,
+      "avgQueueTime": "00:00",
+      "serviceLevel": 0
     }
   ],
   "bullpenReport": [
@@ -44,6 +143,6 @@
     "reports": [
       "Queue All Fields Report"
     ],
-    "refreshMode": "15-minute interval"
+    "refreshMode": "Last 4 intervals"
   }
 }
