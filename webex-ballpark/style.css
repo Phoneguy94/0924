@@ -46,27 +46,37 @@ h2 {
 
 .queue-table {
     width: 100%;
+    max-width: 900px;
     border-collapse: collapse;
     margin-top: 20px;
     margin-bottom: 30px;
+    background-color: #13283f;
+    border-radius: 10px;
+    overflow: hidden;
 }
 
 .queue-table th {
-    background-color: #13283f;
+    background-color: #1b3354;
     color: #f4c542;
-    padding: 12px;
+    padding: 14px 18px;
     text-align: left;
+    font-size: 16px;
 }
 
 .queue-table td {
-    padding: 12px;
+    padding: 14px 18px;
     border-bottom: 1px solid #2b3f58;
+    font-size: 18px;
 }
 
-.queue-table tr:hover {
-    background-color: #13283f;
+.queue-table td:not(:first-child),
+.queue-table th:not(:first-child) {
+    text-align: center;
 }
 
+.queue-table tr:last-child td {
+    border-bottom: none;
+}
 hr {
     border: 0;
     border-top: 1px solid #2b3f58;
