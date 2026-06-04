@@ -41,13 +41,13 @@ body.fill .scoreboard{
   display:grid;
   gap:10px;
   grid-template-columns:repeat(4, 1fr);
-  grid-template-rows:auto auto 1.35fr 1.4fr auto;
+  grid-template-rows:auto auto 1fr 1fr auto;
   grid-template-areas:
-    "top   top   top   top"
-    "season season kpis kpis"
-    "queue bullpen strike csat"
-    "spray spray spray spray"
-    "foot  foot  foot  foot";
+    "top    top    top    top"
+    "season season kpis   kpis"
+    "queue  queue  bullpen bullpen"
+    "strike csat   spray  spray"
+    "foot   foot   foot   foot";
 }
 body.fill .topbar{grid-area:top}
 body.fill #p-season{grid-area:season}
@@ -66,18 +66,16 @@ body.fill .panel .bullpen,
 body.fill .panel .sz,
 body.fill .panel .csat,
 body.fill .panel table{flex:1;min-height:0}
-/* compact the dense data panels so all rows fit */
-body.fill #p-queue tbody td{padding:5px 10px;font-size:13px}
-body.fill #p-queue thead th{padding:5px 10px}
-body.fill #p-bullpen .active-tags{margin-bottom:8px}
-body.fill #p-bullpen .tag{padding:5px}
-body.fill #p-bullpen .tag .t-num{font-size:20px}
-body.fill #p-bullpen .legend-row{font-size:12.5px}
-body.fill #p-bullpen .bullpen{grid-template-columns:120px 1fr;gap:14px}
-body.fill #p-bullpen #donut{width:118px;height:118px}
+/* queue table now wider (spans 2 cols) so rows have room */
+body.fill #p-queue tbody td{padding:6px 12px;font-size:14px}
+body.fill #p-queue thead th{padding:6px 12px}
+/* bullpen spans 2 cols: roomy donut + legend side by side */
+body.fill #p-bullpen .bullpen{grid-template-columns:150px 1fr;gap:24px}
+body.fill #p-bullpen .legend{display:grid;grid-template-columns:1fr 1fr;gap:4px 24px}
+body.fill #p-bullpen .legend-row{font-size:13px}
 body.fill #p-season .srow .s-val{font-size:21px}
 body.fill #p-season .spark{height:auto}
-/* spray fills its full-width panel */
+/* spray fills its panel (spans 2 cols) at field size */
 body.fill #spray{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
 body.fill #spray .field-wrap{height:100%;width:100%;display:flex;align-items:center;justify-content:center}
 body.fill #spray svg.field{max-width:none;height:100%;width:auto;max-height:100%}
@@ -386,15 +384,17 @@ function sprayChart(items){
 
   return `<div class="field-wrap"><svg class="field" viewBox="0 0 ${W} ${H}">
     <defs><radialGradient id="grass" cx="50%" cy="90%" r="90%">
-      <stop offset="0%" stop-color="#357a48"/><stop offset="100%" stop-color="#1d4a2c"/></radialGradient></defs>
+      <stop offset="0%" stop-color="#357a48"/><stop offset="100%" stop-color="#1d4a2c"/></radialGradient>
+      <filter id="lblshadow" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="1" stdDeviation="1.4" flood-color="#000" flood-opacity="0.9"/></filter></defs>
     <path d="M ${hx} ${hy} L ${hx-260} ${hy-200} A 300 300 0 0 1 ${hx+260} ${hy-200} Z" fill="url(#grass)" stroke="#2a5e38" stroke-width="2"/>
     <path d="M ${hx} ${hy} L ${hx-95} ${hy-95} L ${hx} ${hy-150} L ${hx+95} ${hy-95} Z" fill="#9c6b3f" opacity="0.85"/>
     <path d="M ${hx} ${hy-20} L ${hx-62} ${hy-82} L ${hx} ${hy-128} L ${hx+62} ${hy-82} Z" fill="#357a48"/>
     ${[[hx,hy],[hx-95,hy-95],[hx,hy-150],[hx+95,hy-95]].map(([x,y])=>`<rect x="${x-5}" y="${y-5}" width="10" height="10" fill="#fff" transform="rotate(45 ${x} ${y})"/>`).join("")}
     ${placed.map(h=>`<line x1="${hx}" y1="${hy}" x2="${h.x}" y2="${h.y}" stroke="${h.c}" stroke-width="${1.5+(h.volume/max)*3}" opacity="0.85"/>
-      <circle cx="${h.x}" cy="${h.y}" r="${4+(h.volume/max)*6}" fill="${h.c}"/>
-      <text x="${h.x}" y="${h.y-13}" fill="#e9eef5" font-size="11" font-family="Barlow Condensed" text-anchor="middle">${h.intent}</text>
-      <text x="${h.x}" y="${h.y+19}" fill="${h.c}" font-size="13" font-weight="700" font-family="Oswald" text-anchor="middle">${h.volume}</text>`).join("")}
+      <circle cx="${h.x}" cy="${h.y}" r="${4+(h.volume/max)*6}" fill="${h.c}" stroke="#fff" stroke-width="1.5"/>
+      <text x="${h.x}" y="${h.y-22}" fill="#ffffff" font-size="16" font-weight="700" font-family="Oswald" text-anchor="middle" filter="url(#lblshadow)">${h.volume}</text>
+      <text x="${h.x}" y="${h.y-9}" fill="#f0e8da" font-size="10.5" font-family="Barlow Condensed" font-weight="600" text-anchor="middle" filter="url(#lblshadow)">${h.intent}</text>`).join("")}
   </svg></div>`;
 }
 
