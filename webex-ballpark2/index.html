@@ -87,15 +87,24 @@ body.fill #fitwrap{display:block}
   background:rgba(36,27,20,.9);color:var(--ink);border:1px solid var(--panel-edge);
   border-radius:8px;padding:7px 12px;cursor:pointer;backdrop-filter:blur(6px)}
 #fitToggle:hover{border-color:var(--accent);color:var(--accent)}
-.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 22px;
-  background:linear-gradient(180deg, rgba(40,29,20,.88), rgba(30,22,16,.92));border:1px solid var(--panel-edge);border-radius:var(--radius);
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 22px;
+  position:relative;overflow:hidden;border:1px solid var(--panel-edge);border-radius:var(--radius);
+  box-shadow:0 10px 30px rgba(0,0,0,.45);
+  /* bridge + skyline image, anchored right; dark scrim fades L->R for readable text */
+  background:
+    linear-gradient(90deg, rgba(20,13,8,.94) 0%, rgba(20,13,8,.80) 34%, rgba(20,13,8,.45) 60%, rgba(20,13,8,.30) 100%),
+    url('titlestrip.png');
+  background-size:cover; background-position:center 38%;}
+/* keep title text above the image, with a soft shadow */
+.topbar>*{position:relative;z-index:2}
+.brand h1,.brand .sub{text-shadow:0 2px 8px rgba(0,0,0,.85)}
 .brand{display:flex;align-items:center;gap:16px}
 .brand .bats{font-size:30px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
 .brand h1{font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;font-size:clamp(22px,3vw,38px);line-height:1}
 .brand .sub{font-family:'Barlow Condensed',sans-serif;letter-spacing:4px;color:var(--accent);font-size:13px;font-weight:600;text-transform:uppercase}
 .topbar-right{display:flex;align-items:center;gap:14px}
-.clock{font-family:'Oswald',sans-serif;letter-spacing:1px;font-size:15px;color:var(--ink-dim);
+.clock{font-family:'Oswald',sans-serif;letter-spacing:1px;font-size:15px;color:var(--ink);
+  background:rgba(20,13,8,.7);backdrop-filter:blur(4px);
   border:1px solid var(--panel-edge);border-radius:8px;padding:8px 14px;text-transform:uppercase;min-width:230px;text-align:center}
 .live{display:flex;align-items:center;gap:8px;background:#2a0f12;border:1px solid #5a1a20;color:#ff5a63;
   font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:2px;font-size:14px;padding:8px 14px;border-radius:8px}
@@ -124,10 +133,10 @@ body:not(.fill) #footrow{display:flex;flex-direction:column;gap:var(--gap)}
   body:not(.fill) #p-spray{grid-area:spray}
   body:not(.fill) #footrow{grid-area:foot}
 }
-.panel{background:linear-gradient(180deg, rgba(36,27,20,.86), rgba(28,21,16,.90));
+.panel{background:linear-gradient(180deg, rgba(28,20,14,.62), rgba(22,16,11,.68));
   border:1px solid var(--panel-edge);
   border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden;
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  backdrop-filter:blur(10px) saturate(1.1);-webkit-backdrop-filter:blur(10px) saturate(1.1);
   box-shadow:0 10px 30px rgba(0,0,0,.45)}
 .panel::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;
   background:linear-gradient(90deg,var(--accent),transparent 70%);opacity:.6}
