@@ -30,6 +30,20 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
     radial-gradient(140% 90% at 50% 8%, transparent 0%, rgba(20,12,8,.35) 55%, rgba(12,8,5,.72) 100%),
     linear-gradient(180deg, rgba(20,12,8,.30) 0%, rgba(20,12,8,.10) 35%, rgba(12,8,5,.55) 100%);}
 .scoreboard{max-width:1480px;margin:0 auto;display:flex;flex-direction:column;gap:var(--gap)}
+
+/* ===== FIT-TO-SCREEN scaling ===== */
+/* In fit mode, the board renders at a fixed design size and is scaled by JS
+   to fit the viewport with no scroll. Toggle off for full-size + scroll. */
+body.fit{padding:0;overflow:hidden;height:100vh}
+body.fit #fitwrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
+#fitwrap{transform-origin:center center}
+body.fit .scoreboard{width:1480px;max-width:none;margin:0;padding:16px}
+/* fit-mode toggle button */
+#fitToggle{position:fixed;top:10px;right:10px;z-index:50;
+  font-family:'Oswald',sans-serif;letter-spacing:1px;font-size:12px;
+  background:rgba(36,27,20,.9);color:var(--ink);border:1px solid var(--panel-edge);
+  border-radius:8px;padding:7px 12px;cursor:pointer;backdrop-filter:blur(6px)}
+#fitToggle:hover{border-color:var(--accent);color:var(--accent)}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 22px;
   background:linear-gradient(180deg, rgba(40,29,20,.88), rgba(30,22,16,.92));border:1px solid var(--panel-edge);border-radius:var(--radius);
   backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 10px 30px rgba(0,0,0,.45)}
@@ -138,11 +152,16 @@ svg.field{width:100%;max-width:560px;height:auto}
 </head>
 <body>
 <div id="backdrop"></div>
-
+<button id="fitToggle">⤢ Fit: ON</button>
+<div id="fitwrap">
 <div class="scoreboard" id="app">Loading…</div>
+</div>
 <script>
 /* ===== PLAYBACK & THEME CONFIG — tweak for the demo ===== */
 const PLAYBACK = { msPerInterval:3750, autoplay:true, loop:true, showControls:true };
+// FIT_DEFAULT: true = start in scale-to-fit (no scroll, good for kiosk TV).
+//              false = start full-size with scroll. Toggle anytime with the button.
+const FIT_DEFAULT = true;
 const THEMES = { baseball:{ bats:"⚾", titleWord:"BALLPARK" } };
 const ACTIVE_THEME = "baseball";
 const MOCK = { season:true, intent:true, strike:true, csat:true, queue:false, bullpen:false };
@@ -317,6 +336,27 @@ function tick(){ idx=(idx+1)%DATA.timeline.length; if(idx===0&&!PLAYBACK.loop){s
 function start(){ playing=true; timer=setInterval(tick,PLAYBACK.msPerInterval); if(PLAYBACK.showControls)document.getElementById("playBtn").textContent="⏸ Pause"; }
 function stop(){ playing=false; clearInterval(timer); if(PLAYBACK.showControls)document.getElementById("playBtn").textContent="▶ Play"; }
 
+/* ===== fit-to-screen scaling ===== */
+let fitMode=FIT_DEFAULT;
+function applyFit(){
+  const wrap=document.getElementById("fitwrap");
+  const board=document.getElementById("app");
+  if(!fitMode){ document.body.classList.remove("fit"); wrap.style.transform=""; return; }
+  document.body.classList.add("fit");
+  // measure natural board size, then scale to fit viewport (with small margin)
+  wrap.style.transform="scale(1)";
+  const bw=board.offsetWidth, bh=board.offsetHeight;
+  const vw=window.innerWidth-24, vh=window.innerHeight-24;
+  const scale=Math.min(vw/bw, vh/bh);
+  wrap.style.transform=`scale(${scale})`;
+}
+function setupFitToggle(){
+  const btn=document.getElementById("fitToggle");
+  btn.textContent = fitMode ? "⤢ Fit: ON" : "⤢ Fit: OFF";
+  btn.onclick=()=>{ fitMode=!fitMode; btn.textContent=fitMode?"⤢ Fit: ON":"⤢ Fit: OFF"; applyFit(); };
+  window.addEventListener("resize", ()=>{ if(fitMode) applyFit(); });
+}
+
 fetch("data.json").then(r=>r.json()).then(d=>{
   DATA=d; scaffold(); drawSeason(); renderInterval(0);
   if(PLAYBACK.showControls){
@@ -327,6 +367,9 @@ fetch("data.json").then(r=>r.json()).then(d=>{
       document.getElementById("speedLbl").textContent=(PLAYBACK.msPerInterval/1000).toFixed(2)+"s/int";
       if(playing){stop();start();}};
   }
+  setupFitToggle();
+  // scale after fonts/layout settle, and once more shortly after for safety
+  requestAnimationFrame(()=>{ applyFit(); setTimeout(applyFit,300); });
   if(PLAYBACK.autoplay) start();
 }).catch(err=>{document.getElementById("app").innerHTML=
   `<div class="panel"><div class="panel-title">Couldn't load data.json</div>
