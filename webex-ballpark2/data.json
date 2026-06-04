@@ -178,16 +178,8 @@
           "volume": 14
         },
         {
-          "intent": "Stop Svc",
-          "volume": 9
-        },
-        {
           "intent": "Handover",
           "volume": 8
-        },
-        {
-          "intent": "Outage",
-          "volume": 3
         }
       ],
       "strikeZone": [
@@ -351,20 +343,12 @@
           "volume": 17
         },
         {
-          "intent": "Outage",
-          "volume": 14
-        },
-        {
           "intent": "Start Svc",
           "volume": 11
         },
         {
           "intent": "Handover",
           "volume": 9
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 4
         }
       ],
       "strikeZone": [
@@ -530,14 +514,6 @@
         {
           "intent": "Handover",
           "volume": 11
-        },
-        {
-          "intent": "Outage",
-          "volume": 10
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 7
         }
       ],
       "strikeZone": [
@@ -699,14 +675,6 @@
         {
           "intent": "Call abandoned in AI Agent",
           "volume": 7
-        },
-        {
-          "intent": "Outage",
-          "volume": 6
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 6
         }
       ],
       "strikeZone": [
@@ -873,20 +841,12 @@
           "volume": 14
         },
         {
-          "intent": "Outage",
-          "volume": 14
-        },
-        {
           "intent": "Balance",
           "volume": 10
         },
         {
           "intent": "Call abandoned in AI Agent",
           "volume": 9
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 2
         }
       ],
       "strikeZone": [
@@ -1061,16 +1021,8 @@
           "volume": 10
         },
         {
-          "intent": "Outage",
-          "volume": 9
-        },
-        {
           "intent": "Handover",
           "volume": 7
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 5
         }
       ],
       "strikeZone": [
@@ -1224,14 +1176,6 @@
         {
           "intent": "Handover",
           "volume": 12
-        },
-        {
-          "intent": "Outage",
-          "volume": 9
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 6
         },
         {
           "intent": "Start Svc",
@@ -1412,14 +1356,6 @@
         {
           "intent": "Handover",
           "volume": 9
-        },
-        {
-          "intent": "Outage",
-          "volume": 7
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 2
         }
       ],
       "strikeZone": [
@@ -1594,15 +1530,7 @@
           "volume": 12
         },
         {
-          "intent": "Outage",
-          "volume": 12
-        },
-        {
           "intent": "Call abandoned in AI Agent",
-          "volume": 10
-        },
-        {
-          "intent": "Stop Svc",
           "volume": 10
         }
       ],
@@ -1763,20 +1691,12 @@
           "volume": 14
         },
         {
-          "intent": "Outage",
-          "volume": 11
-        },
-        {
           "intent": "Call abandoned in AI Agent",
           "volume": 10
         },
         {
           "intent": "Handover",
           "volume": 8
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 4
         }
       ],
       "strikeZone": [
@@ -1957,14 +1877,6 @@
         {
           "intent": "Call abandoned in AI Agent",
           "volume": 6
-        },
-        {
-          "intent": "Outage",
-          "volume": 4
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 1
         }
       ],
       "strikeZone": [
@@ -2141,14 +2053,6 @@
         {
           "intent": "Call abandoned in AI Agent",
           "volume": 9
-        },
-        {
-          "intent": "Outage",
-          "volume": 6
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 3
         }
       ],
       "strikeZone": [
@@ -2314,14 +2218,6 @@
         {
           "intent": "Call abandoned in AI Agent",
           "volume": 6
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 6
-        },
-        {
-          "intent": "Outage",
-          "volume": 1
         }
       ],
       "strikeZone": [
@@ -2498,14 +2394,6 @@
         {
           "intent": "Handover",
           "volume": 8
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 6
-        },
-        {
-          "intent": "Outage",
-          "volume": 5
         }
       ],
       "strikeZone": [
@@ -2676,20 +2564,12 @@
           "volume": 12
         },
         {
-          "intent": "Outage",
-          "volume": 10
-        },
-        {
           "intent": "Live Agent",
           "volume": 7
         },
         {
           "intent": "Handover",
           "volume": 7
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 4
         }
       ],
       "strikeZone": [
@@ -2856,20 +2736,12 @@
           "volume": 12
         },
         {
-          "intent": "Outage",
-          "volume": 12
-        },
-        {
           "intent": "Live Agent",
           "volume": 9
         },
         {
           "intent": "Handover",
           "volume": 3
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 2
         }
       ],
       "strikeZone": [
@@ -3025,19 +2897,11 @@
           "volume": 14
         },
         {
-          "intent": "Outage",
-          "volume": 11
-        },
-        {
           "intent": "Live Agent",
           "volume": 10
         },
         {
           "intent": "Call abandoned in AI Agent",
-          "volume": 7
-        },
-        {
-          "intent": "Stop Svc",
           "volume": 7
         }
       ],
@@ -3207,14 +3071,6 @@
         {
           "intent": "Handover",
           "volume": 11
-        },
-        {
-          "intent": "Outage",
-          "volume": 6
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 3
         }
       ],
       "strikeZone": [
@@ -3380,14 +3236,6 @@
         {
           "intent": "Call abandoned in AI Agent",
           "volume": 12
-        },
-        {
-          "intent": "Outage",
-          "volume": 7
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 4
         }
       ],
       "strikeZone": [
@@ -3554,20 +3402,12 @@
           "volume": 11
         },
         {
-          "intent": "Outage",
-          "volume": 8
-        },
-        {
           "intent": "Call abandoned in AI Agent",
           "volume": 7
         },
         {
           "intent": "Handover",
           "volume": 6
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 1
         }
       ],
       "strikeZone": [
@@ -3742,15 +3582,7 @@
           "volume": 9
         },
         {
-          "intent": "Stop Svc",
-          "volume": 5
-        },
-        {
           "intent": "Handover",
-          "volume": 1
-        },
-        {
-          "intent": "Outage",
           "volume": 1
         }
       ],
@@ -3917,14 +3749,6 @@
         {
           "intent": "Handover",
           "volume": 4
-        },
-        {
-          "intent": "Outage",
-          "volume": 3
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 3
         }
       ],
       "strikeZone": [
@@ -4097,14 +3921,6 @@
         {
           "intent": "Handover",
           "volume": 9
-        },
-        {
-          "intent": "Outage",
-          "volume": 7
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 6
         }
       ],
       "strikeZone": [
@@ -4277,14 +4093,6 @@
         {
           "intent": "Handover",
           "volume": 7
-        },
-        {
-          "intent": "Outage",
-          "volume": 3
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 3
         }
       ],
       "strikeZone": [
@@ -4461,14 +4269,6 @@
         {
           "intent": "Handover",
           "volume": 5
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 5
-        },
-        {
-          "intent": "Outage",
-          "volume": 2
         }
       ],
       "strikeZone": [
@@ -4635,20 +4435,12 @@
           "volume": 10
         },
         {
-          "intent": "Stop Svc",
-          "volume": 9
-        },
-        {
           "intent": "Handover",
           "volume": 8
         },
         {
           "intent": "Call abandoned in AI Agent",
           "volume": 7
-        },
-        {
-          "intent": "Outage",
-          "volume": 3
         }
       ],
       "strikeZone": [
@@ -4819,16 +4611,8 @@
           "volume": 12
         },
         {
-          "intent": "Outage",
-          "volume": 8
-        },
-        {
           "intent": "Handover",
           "volume": 7
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 4
         }
       ],
       "strikeZone": [
@@ -4995,15 +4779,7 @@
           "volume": 15
         },
         {
-          "intent": "Stop Svc",
-          "volume": 6
-        },
-        {
           "intent": "Call abandoned in AI Agent",
-          "volume": 5
-        },
-        {
-          "intent": "Outage",
           "volume": 5
         },
         {
@@ -5181,14 +4957,6 @@
         {
           "intent": "Call abandoned in AI Agent",
           "volume": 7
-        },
-        {
-          "intent": "Outage",
-          "volume": 3
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 3
         }
       ],
       "strikeZone": [
@@ -5365,14 +5133,6 @@
         {
           "intent": "Handover",
           "volume": 8
-        },
-        {
-          "intent": "Outage",
-          "volume": 6
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 1
         }
       ],
       "strikeZone": [
@@ -5534,14 +5294,6 @@
         {
           "intent": "Balance",
           "volume": 8
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 4
-        },
-        {
-          "intent": "Outage",
-          "volume": 1
         }
       ],
       "strikeZone": [
@@ -5710,14 +5462,6 @@
         {
           "intent": "Call abandoned in AI Agent",
           "volume": 8
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 6
-        },
-        {
-          "intent": "Outage",
-          "volume": 3
         }
       ],
       "strikeZone": [
@@ -5887,14 +5631,6 @@
         {
           "intent": "Handover",
           "volume": 7
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 7
-        },
-        {
-          "intent": "Outage",
-          "volume": 3
         }
       ],
       "strikeZone": [
@@ -6064,14 +5800,6 @@
         {
           "intent": "Start Svc",
           "volume": 8
-        },
-        {
-          "intent": "Outage",
-          "volume": 7
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 2
         }
       ],
       "strikeZone": [
@@ -6241,14 +5969,6 @@
         {
           "intent": "Start Svc",
           "volume": 5
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 3
-        },
-        {
-          "intent": "Outage",
-          "volume": 2
         }
       ],
       "strikeZone": [
@@ -6404,16 +6124,8 @@
           "volume": 5
         },
         {
-          "intent": "Outage",
-          "volume": 5
-        },
-        {
           "intent": "Call abandoned in AI Agent",
           "volume": 3
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 2
         },
         {
           "intent": "Handover",
@@ -6541,10 +6253,6 @@
           "volume": 5
         },
         {
-          "intent": "Outage",
-          "volume": 5
-        },
-        {
           "intent": "Start Svc",
           "volume": 2
         },
@@ -6648,16 +6356,8 @@
           "volume": 3
         },
         {
-          "intent": "Outage",
-          "volume": 3
-        },
-        {
           "intent": "Live Agent",
           "volume": 2
-        },
-        {
-          "intent": "Stop Svc",
-          "volume": 1
         }
       ],
       "strikeZone": [
