@@ -41,13 +41,13 @@ body.fill .scoreboard{
   display:grid;
   gap:10px;
   grid-template-columns:repeat(2, 1fr);
-  grid-template-rows:auto auto 1.25fr 1fr 52px auto;
+  grid-template-rows:auto 190px 1.15fr 0.6fr 52px auto;
   grid-template-areas:
     "top     top"
     "season  kpis"
     "queue   spray"
     "bullpen spray"
-    "strike  strike"
+    "bullpen strike"
     "foot    foot";
 }
 body.fill .topbar{grid-area:top}
@@ -67,18 +67,17 @@ body.fill .panel .bullpen,
 body.fill .panel .sz-rows,
 body.fill .panel .csat,
 body.fill .panel table{flex:1;min-height:0}
-/* queue table compact in stacked left column */
-body.fill #p-queue tbody td{padding:4px 12px;font-size:13px}
-body.fill #p-queue thead th{padding:4px 12px;font-size:11px}
-body.fill #p-queue .panel-head{margin-bottom:4px}
-/* bullpen compact in stacked left column */
-body.fill #p-bullpen .bullpen{grid-template-columns:110px 1fr;gap:16px}
-body.fill #p-bullpen #donut{width:96px;height:96px}
-body.fill #p-bullpen .active-tags{margin-bottom:8px}
-body.fill #p-bullpen .tag{padding:5px}
-body.fill #p-bullpen .tag .t-num{font-size:20px}
-body.fill #p-bullpen .legend{display:grid;grid-template-columns:1fr 1fr;gap:3px 18px}
-body.fill #p-bullpen .legend-row{font-size:12px}
+/* queue table readable in taller left column */
+body.fill #p-queue tbody td{padding:7px 12px;font-size:15px}
+body.fill #p-queue thead th{padding:6px 12px;font-size:12px}
+body.fill #p-queue .panel-head{margin-bottom:8px}
+/* bullpen readable in taller left column (spans 2 rows) */
+body.fill #p-bullpen .bullpen{grid-template-columns:140px 1fr;gap:22px}
+body.fill #p-bullpen #donut{width:130px;height:130px}
+body.fill #p-bullpen .active-tags{margin-bottom:12px}
+body.fill #p-bullpen .tag .t-num{font-size:24px}
+body.fill #p-bullpen .legend{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px}
+body.fill #p-bullpen .legend-row{font-size:14px}
 body.fill #p-season .srow .s-val{font-size:21px}
 body.fill #p-season .spark{height:auto}
 /* spray fills its panel (spans 2 cols) at field size */
@@ -146,6 +145,7 @@ body.wall #fitwrap{display:none}           /* hide the 7-panel showcase */
 .brand h1{font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;font-size:clamp(22px,3vw,38px);line-height:1}
 .brand .sub{font-family:'Barlow Condensed',sans-serif;letter-spacing:4px;color:var(--accent);font-size:13px;font-weight:600;text-transform:uppercase}
 .topbar-right{display:flex;align-items:center;gap:14px}
+.bar-logo{height:38px;width:auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
 .clock{font-family:'Oswald',sans-serif;letter-spacing:1px;font-size:15px;color:var(--ink);
   background:rgba(20,13,8,.7);backdrop-filter:blur(4px);
   border:1px solid var(--panel-edge);border-radius:8px;padding:8px 14px;text-transform:uppercase;min-width:230px;text-align:center}
@@ -201,7 +201,11 @@ body:not(.fill) #footrow{display:flex;flex-direction:column;gap:var(--gap)}
   line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gs-cell .gs-sub{font-size:11px;color:var(--ink-faint)}
 body.fill .game-summary{grid-template-columns:repeat(2,1fr)}
-body.fill #p-kpis .kpis{grid-template-columns:repeat(2,1fr)}
+body.fill #p-kpis .kpis{grid-template-columns:repeat(2,1fr);gap:8px}
+body.fill #p-kpis .kpi{padding:8px 14px}
+body.fill #p-kpis .kpi .val{font-size:28px;margin-top:0}
+body.fill #p-season .gs-cell{padding:7px 12px}
+body.fill #p-season .gs-cell .gs-val{font-size:22px}
 .panel.expanded .game-summary .gs-val{font-size:34px}
 .season-rows{display:flex;flex-direction:column;gap:12px}
 .srow{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px}
@@ -384,7 +388,10 @@ function scaffold(){
     <div class="topbar fade-up">
       <div class="brand"><span class="bats">${t.bats}</span>
         <div><h1>WEBEX ${t.titleWord}</h1><div class="sub">Contact Center Operations</div></div></div>
-      <div class="topbar-right"><span class="clock" id="clock">—</span>
+      <div class="topbar-right">
+        <img src="veytec.png" alt="Veytec" class="bar-logo">
+        <img src="webex.png" alt="Webex by Cisco" class="bar-logo">
+        <span class="clock" id="clock">—</span>
         <span class="live"><span class="dot"></span>LIVE</span></div></div>
     <div class="panel fade-up" id="p-season"><div class="panel-head"><span class="panel-num">1</span>
         <span class="panel-title">Game Summary <small>— Today So Far</small></span></div>
@@ -419,16 +426,7 @@ function scaffold(){
         <div class="csat-bars" id="csatBars"></div></div></div>
     <div class="panel fade-up" id="p-spray"><div class="panel-head"><span class="panel-num">7</span>
         <span class="panel-title">Intent Spray Chart <small>— Volume by Intent</small></span>${flag(MOCK.intent)}</div>
-      <div class="spray-row">
-        <div class="spray-logo left">
-          <img src="veytec.png" alt="Veytec" class="logo-img">
-          <div class="logo-tag">Results Driven. Relationship Focused.</div>
-        </div>
-        <div id="spray"></div>
-        <div class="spray-logo right">
-          <img src="webex.png" alt="Webex by Cisco" class="logo-img">
-        </div>
-      </div></div>
+      <div id="spray"></div></div>
     <div id="footrow">
     ${PLAYBACK.showControls?`<div class="controls fade-up">
       <button id="playBtn">⏸ Pause</button><span class="lbl">Interval</span>
