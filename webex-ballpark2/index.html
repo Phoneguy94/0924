@@ -40,14 +40,14 @@ body.fill .scoreboard{
   height:calc(100vh - 20px);
   display:grid;
   gap:10px;
-  grid-template-columns:repeat(4, 1fr);
-  grid-template-rows:auto auto 1fr 1fr auto;
+  grid-template-columns:repeat(2, 1fr);
+  grid-template-rows:auto 1fr 1fr 1fr auto;
   grid-template-areas:
-    "top    top    top    top"
-    "season season kpis   kpis"
-    "queue  queue  bullpen bullpen"
-    "strike csat   spray  spray"
-    "foot   foot   foot   foot";
+    "top     top"
+    "season  kpis"
+    "queue   bullpen"
+    "strike  spray"
+    "foot    foot";
 }
 body.fill .topbar{grid-area:top}
 body.fill #p-season{grid-area:season}
@@ -55,7 +55,7 @@ body.fill #p-kpis{grid-area:kpis}
 body.fill #p-queue{grid-area:queue}
 body.fill #p-bullpen{grid-area:bullpen}
 body.fill #p-strike{grid-area:strike}
-body.fill #p-csat{grid-area:csat}
+body.fill #p-csat{display:none}        /* CSAT parked — hidden, code kept */
 body.fill #p-spray{grid-area:spray}
 body.fill #footrow{grid-area:foot;display:flex;flex-direction:column;gap:8px}
 /* panels in fill mode: clip overflow, let inner content breathe */
@@ -131,7 +131,7 @@ body.wall #fitwrap{display:none}           /* hide the 7-panel showcase */
   background:
     linear-gradient(90deg, rgba(20,13,8,.94) 0%, rgba(20,13,8,.80) 34%, rgba(20,13,8,.45) 60%, rgba(20,13,8,.30) 100%),
     url('titlestrip.png');
-  background-size:cover; background-position:center 60%;}
+  background-size:cover; background-position:center 38%;}
 /* keep title text above the image, with a soft shadow */
 .topbar>*{position:relative;z-index:2}
 .brand h1,.brand .sub{text-shadow:0 2px 8px rgba(0,0,0,.85)}
@@ -158,15 +158,15 @@ body:not(.fill) #footrow{display:flex;flex-direction:column;gap:var(--gap)}
     display:grid;gap:var(--gap);
     grid-template-columns:1fr 1fr;
     grid-template-areas:
-      "top top" "season season" "kpis kpis"
-      "queue bullpen" "strike csat" "spray spray" "foot foot";}
+      "top top" "season kpis"
+      "queue bullpen" "strike spray" "foot foot";}
   body:not(.fill) .topbar{grid-area:top}
   body:not(.fill) #p-season{grid-area:season}
   body:not(.fill) #p-kpis{grid-area:kpis}
   body:not(.fill) #p-queue{grid-area:queue}
   body:not(.fill) #p-bullpen{grid-area:bullpen}
   body:not(.fill) #p-strike{grid-area:strike}
-  body:not(.fill) #p-csat{grid-area:csat}
+  body:not(.fill) #p-csat{display:none}    /* CSAT parked */
   body:not(.fill) #p-spray{grid-area:spray}
   body:not(.fill) #footrow{grid-area:foot}
 }
@@ -194,7 +194,8 @@ body:not(.fill) #footrow{display:flex;flex-direction:column;gap:var(--gap)}
 .gs-cell .gs-val{font-family:'Oswald',sans-serif;font-weight:700;font-size:24px;color:var(--accent);
   line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .gs-cell .gs-sub{font-size:11px;color:var(--ink-faint)}
-body.fill .game-summary{grid-template-columns:repeat(4,1fr)}
+body.fill .game-summary{grid-template-columns:repeat(2,1fr)}
+body.fill #p-kpis .kpis{grid-template-columns:repeat(2,1fr)}
 .panel.expanded .game-summary .gs-val{font-size:34px}
 .season-rows{display:flex;flex-direction:column;gap:12px}
 .srow{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px}
@@ -452,7 +453,6 @@ function drawGameSummary(i){
     {label:"Avg Queue Time",  val:mmss, sub:"weighted"},
     {label:"Top Intent",      val:topIntent[0], sub:`${fmtInt(topIntent[1])} calls`},
     {label:"Busiest Queue",   val:busiestQ[0], sub:`${fmtInt(busiestQ[1])} presented`},
-    {label:"Peak Interval",   val:peakTime, sub:`${peak.count} calls`},
   ];
   document.getElementById("gameSummary").innerHTML = stats.map(s=>`
     <div class="gs-cell">
