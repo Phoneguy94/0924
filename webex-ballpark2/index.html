@@ -29,16 +29,61 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
   background:
     radial-gradient(140% 90% at 50% 8%, transparent 0%, rgba(20,12,8,.35) 55%, rgba(12,8,5,.72) 100%),
     linear-gradient(180deg, rgba(20,12,8,.30) 0%, rgba(20,12,8,.10) 35%, rgba(12,8,5,.55) 100%);}
-.scoreboard{max-width:1480px;margin:0 auto;display:flex;flex-direction:column;gap:var(--gap)}
+.scoreboard{width:100%;margin:0;display:flex;flex-direction:column;gap:var(--gap)}
 
-/* ===== FIT-TO-SCREEN scaling ===== */
-/* In fit mode, the board renders at a fixed design size and is scaled by JS
-   to fit the viewport with no scroll. Toggle off for full-size + scroll. */
-body.fit{padding:0;overflow:hidden;height:100vh}
-body.fit #fitwrap{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
-#fitwrap{transform-origin:center center}
-body.fit .scoreboard{width:1480px;max-width:none;margin:0;padding:16px}
-/* fit-mode toggle button */
+/* ===== FILL-THE-SCREEN broadcast grid =====
+   In fill mode the board becomes a full-viewport grid: panels spread
+   horizontally to use the whole width and the rows size to the height.
+   Toggle off for the classic stacked + scroll layout. */
+body.fill{padding:10px;overflow:hidden;height:100vh}
+body.fill .scoreboard{
+  height:calc(100vh - 20px);
+  display:grid;
+  gap:10px;
+  grid-template-columns:repeat(4, 1fr);
+  grid-template-rows:auto auto 1.35fr 1.4fr auto;
+  grid-template-areas:
+    "top   top   top   top"
+    "season season kpis kpis"
+    "queue bullpen strike csat"
+    "spray spray spray spray"
+    "foot  foot  foot  foot";
+}
+body.fill .topbar{grid-area:top}
+body.fill #p-season{grid-area:season}
+body.fill #p-kpis{grid-area:kpis}
+body.fill #p-queue{grid-area:queue}
+body.fill #p-bullpen{grid-area:bullpen}
+body.fill #p-strike{grid-area:strike}
+body.fill #p-csat{grid-area:csat}
+body.fill #p-spray{grid-area:spray}
+body.fill #footrow{grid-area:foot;display:flex;flex-direction:column;gap:8px}
+/* panels in fill mode: clip overflow, let inner content breathe */
+body.fill .panel{overflow:hidden;display:flex;flex-direction:column;padding:12px 16px}
+body.fill .panel-head{margin-bottom:8px}
+body.fill .panel .season,
+body.fill .panel .bullpen,
+body.fill .panel .sz,
+body.fill .panel .csat,
+body.fill .panel table{flex:1;min-height:0}
+/* compact the dense data panels so all rows fit */
+body.fill #p-queue tbody td{padding:5px 10px;font-size:13px}
+body.fill #p-queue thead th{padding:5px 10px}
+body.fill #p-bullpen .active-tags{margin-bottom:8px}
+body.fill #p-bullpen .tag{padding:5px}
+body.fill #p-bullpen .tag .t-num{font-size:20px}
+body.fill #p-bullpen .legend-row{font-size:12.5px}
+body.fill #p-bullpen .bullpen{grid-template-columns:120px 1fr;gap:14px}
+body.fill #p-bullpen #donut{width:118px;height:118px}
+body.fill #p-season .srow .s-val{font-size:21px}
+body.fill #p-season .spark{height:auto}
+/* spray fills its full-width panel */
+body.fill #spray{flex:1;min-height:0;display:flex;align-items:center;justify-content:center}
+body.fill #spray .field-wrap{height:100%;width:100%;display:flex;align-items:center;justify-content:center}
+body.fill #spray svg.field{max-width:none;height:100%;width:auto;max-height:100%}
+body.fill #fitwrap{display:block}
+
+/* toggle button */
 #fitToggle{position:fixed;top:10px;right:10px;z-index:50;
   font-family:'Oswald',sans-serif;letter-spacing:1px;font-size:12px;
   background:rgba(36,27,20,.9);color:var(--ink);border:1px solid var(--panel-edge);
@@ -60,6 +105,27 @@ body.fit .scoreboard{width:1480px;max-width:none;margin:0;padding:16px}
 @keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap)}
 @media (max-width:900px){.grid{grid-template-columns:1fr}}
+/* default (scroll) mode: keep a readable centered column and pair the mid panels */
+body:not(.fill) .scoreboard{max-width:1480px;margin:0 auto}
+body:not(.fill) #footrow{display:flex;flex-direction:column;gap:var(--gap)}
+@media (min-width:901px){
+  body:not(.fill) #p-queue,body:not(.fill) #p-strike{grid-column:auto}
+  body:not(.fill) .scoreboard{
+    display:grid;gap:var(--gap);
+    grid-template-columns:1fr 1fr;
+    grid-template-areas:
+      "top top" "season season" "kpis kpis"
+      "queue bullpen" "strike csat" "spray spray" "foot foot";}
+  body:not(.fill) .topbar{grid-area:top}
+  body:not(.fill) #p-season{grid-area:season}
+  body:not(.fill) #p-kpis{grid-area:kpis}
+  body:not(.fill) #p-queue{grid-area:queue}
+  body:not(.fill) #p-bullpen{grid-area:bullpen}
+  body:not(.fill) #p-strike{grid-area:strike}
+  body:not(.fill) #p-csat{grid-area:csat}
+  body:not(.fill) #p-spray{grid-area:spray}
+  body:not(.fill) #footrow{grid-area:foot}
+}
 .panel{background:linear-gradient(180deg, rgba(36,27,20,.86), rgba(28,21,16,.90));
   border:1px solid var(--panel-edge);
   border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden;
@@ -159,8 +225,9 @@ svg.field{width:100%;max-width:560px;height:auto}
 <script>
 /* ===== PLAYBACK & THEME CONFIG — tweak for the demo ===== */
 const PLAYBACK = { msPerInterval:3750, autoplay:true, loop:true, showControls:true };
-// FIT_DEFAULT: true = start in scale-to-fit (no scroll, good for kiosk TV).
-//              false = start full-size with scroll. Toggle anytime with the button.
+// FIT_DEFAULT: true = start in fill-the-screen mode (broadcast grid, no scroll,
+//              panels spread across the full width — best for kiosk TV).
+//              false = classic stacked layout with scroll. Toggle anytime.
 const FIT_DEFAULT = true;
 const THEMES = { baseball:{ bats:"⚾", titleWord:"BALLPARK" } };
 const ACTIVE_THEME = "baseball";
@@ -181,37 +248,36 @@ function scaffold(){
         <div><h1>WEBEX ${t.titleWord}</h1><div class="sub">Contact Center Operations</div></div></div>
       <div class="topbar-right"><span class="clock" id="clock">—</span>
         <span class="live"><span class="dot"></span>LIVE</span></div></div>
-    <div class="panel fade-up"><div class="panel-head"><span class="panel-num">1</span>
+    <div class="panel fade-up" id="p-season"><div class="panel-head"><span class="panel-num">1</span>
         <span class="panel-title">Monthly Scoreboard <small>— Season Stats</small></span>${flag(MOCK.season)}</div>
       <div class="season"><div class="season-rows" id="seasonRows"></div>
         <svg class="spark" id="spark" viewBox="0 0 320 90" preserveAspectRatio="none"></svg></div></div>
-    <div class="panel fade-up"><div class="panel-head"><span class="panel-num">2</span>
+    <div class="panel fade-up" id="p-kpis"><div class="panel-head"><span class="panel-num">2</span>
         <span class="panel-title">Live Snapshot <small id="intLabel"></small></span></div>
       <div class="kpis" id="kpis"></div></div>
-    <div class="grid">
-      <div class="panel fade-up"><div class="panel-head"><span class="panel-num">3</span>
-          <span class="panel-title">Queue Standings</span>${flag(MOCK.queue)}</div>
-        <table><thead><tr><th>Queue</th><th>Presented</th><th>Handled</th><th>Avg Wait</th><th>SL</th></tr></thead>
-          <tbody id="queueBody"></tbody></table></div>
-      <div class="panel fade-up"><div class="panel-head"><span class="panel-num">4</span>
-          <span class="panel-title">Bullpen Report <small>— Agent States</small></span>${flag(MOCK.bullpen)}</div>
-        <div class="active-tags" id="activeTags"></div>
-        <div class="bullpen"><div class="donut-wrap">
-          <svg viewBox="0 0 140 140" width="150" height="150" id="donut"></svg>
-          <div class="donut-center"><div class="n" id="totalAgents">—</div><div class="l">Total Agents</div></div></div>
-        <div class="legend" id="legend"></div></div></div></div>
-    <div class="grid">
-      <div class="panel fade-up"><div class="panel-head"><span class="panel-num">5</span>
-          <span class="panel-title">Strike Zone <small>— Intent Match Quality</small></span>${flag(MOCK.strike)}</div>
-        <div class="sz"><div class="sz-rows" id="szRows"></div>
-          <svg viewBox="0 0 120 140" width="150" id="szGrid"></svg></div></div>
-      <div class="panel fade-up"><div class="panel-head"><span class="panel-num">6</span>
-          <span class="panel-title">CSAT <small>— Post-Call Survey</small></span>${flag(MOCK.csat)}</div>
-        <div class="csat"><div class="csat-score"><div class="big" id="csatBig">—</div><div class="out">OUT OF 5</div></div>
-          <div class="csat-bars" id="csatBars"></div></div></div></div>
-    <div class="panel fade-up"><div class="panel-head"><span class="panel-num">7</span>
+    <div class="panel fade-up" id="p-queue"><div class="panel-head"><span class="panel-num">3</span>
+        <span class="panel-title">Queue Standings</span>${flag(MOCK.queue)}</div>
+      <table><thead><tr><th>Queue</th><th>Presented</th><th>Handled</th><th>Avg Wait</th><th>SL</th></tr></thead>
+        <tbody id="queueBody"></tbody></table></div>
+    <div class="panel fade-up" id="p-bullpen"><div class="panel-head"><span class="panel-num">4</span>
+        <span class="panel-title">Bullpen Report <small>— Agent States</small></span>${flag(MOCK.bullpen)}</div>
+      <div class="active-tags" id="activeTags"></div>
+      <div class="bullpen"><div class="donut-wrap">
+        <svg viewBox="0 0 140 140" width="150" height="150" id="donut"></svg>
+        <div class="donut-center"><div class="n" id="totalAgents">—</div><div class="l">Total Agents</div></div></div>
+      <div class="legend" id="legend"></div></div></div>
+    <div class="panel fade-up" id="p-strike"><div class="panel-head"><span class="panel-num">5</span>
+        <span class="panel-title">Strike Zone <small>— Intent Match Quality</small></span>${flag(MOCK.strike)}</div>
+      <div class="sz"><div class="sz-rows" id="szRows"></div>
+        <svg viewBox="0 0 120 140" width="150" id="szGrid"></svg></div></div>
+    <div class="panel fade-up" id="p-csat"><div class="panel-head"><span class="panel-num">6</span>
+        <span class="panel-title">CSAT <small>— Post-Call Survey</small></span>${flag(MOCK.csat)}</div>
+      <div class="csat"><div class="csat-score"><div class="big" id="csatBig">—</div><div class="out">OUT OF 5</div></div>
+        <div class="csat-bars" id="csatBars"></div></div></div>
+    <div class="panel fade-up" id="p-spray"><div class="panel-head"><span class="panel-num">7</span>
         <span class="panel-title">Intent Spray Chart <small>— Volume by Intent</small></span>${flag(MOCK.intent)}</div>
       <div id="spray"></div></div>
+    <div id="footrow">
     ${PLAYBACK.showControls?`<div class="controls fade-up">
       <button id="playBtn">⏸ Pause</button><span class="lbl">Interval</span>
       <input type="range" class="scrub" id="scrub" min="0" value="0">
@@ -219,7 +285,7 @@ function scaffold(){
       <input type="range" id="speed" min="500" max="8000" step="250" value="${PLAYBACK.msPerInterval}">
       <span class="lbl" id="speedLbl"></span></div>`:''}
     <div class="footer fade-up"><span class="source-chip"><b>Source:</b> <span id="srcSys"></span></span>
-      <span class="source-chip"><b>Refresh Mode:</b> <span id="srcMode"></span></span></div>`;
+      <span class="source-chip"><b>Refresh Mode:</b> <span id="srcMode"></span></span></div></div>`;
 }
 
 function drawSeason(){
@@ -336,25 +402,16 @@ function tick(){ idx=(idx+1)%DATA.timeline.length; if(idx===0&&!PLAYBACK.loop){s
 function start(){ playing=true; timer=setInterval(tick,PLAYBACK.msPerInterval); if(PLAYBACK.showControls)document.getElementById("playBtn").textContent="⏸ Pause"; }
 function stop(){ playing=false; clearInterval(timer); if(PLAYBACK.showControls)document.getElementById("playBtn").textContent="▶ Play"; }
 
-/* ===== fit-to-screen scaling ===== */
-let fitMode=FIT_DEFAULT;
+/* ===== fill-the-screen mode toggle ===== */
+let fillMode=FIT_DEFAULT;
 function applyFit(){
-  const wrap=document.getElementById("fitwrap");
-  const board=document.getElementById("app");
-  if(!fitMode){ document.body.classList.remove("fit"); wrap.style.transform=""; return; }
-  document.body.classList.add("fit");
-  // measure natural board size, then scale to fit viewport (with small margin)
-  wrap.style.transform="scale(1)";
-  const bw=board.offsetWidth, bh=board.offsetHeight;
-  const vw=window.innerWidth-24, vh=window.innerHeight-24;
-  const scale=Math.min(vw/bw, vh/bh);
-  wrap.style.transform=`scale(${scale})`;
+  document.body.classList.toggle("fill", fillMode);
+  const btn=document.getElementById("fitToggle");
+  if(btn) btn.textContent = fillMode ? "⤢ Fill: ON" : "⤢ Fill: OFF";
 }
 function setupFitToggle(){
   const btn=document.getElementById("fitToggle");
-  btn.textContent = fitMode ? "⤢ Fit: ON" : "⤢ Fit: OFF";
-  btn.onclick=()=>{ fitMode=!fitMode; btn.textContent=fitMode?"⤢ Fit: ON":"⤢ Fit: OFF"; applyFit(); };
-  window.addEventListener("resize", ()=>{ if(fitMode) applyFit(); });
+  btn.onclick=()=>{ fillMode=!fillMode; applyFit(); };
 }
 
 fetch("data.json").then(r=>r.json()).then(d=>{
@@ -368,8 +425,7 @@ fetch("data.json").then(r=>r.json()).then(d=>{
       if(playing){stop();start();}};
   }
   setupFitToggle();
-  // scale after fonts/layout settle, and once more shortly after for safety
-  requestAnimationFrame(()=>{ applyFit(); setTimeout(applyFit,300); });
+  applyFit();
   if(PLAYBACK.autoplay) start();
 }).catch(err=>{document.getElementById("app").innerHTML=
   `<div class="panel"><div class="panel-title">Couldn't load data.json</div>
