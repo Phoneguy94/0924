@@ -88,6 +88,42 @@ body.fill #fitwrap{display:block}
   background:rgba(36,27,20,.9);color:var(--ink);border:1px solid var(--panel-edge);
   border-radius:8px;padding:7px 12px;cursor:pointer;backdrop-filter:blur(6px)}
 #fitToggle:hover{border-color:var(--accent);color:var(--accent)}
+#wallToggle{position:fixed;top:10px;right:118px;z-index:50;
+  font-family:'Oswald',sans-serif;letter-spacing:1px;font-size:12px;
+  background:rgba(36,27,20,.9);color:var(--ink);border:1px solid var(--panel-edge);
+  border-radius:8px;padding:7px 12px;cursor:pointer;backdrop-filter:blur(6px)}
+#wallToggle:hover{border-color:var(--accent);color:var(--accent)}
+#wallToggle.active{background:var(--accent);color:#1a1205;border-color:var(--accent)}
+
+/* ===== WALLBOARD MODE — 3 big glanceable metrics ===== */
+#wallboard{display:none;position:fixed;inset:0;z-index:40;padding:80px 30px 30px}
+body.wall #wallboard{display:flex;flex-direction:column;gap:18px}
+body.wall #fitwrap{display:none}           /* hide the 7-panel showcase */
+.wall-head{display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:14px 26px;border:1px solid var(--panel-edge);border-radius:var(--radius);
+  background:linear-gradient(180deg, rgba(40,29,20,.88), rgba(30,22,16,.92));
+  backdrop-filter:blur(6px);box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.wall-head h2{font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;font-size:clamp(20px,2.6vw,34px)}
+.wall-head .wclock{font-family:'Oswald',sans-serif;letter-spacing:1px;font-size:18px;color:var(--ink-dim)}
+.wall-tiles{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;min-height:0}
+.wtile{border:1px solid var(--panel-edge);border-radius:18px;
+  background:linear-gradient(180deg, rgba(28,20,14,.80), rgba(22,16,11,.86));
+  backdrop-filter:blur(10px);box-shadow:0 14px 40px rgba(0,0,0,.5);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  position:relative;overflow:hidden}
+.wtile::before{content:'';position:absolute;inset:0 0 auto 0;height:5px;background:var(--accent);opacity:.7}
+.wtile .wlabel{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:3px;
+  font-size:clamp(16px,1.8vw,24px);color:var(--ink-dim)}
+.wtile .wval{font-family:'Oswald',sans-serif;font-weight:700;font-size:clamp(70px,13vw,190px);
+  line-height:.9;color:var(--accent)}
+.wtile .wsub{font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-size:clamp(14px,1.4vw,20px);
+  color:var(--ink-faint);text-transform:uppercase}
+/* status coloring */
+.wtile.good .wval{color:#7cc24a} .wtile.good::before{background:#7cc24a}
+.wtile.warn .wval{color:#ff9800} .wtile.warn::before{background:#ff9800}
+.wtile.bad  .wval{color:#ef5350} .wtile.bad::before{background:#ef5350}
+.wtile.bad{animation:wpulse 1.6s ease-in-out infinite}
+@keyframes wpulse{0%,100%{box-shadow:0 14px 40px rgba(0,0,0,.5)}50%{box-shadow:0 0 40px rgba(239,83,80,.4)}}
 .topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 22px;
   position:relative;overflow:hidden;border:1px solid var(--panel-edge);border-radius:var(--radius);
   box-shadow:0 10px 30px rgba(0,0,0,.45);
@@ -295,6 +331,8 @@ svg.field{width:100%;max-width:560px;height:auto}
 <div id="backdrop"></div>
 <div id="overlay"></div>
 <button id="fitToggle">⤢ Fit: ON</button>
+<button id="wallToggle">▦ Wallboard</button>
+<div id="wallboard"></div>
 <div id="fitwrap">
 <div class="scoreboard" id="app">Loading…</div>
 </div>
@@ -477,6 +515,7 @@ function renderInterval(i){
       <span style="text-align:right;font-family:Oswald">${d.pct}%</span></div>`).join("");
   document.getElementById("spray").innerHTML=sprayChart(snap.intentVolume);
   drawGameSummary(i);
+  renderWallboard(i);
   if(PLAYBACK.showControls){document.getElementById("scrub").value=i;
     document.getElementById("speedLbl").textContent=(PLAYBACK.msPerInterval/1000).toFixed(2)+"s/int";}
 }
@@ -541,6 +580,73 @@ function setupFitToggle(){
   btn.onclick=()=>{ fillMode=!fillMode; applyFit(); };
 }
 
+/* ===== Wallboard mode (3 big metrics) ===== */
+let wallMode=false;
+function setupWallToggle(){
+  const btn=document.getElementById("wallToggle");
+  btn.onclick=()=>{
+    wallMode=!wallMode;
+    document.body.classList.toggle("wall", wallMode);
+    btn.classList.toggle("active", wallMode);
+    document.getElementById("fitToggle").style.display = wallMode ? "none" : "";
+    renderWallboard(idx);
+  };
+}
+function renderWallboard(i){
+  if(!wallMode) return;
+  const snap=DATA.timeline[i];
+
+  // longest current wait across active queues (mm:ss -> seconds)
+  let longest=0, longestQ="—";
+  (snap.queueStandings||[]).forEach(q=>{
+    const p=q.avgQueueTime.split(":"); const sec=(+p[0])*60+(+p[1]);
+    if(sec>longest){ longest=sec; longestQ=q.queue; }
+  });
+  const waitTxt = `${String(Math.floor(longest/60)).padStart(2,"0")}:${String(longest%60).padStart(2,"0")}`;
+  const waitClass = longest>=300?"bad":longest>=120?"warn":"good";
+
+  // answer rate (service level)
+  const sl=snap.summary.serviceLevel;
+  const slClass2 = sl>=80?"good":sl>=50?"warn":"bad";
+
+  // agents available right now
+  const avail = (snap.agentStateSummary||[]).find(s=>s.state==="available");
+  const availN = avail?avail.count:0;
+  const totalAgents=(snap.agentStateSummary||[]).reduce((s,x)=>s+x.count,0);
+  const availClass = availN>=5?"good":availN>=1?"warn":"bad";
+
+  const closed = !snap.queueStandings || snap.queueStandings.length===0 || snap.summary.callsPresented===0;
+
+  document.getElementById("wallboard").innerHTML = `
+    <div class="wall-head">
+      <h2>⚾ WEBEX BALLPARK — FLOOR VIEW</h2>
+      <span class="wclock">${snap.intervalLabel}</span>
+    </div>
+    <div class="wall-tiles">
+      ${closed ? `
+      <div class="wtile" style="grid-column:1/-1">
+        <div class="wlabel">After Hours</div>
+        <div class="wval" style="font-size:clamp(50px,9vw,130px)">GAME OVER</div>
+        <div class="wsub">Queues Closed</div>
+      </div>` : `
+      <div class="wtile ${waitClass}">
+        <div class="wlabel">Longest Wait</div>
+        <div class="wval">${waitTxt}</div>
+        <div class="wsub">${longestQ}</div>
+      </div>
+      <div class="wtile ${slClass2}">
+        <div class="wlabel">Answer Rate</div>
+        <div class="wval">${sl}%</div>
+        <div class="wsub">Service Level</div>
+      </div>
+      <div class="wtile ${availClass}">
+        <div class="wlabel">Available</div>
+        <div class="wval">${availN}</div>
+        <div class="wsub">of ${totalAgents} agents</div>
+      </div>`}
+    </div>`;
+}
+
 /* ===== click-to-expand panels ===== */
 function setupExpand(){
   const overlay=document.getElementById("overlay");
@@ -581,6 +687,7 @@ fetch("data.json").then(r=>r.json()).then(d=>{
       if(playing){stop();start();}};
   }
   setupFitToggle();
+  setupWallToggle();
   setupExpand();
   applyFit();
   if(PLAYBACK.autoplay) start();
