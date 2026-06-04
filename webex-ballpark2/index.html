@@ -95,7 +95,7 @@ body.fill #fitwrap{display:block}
   background:
     linear-gradient(90deg, rgba(20,13,8,.94) 0%, rgba(20,13,8,.80) 34%, rgba(20,13,8,.45) 60%, rgba(20,13,8,.30) 100%),
     url('titlestrip.png');
-  background-size:cover; background-position:center 55%;}
+  background-size:cover; background-position:center 60%;}
 /* keep title text above the image, with a soft shadow */
 .topbar>*{position:relative;z-index:2}
 .brand h1,.brand .sub{text-shadow:0 2px 8px rgba(0,0,0,.85)}
@@ -149,6 +149,17 @@ body:not(.fill) #footrow{display:flex;flex-direction:column;gap:var(--gap)}
 .mock-flag{margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1px;
   color:#ffb74d;border:1px solid #5a4420;background:#241d0d;padding:2px 7px;border-radius:20px;text-transform:uppercase}
 .season{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:center}
+/* Game Summary running-totals grid */
+.game-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1;align-content:center}
+.gs-cell{background:var(--panel-2);border:1px solid var(--panel-edge);border-radius:10px;
+  padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.gs-cell .gs-label{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;
+  letter-spacing:1px;font-size:11px;color:var(--ink-dim)}
+.gs-cell .gs-val{font-family:'Oswald',sans-serif;font-weight:700;font-size:24px;color:var(--accent);
+  line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gs-cell .gs-sub{font-size:11px;color:var(--ink-faint)}
+body.fill .game-summary{grid-template-columns:repeat(4,1fr)}
+.panel.expanded .game-summary .gs-val{font-size:34px}
 .season-rows{display:flex;flex-direction:column;gap:12px}
 .srow{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px}
 .srow .s-label{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:1px;font-size:14px;color:var(--ink-dim)}
@@ -307,9 +318,8 @@ function scaffold(){
       <div class="topbar-right"><span class="clock" id="clock">—</span>
         <span class="live"><span class="dot"></span>LIVE</span></div></div>
     <div class="panel fade-up" id="p-season"><div class="panel-head"><span class="panel-num">1</span>
-        <span class="panel-title">Monthly Scoreboard <small>— Season Stats</small></span>${flag(MOCK.season)}</div>
-      <div class="season"><div class="season-rows" id="seasonRows"></div>
-        <svg class="spark" id="spark" viewBox="0 0 320 90" preserveAspectRatio="none"></svg></div></div>
+        <span class="panel-title">Game Summary <small>— Today So Far</small></span></div>
+      <div id="gameSummary" class="game-summary"></div></div>
     <div class="panel fade-up" id="p-kpis"><div class="panel-head"><span class="panel-num">2</span>
         <span class="panel-title">Live Snapshot <small id="intLabel"></small></span></div>
       <div class="kpis" id="kpis"></div></div>
@@ -355,22 +365,52 @@ function scaffold(){
       <span class="source-chip"><b>Refresh Mode:</b> <span id="srcMode"></span></span></div></div>`;
 }
 
-function drawSeason(){
-  const s=DATA.season; const rows=document.getElementById("seasonRows");
-  rows.innerHTML=s.metrics.map(m=>{
-    const up=(m.delta.startsWith("+")&&m.label!=="Agent Handovers")||(m.label==="Agent Handovers"&&m.delta.startsWith("-"));
-    const val=m.fmt==="pct"?m.value+"%":fmtInt(m.value);
-    return `<div class="srow"><span class="s-label">${m.label}</span><span class="s-val">${val}</span>
-      <span class="s-delta ${up?'up':'down'}">${up?'▲':'▼'} ${m.delta.replace(/[+-]/,'')}</span></div>`;}).join("");
-  const W=320,H=90,colors=["#4caf50","#1ba1e2","#ffc629","#ff5a63"]; let svg="";
-  s.metrics.forEach((m,i)=>{const tr=m.trend,mn=Math.min(...tr),mx=Math.max(...tr),rng=(mx-mn)||1;
-    const pts=tr.map((v,j)=>`${20+j*(W-40)/(tr.length-1)},${H-10-((v-mn)/rng)*(H-30)}`).join(" ");
-    svg+=`<polyline points="${pts}" fill="none" stroke="${colors[i]}" stroke-width="2.5" opacity="0.9"/>`;
-    tr.forEach((v,j)=>{svg+=`<circle cx="${20+j*(W-40)/(tr.length-1)}" cy="${H-10-((v-mn)/rng)*(H-30)}" r="3" fill="${colors[i]}"/>`;});});
-  s.months.forEach((mo,j)=>{svg+=`<text x="${20+j*(W-40)/(s.months.length-1)}" y="${H-1}" fill="#5b6675" font-size="9" font-family="Barlow Condensed" text-anchor="middle">${mo}</text>`;});
-  document.getElementById("spark").innerHTML=svg;
+function drawSourceLine(){
   document.getElementById("srcSys").textContent=`${DATA.source.system} — ${DATA.source.reports.join(", ")}`;
   document.getElementById("srcMode").textContent=DATA.source.refreshMode;
+}
+
+// running totals from the first interval through interval i (inclusive)
+function drawGameSummary(i){
+  let calls=0, handled=0, withinSL=0, waitWeighted=0;
+  const intentTot={}, queueTot={};
+  let peak={count:-1,label:""};
+  for(let k=0;k<=i;k++){
+    const s=DATA.timeline[k];
+    calls   += s.summary.callsPresented;
+    handled += s.summary.callsHandled;
+    // approximate within-SL from each interval's overall SL%
+    withinSL+= Math.round(s.summary.callsHandled * (s.summary.serviceLevel/100));
+    // weighted wait by presented
+    const ws=s.summary.avgQueueTime.split(":"); const wsec=(+ws[0])*60+(+ws[1]);
+    waitWeighted += wsec*s.summary.callsPresented;
+    (s.intentVolume||[]).forEach(iv=>intentTot[iv.intent]=(intentTot[iv.intent]||0)+iv.volume);
+    (s.queueStandings||[]).forEach(q=>queueTot[q.queue]=(queueTot[q.queue]||0)+q.callsPresented);
+    if(s.summary.callsPresented>peak.count){ peak={count:s.summary.callsPresented,label:s.intervalLabel}; }
+  }
+  const slPct = handled? Math.round(withinSL/handled*100):0;
+  const avgWait = calls? Math.round(waitWeighted/calls):0;
+  const mmss=`${String(Math.floor(avgWait/60)).padStart(2,"0")}:${String(avgWait%60).padStart(2,"0")}`;
+  const topIntent = Object.entries(intentTot).sort((a,b)=>b[1]-a[1])[0]||["—",0];
+  const busiestQ  = Object.entries(queueTot).sort((a,b)=>b[1]-a[1])[0]||["—",0];
+  // peak label -> just the start time
+  const peakTime = peak.label ? peak.label.split(" ").slice(1,3).join(" ") : "—";
+
+  const stats=[
+    {label:"Calls Presented", val:fmtInt(calls), sub:"so far today"},
+    {label:"Calls Handled",   val:fmtInt(handled), sub:`${calls?Math.round(handled/calls*100):0}% of presented`},
+    {label:"Service Level",   val:slPct+"%", sub:"running average"},
+    {label:"Avg Queue Time",  val:mmss, sub:"weighted"},
+    {label:"Top Intent",      val:topIntent[0], sub:`${fmtInt(topIntent[1])} calls`},
+    {label:"Busiest Queue",   val:busiestQ[0], sub:`${fmtInt(busiestQ[1])} presented`},
+    {label:"Peak Interval",   val:peakTime, sub:`${peak.count} calls`},
+  ];
+  document.getElementById("gameSummary").innerHTML = stats.map(s=>`
+    <div class="gs-cell">
+      <div class="gs-label">${s.label}</div>
+      <div class="gs-val">${s.val}</div>
+      <div class="gs-sub">${s.sub}</div>
+    </div>`).join("");
 }
 
 function renderInterval(i){
@@ -419,6 +459,7 @@ function renderInterval(i){
       <div class="bg"><div class="fill" style="width:${d.pct}%;background:${csColors[d.stars]}"></div></div>
       <span style="text-align:right;font-family:Oswald">${d.pct}%</span></div>`).join("");
   document.getElementById("spray").innerHTML=sprayChart(snap.intentVolume);
+  drawGameSummary(i);
   if(PLAYBACK.showControls){document.getElementById("scrub").value=i;
     document.getElementById("speedLbl").textContent=(PLAYBACK.msPerInterval/1000).toFixed(2)+"s/int";}
 }
@@ -513,7 +554,7 @@ function setupExpand(){
 }
 
 fetch("data.json").then(r=>r.json()).then(d=>{
-  DATA=d; scaffold(); drawSeason(); renderInterval(0);
+  DATA=d; scaffold(); drawSourceLine(); renderInterval(0);
   if(PLAYBACK.showControls){
     const scrub=document.getElementById("scrub"); scrub.max=d.timeline.length-1;
     document.getElementById("playBtn").onclick=()=>playing?stop():start();
