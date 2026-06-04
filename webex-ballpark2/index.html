@@ -94,7 +94,7 @@ body.fill #fitwrap{display:block}
   background:
     linear-gradient(90deg, rgba(20,13,8,.94) 0%, rgba(20,13,8,.80) 34%, rgba(20,13,8,.45) 60%, rgba(20,13,8,.30) 100%),
     url('titlestrip.png');
-  background-size:cover; background-position:center 45%;}
+  background-size:cover; background-position:center 38%;}
 /* keep title text above the image, with a soft shadow */
 .topbar>*{position:relative;z-index:2}
 .brand h1,.brand .sub{text-shadow:0 2px 8px rgba(0,0,0,.85)}
@@ -220,11 +220,45 @@ svg.field{width:100%;max-width:560px;height:auto}
 .footer b{color:var(--ink)}
 .footer .source-chip{font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
 .fade-up{animation:fadeUp .5s ease both}
+
+/* ===== click-to-expand panels ===== */
+.expand-btn{position:absolute;top:10px;right:10px;z-index:5;
+  width:26px;height:26px;border-radius:6px;display:grid;place-items:center;
+  background:rgba(20,13,8,.65);border:1px solid var(--panel-edge);color:var(--ink-dim);
+  cursor:pointer;font-size:14px;line-height:1;backdrop-filter:blur(4px);transition:all .15s}
+.expand-btn:hover{border-color:var(--accent);color:var(--accent)}
+.panel{position:relative}
+/* dim everything behind the expanded panel */
+#overlay{position:fixed;inset:0;z-index:90;background:rgba(8,5,3,.78);
+  backdrop-filter:blur(3px);display:none;animation:fadeIn .2s ease both}
+#overlay.show{display:block}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+/* the expanded panel floats above the overlay */
+.panel.expanded{position:fixed;z-index:100;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  width:min(86vw,1300px);height:min(82vh,900px);
+  margin:0;overflow:auto;
+  background:linear-gradient(180deg, rgba(28,20,14,.96), rgba(22,16,11,.98));
+  box-shadow:0 30px 80px rgba(0,0,0,.7);
+  animation:popIn .22s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes popIn{from{transform:translate(-50%,-50%) scale(.9);opacity:.4}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+.panel.expanded .expand-btn{font-size:18px;width:32px;height:32px}
+/* scale up inner content when expanded so it fills the bigger box */
+.panel.expanded .panel-title{font-size:22px}
+.panel.expanded .kpi .val{font-size:48px}
+.panel.expanded table{font-size:1.15em}
+.panel.expanded tbody td{padding:12px 14px;font-size:16px}
+.panel.expanded .legend-row{font-size:16px}
+.panel.expanded .sz-row .lab{font-size:16px}
+.panel.expanded #spray svg.field,.panel.expanded .field-wrap{height:100%}
+.panel.expanded .season,.panel.expanded .bullpen,.panel.expanded .sz,
+.panel.expanded .csat,.panel.expanded #spray{height:calc(100% - 60px)}
 @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 </style>
 </head>
 <body>
 <div id="backdrop"></div>
+<div id="overlay"></div>
 <button id="fitToggle">⤢ Fit: ON</button>
 <div id="fitwrap">
 <div class="scoreboard" id="app">Loading…</div>
@@ -423,6 +457,35 @@ function setupFitToggle(){
   btn.onclick=()=>{ fillMode=!fillMode; applyFit(); };
 }
 
+/* ===== click-to-expand panels ===== */
+function setupExpand(){
+  const overlay=document.getElementById("overlay");
+  let openPanel=null;
+  function close(){
+    if(!openPanel) return;
+    openPanel.classList.remove("expanded");
+    const b=openPanel.querySelector(".expand-btn"); if(b) b.textContent="⤢";
+    overlay.classList.remove("show");
+    openPanel=null;
+  }
+  function open(panel){
+    openPanel=panel;
+    panel.classList.add("expanded");
+    const b=panel.querySelector(".expand-btn"); if(b) b.textContent="✕";
+    overlay.classList.add("show");
+  }
+  // add an expand button to every panel
+  document.querySelectorAll(".panel").forEach(panel=>{
+    const btn=document.createElement("button");
+    btn.className="expand-btn"; btn.textContent="⤢"; btn.title="Expand";
+    btn.onclick=(e)=>{ e.stopPropagation();
+      (panel===openPanel)?close():(close(),open(panel)); };
+    panel.appendChild(btn);
+  });
+  overlay.onclick=close;
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape") close(); });
+}
+
 fetch("data.json").then(r=>r.json()).then(d=>{
   DATA=d; scaffold(); drawSeason(); renderInterval(0);
   if(PLAYBACK.showControls){
@@ -434,6 +497,7 @@ fetch("data.json").then(r=>r.json()).then(d=>{
       if(playing){stop();start();}};
   }
   setupFitToggle();
+  setupExpand();
   applyFit();
   if(PLAYBACK.autoplay) start();
 }).catch(err=>{document.getElementById("app").innerHTML=
