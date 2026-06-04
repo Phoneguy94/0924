@@ -41,12 +41,13 @@ body.fill .scoreboard{
   display:grid;
   gap:10px;
   grid-template-columns:repeat(2, 1fr);
-  grid-template-rows:auto 1fr 1fr 1fr auto;
+  grid-template-rows:auto auto 1.25fr 1fr 52px auto;
   grid-template-areas:
     "top     top"
     "season  kpis"
-    "queue   bullpen"
-    "strike  spray"
+    "queue   spray"
+    "bullpen spray"
+    "strike  strike"
     "foot    foot";
 }
 body.fill .topbar{grid-area:top}
@@ -54,9 +55,9 @@ body.fill #p-season{grid-area:season}
 body.fill #p-kpis{grid-area:kpis}
 body.fill #p-queue{grid-area:queue}
 body.fill #p-bullpen{grid-area:bullpen}
+body.fill #p-spray{grid-area:spray}
 body.fill #p-strike{grid-area:strike}
 body.fill #p-csat{display:none}        /* CSAT parked — hidden, code kept */
-body.fill #p-spray{grid-area:spray}
 body.fill #footrow{grid-area:foot;display:flex;flex-direction:column;gap:8px}
 /* panels in fill mode: clip overflow, let inner content breathe */
 body.fill .panel{overflow:hidden;display:flex;flex-direction:column;padding:12px 16px}
@@ -66,13 +67,18 @@ body.fill .panel .bullpen,
 body.fill .panel .sz-rows,
 body.fill .panel .csat,
 body.fill .panel table{flex:1;min-height:0}
-/* queue table now wider (spans 2 cols) so rows have room */
-body.fill #p-queue tbody td{padding:6px 12px;font-size:14px}
-body.fill #p-queue thead th{padding:6px 12px}
-/* bullpen spans 2 cols: roomy donut + legend side by side */
-body.fill #p-bullpen .bullpen{grid-template-columns:150px 1fr;gap:24px}
-body.fill #p-bullpen .legend{display:grid;grid-template-columns:1fr 1fr;gap:4px 24px}
-body.fill #p-bullpen .legend-row{font-size:13px}
+/* queue table compact in stacked left column */
+body.fill #p-queue tbody td{padding:4px 12px;font-size:13px}
+body.fill #p-queue thead th{padding:4px 12px;font-size:11px}
+body.fill #p-queue .panel-head{margin-bottom:4px}
+/* bullpen compact in stacked left column */
+body.fill #p-bullpen .bullpen{grid-template-columns:110px 1fr;gap:16px}
+body.fill #p-bullpen #donut{width:96px;height:96px}
+body.fill #p-bullpen .active-tags{margin-bottom:8px}
+body.fill #p-bullpen .tag{padding:5px}
+body.fill #p-bullpen .tag .t-num{font-size:20px}
+body.fill #p-bullpen .legend{display:grid;grid-template-columns:1fr 1fr;gap:3px 18px}
+body.fill #p-bullpen .legend-row{font-size:12px}
 body.fill #p-season .srow .s-val{font-size:21px}
 body.fill #p-season .spark{height:auto}
 /* spray fills its panel (spans 2 cols) at field size */
@@ -240,6 +246,23 @@ tbody tr:hover{background:rgba(255,255,255,.025)}
 svg.field{width:100%;max-width:560px;height:auto}
 .sz{display:grid;grid-template-columns:1fr 150px;gap:20px;align-items:center}
 .sz-rows{display:flex;flex-direction:column;gap:12px;flex:1;justify-content:center}
+/* ===== Top Intents scrolling ticker ===== */
+#p-strike{padding:0 !important;overflow:hidden}
+.ticker-wrap{display:flex;align-items:center;height:100%;min-height:48px}
+.ticker-label{flex:0 0 auto;background:var(--accent);color:#1a1205;
+  font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;font-size:15px;
+  padding:0 18px;height:100%;display:flex;align-items:center;white-space:nowrap}
+.ticker-viewport{flex:1;overflow:hidden;position:relative;height:100%;display:flex;align-items:center}
+.ticker-viewport .sz-rows{display:block;flex:none;width:100%}
+.ticker-track{display:inline-flex;align-items:center;gap:0;white-space:nowrap;
+  animation:crawl 30s linear infinite;will-change:transform}
+.ticker-track:hover{animation-play-state:paused}
+@keyframes crawl{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tick-item{font-family:'Oswald',sans-serif;font-size:18px;color:var(--ink);padding:0 6px}
+.tick-rank{font-weight:700}
+.tick-name{font-weight:500}
+.tick-count{font-weight:700;color:var(--accent)}
+.tick-sep{color:var(--ink-faint);padding:0 18px;font-size:14px}
 /* GAME OVER / closed banner (Queue Standings after hours) */
 .closed-banner{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center}
 .closed-banner .closed-icon{font-size:46px;opacity:.55;margin-bottom:4px}
@@ -385,9 +408,11 @@ function scaffold(){
         <svg viewBox="0 0 140 140" width="150" height="150" id="donut"></svg>
         <div class="donut-center"><div class="n" id="totalAgents">—</div><div class="l">Total Agents</div></div></div>
       <div class="legend" id="legend"></div></div></div>
-    <div class="panel fade-up" id="p-strike"><div class="panel-head"><span class="panel-num">5</span>
-        <span class="panel-title">Strike Zone <small>— Top Intents</small></span></div>
-      <div class="sz-rows" id="szRows"></div></div>
+    <div class="panel fade-up" id="p-strike">
+      <div class="ticker-wrap">
+        <span class="ticker-label">⚾ TOP INTENTS — TODAY</span>
+        <div class="ticker-viewport"><div class="sz-rows" id="szRows"></div></div>
+      </div></div>
     <div class="panel fade-up" id="p-csat"><div class="panel-head"><span class="panel-num">6</span>
         <span class="panel-title">CSAT <small>— Post-Call Survey</small></span>${flag(MOCK.csat)}</div>
       <div class="csat"><div class="csat-score"><div class="big" id="csatBig">—</div><div class="out">OUT OF 5</div></div>
@@ -502,10 +527,13 @@ function renderInterval(i){
   const ranked=Object.entries(intentRun).sort((a,b)=>b[1]-a[1]).slice(0,5);
   const rankMax=ranked.length?ranked[0][1]:1;
   const szColors=["#ffc629","#1ba1e2","#4caf50","#ff9800","#9c27b0"];
-  document.getElementById("szRows").innerHTML=ranked.map(([name,cnt],k)=>`
-    <div class="sz-row"><span class="lab">${name}</span>
-      <span class="v" style="color:${szColors[k]}">${fmtInt(cnt)}</span>
-      <div class="barbg"><div class="barfill" style="width:${Math.round(cnt/rankMax*100)}%;background:${szColors[k]}"></div></div></div>`).join("");
+  const tickerItems = ranked.map(([name,cnt],k)=>
+    `<span class="tick-item"><span class="tick-rank" style="color:${szColors[k]}">${k+1}.</span> `+
+    `<span class="tick-name">${name}</span> <span class="tick-count">${fmtInt(cnt)}</span></span>`
+  ).join('<span class="tick-sep">•</span>');
+  // duplicate the content so the crawl loops seamlessly
+  document.getElementById("szRows").innerHTML =
+    `<div class="ticker-track">${tickerItems}<span class="tick-sep">•</span>${tickerItems}</div>`;
   const cs=snap.csat;
   document.getElementById("csatBig").textContent=cs.score.toFixed(1);
   const csColors={5:"#4caf50",4:"#8bc34a",3:"#ffc629",2:"#ff9800",1:"#ef4444"};
