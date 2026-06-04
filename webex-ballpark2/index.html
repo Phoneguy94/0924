@@ -203,6 +203,13 @@ tbody tr:hover{background:rgba(255,255,255,.025)}
 svg.field{width:100%;max-width:560px;height:auto}
 .sz{display:grid;grid-template-columns:1fr 150px;gap:20px;align-items:center}
 .sz-rows{display:flex;flex-direction:column;gap:12px;flex:1;justify-content:center}
+/* GAME OVER / closed banner (Queue Standings after hours) */
+.closed-banner{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center}
+.closed-banner .closed-icon{font-size:46px;opacity:.55;margin-bottom:4px}
+.closed-banner .closed-text{font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:3px;
+  font-size:44px;color:var(--accent);line-height:1}
+.closed-banner .closed-sub{font-family:'Barlow Condensed',sans-serif;letter-spacing:4px;
+  text-transform:uppercase;font-size:16px;color:var(--ink-dim)}
 .sz-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
 .sz-row .lab{font-size:13px;color:var(--ink-dim)}
 .sz-row .barbg{grid-column:1/-1;height:8px;background:var(--panel-2);border-radius:6px;overflow:hidden}
@@ -324,9 +331,14 @@ function scaffold(){
         <span class="panel-title">Live Snapshot <small id="intLabel"></small></span></div>
       <div class="kpis" id="kpis"></div></div>
     <div class="panel fade-up" id="p-queue"><div class="panel-head"><span class="panel-num">3</span>
-        <span class="panel-title">Queue Standings</span>${flag(MOCK.queue)}</div>
-      <table><thead><tr><th>Queue</th><th>Presented</th><th>Handled</th><th>Avg Wait</th><th>SL</th></tr></thead>
-        <tbody id="queueBody"></tbody></table></div>
+        <span class="panel-title">Queue Standings</span></div>
+      <table id="queueTable"><thead><tr><th>Queue</th><th>Presented</th><th>Handled</th><th>Avg Wait</th><th>SL</th></tr></thead>
+        <tbody id="queueBody"></tbody></table>
+      <div id="queueClosed" class="closed-banner" style="display:none">
+        <div class="closed-icon">⚾</div>
+        <div class="closed-text">GAME OVER</div>
+        <div class="closed-sub">Closed</div>
+      </div></div>
     <div class="panel fade-up" id="p-bullpen"><div class="panel-head"><span class="panel-num">4</span>
         <span class="panel-title">Bullpen Report <small>— Agent States</small></span>${flag(MOCK.bullpen)}</div>
       <div class="active-tags" id="activeTags"></div>
@@ -422,6 +434,9 @@ function renderInterval(i){
     <div class="kpi"><div class="label">Calls Handled</div><div class="val">${su.callsHandled}</div></div>
     <div class="kpi"><div class="label">Avg Queue Time</div><div class="val">${su.avgQueueTime}</div></div>
     <div class="kpi"><div class="label">Service Level</div><div class="val">${su.serviceLevel}%</div></div>`;
+  const closed = !snap.queueStandings || snap.queueStandings.length===0 || snap.summary.callsPresented===0;
+  document.getElementById("queueTable").style.display = closed ? "none" : "";
+  document.getElementById("queueClosed").style.display = closed ? "flex" : "none";
   document.getElementById("queueBody").innerHTML=snap.queueStandings.map(q=>`
     <tr><td>${q.queue}</td><td>${q.callsPresented}</td><td>${q.callsHandled}</td><td>${q.avgQueueTime}</td>
     <td><span class="sl-pill ${slClass(q.serviceLevel)}">${q.serviceLevel}%</span></td></tr>`).join("");
