@@ -1,18 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Webex Ballpark Experience</title>
+
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
-  html,body{height:100%}
+  html,body{min-height:100%}
 
   body{
     min-height:100vh;
-    background-color:#0a1526;                 /* navy from the image */
+    background-color:#0a1526;
     background-image:url("chat_background.png");
-    background-size:cover;                      /* FILL the screen - looks great on desktop & landscape */
+    background-size:cover;
     background-position:center center;
     background-repeat:no-repeat;
     background-attachment:fixed;
@@ -20,26 +21,141 @@
     overflow-x:hidden;
   }
 
-  /* ONLY change behavior on portrait phones, where 'cover' crops too hard.
-     There, show the whole graphic full-width at the top, navy fills below
-     (where the chat widget sits). Desktop & landscape keep the nice 'cover' fill. */
-  @media (max-aspect-ratio: 3/4){
-    body{
-      background-size:100% auto;     /* full width, full image visible, no crop */
-      background-position:center top;
-      background-attachment:scroll;
-    }
+  main{
+    position:relative;
+    z-index:1;
+    min-height:100vh;
   }
 
-  main{position:relative;z-index:1;min-height:100vh}
+  .mobile-hero{
+    display:none;
+  }
+
+  @media (max-width:700px) and (orientation:portrait){
+    body{
+      background-image:none;
+      background-color:#071426;
+      background-attachment:scroll;
+    }
+
+    main{
+      min-height:100dvh;
+      background:
+        linear-gradient(to bottom, rgba(5,12,24,.08), #071426 48%),
+        url("chat_background.png");
+      background-size:100% auto;
+      background-position:top center;
+      background-repeat:no-repeat;
+      padding-top:42vw;
+      padding-bottom:90px;
+    }
+
+    .mobile-hero{
+      display:block;
+      padding:18px;
+      color:white;
+    }
+
+    .mobile-card{
+      background:rgba(2,8,23,.82);
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:22px;
+      padding:20px;
+      box-shadow:0 18px 40px rgba(0,0,0,.35);
+      backdrop-filter:blur(8px);
+    }
+
+    .mobile-eyebrow{
+      color:#ffb81c;
+      font-weight:800;
+      font-size:13px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin-bottom:8px;
+    }
+
+    .mobile-card h1{
+      font-size:34px;
+      line-height:1.02;
+      margin-bottom:12px;
+    }
+
+    .mobile-card p{
+      font-size:16px;
+      line-height:1.4;
+      color:rgba(255,255,255,.86);
+      margin-bottom:16px;
+    }
+
+    .mobile-btn{
+      display:block;
+      text-align:center;
+      background:linear-gradient(90deg,#009dff,#573bff);
+      color:white;
+      padding:14px 16px;
+      border-radius:14px;
+      font-weight:800;
+      font-size:17px;
+      margin-bottom:16px;
+    }
+
+    .mobile-grid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:10px;
+    }
+
+    .mobile-item{
+      background:rgba(255,255,255,.08);
+      border:1px solid rgba(255,255,255,.12);
+      border-radius:14px;
+      padding:12px;
+      font-size:14px;
+      font-weight:700;
+    }
+
+    .mobile-note{
+      margin-top:14px;
+      font-size:12px;
+      color:rgba(255,255,255,.65);
+      line-height:1.35;
+    }
+  }
 </style>
 </head>
+
 <body>
-  <main>
+<main>
 
-    <!-- WORKING WEBEX LIVECHAT SCRIPT -->
-    <div id="divicw" data-bind="354C5CE5-097E-46A3-B5A0-99B2A4982409" data-org="" data-guid="cb2cf342-2ee0-454a-810f-8275b0087ca6"></div><script>var i={t:function(){try{var e=document.getElementById("divicw"),t=document.createElement("script");t.src="https://media.imi.chat/widget/js/imichatinit.js?t="+new Date().toISOString(),e.insertAdjacentElement("afterend",t),t.addEventListener("load",function(){console.log(new Date().toISOString(),"Livechat script loaded successfully!")}),t.addEventListener("error",function(){console.log(new Date().toISOString(),"Error loading Livechat script");i.o(e)})}catch(e){console.error(e)}},o:function(e){e.insertAdjacentHTML("afterend",'<iframe id="tls_al_frm" frameborder="0" style="overflow:hidden;height:208px;width:394px;position:fixed;display:block;right:48px;bottom:12px;z-index:99999;display:none;"></iframe>');var t=document.getElementById("tls_al_frm"),n=t.contentWindow,d=n.document;d.open();d.write("<!doctype html><html><head><meta charset='utf-8'><title>Untitled Document</title><style>body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#99a0b0;font-size:14px}.popover__content{background-color:#fbfbfe;padding:1.5rem;border-radius:5px;width:300px;box-shadow:0 2px 5px 0 rgba(0,0,0,0.26);position:relative}.popover__message{font-weight:600;color:#56627c;font-size:16px}.pull-left{float:left}.clearfix{clear:both}.hdr-txt{width:218px;margin-top:3px}.para-txt a{text-decoration:none;color:#005cde}.close-btn{position:absolute;right:15px;top:15px}.close-btn a{text-decoration:none;font-weight:400;color:#56627c;font-size:16px}</style></head><body><div class='popover__content'><div class='close-btn'><a href='#' onclick='closeTLSAlert()'>X</a></div><div class='popover__message'><div class='pull-left hdr-txt'>This browser version is not supported on LiveChat.</div></div><div class='clearfix'></div><p class='para-txt'>Please update your browser to the latest version and re-open the website to access the widget.</p></div><script>function closeTLSAlert(){window.parent.postMessage({key:'close_tls_alert',value:'close_tls_alert',action:'close_tls_alert'},'*');}<\/script></body></html>");d.close();t.style.display='block';window.addEventListener('message',function(e){'close_tls_alert'===e.data.action&&i.s()})},s:function(){var e=document.getElementById('tls_al_frm');e&&e.remove()}};i.t();</script>
+  <section class="mobile-hero">
+    <div class="mobile-card">
+      <div class="mobile-eyebrow">Powered by Webex AI</div>
 
-  </main>
+      <h1>Webex Ballpark Experience</h1>
+
+      <p>
+        Register, create your bobblehead, get your Hall of Fame keepsake,
+        and ask questions about PNC Park or food.
+      </p>
+
+      <div class="mobile-btn">💬 Open the AI Agent chat</div>
+
+      <div class="mobile-grid">
+        <div class="mobile-item">🎟️ Register</div>
+        <div class="mobile-item">🧢 Bobblehead</div>
+        <div class="mobile-item">🏛️ Hall of Fame</div>
+        <div class="mobile-item">🍔 Park & Food Q&A</div>
+      </div>
+
+      <div class="mobile-note">
+        Your information is used only for your Ballpark Experience. Souvenir links may be sent by SMS.
+      </div>
+    </div>
+  </section>
+
+  <!-- WORKING WEBEX LIVECHAT SCRIPT -->
+  <div id="divicw" data-bind="354C5CE5-097E-46A3-B5A0-99B2A4982409" data-org="" data-guid="cb2cf342-2ee0-454a-810f-8275b0087ca6"></div><script>var i={t:function(){try{var e=document.getElementById("divicw"),t=document.createElement("script");t.src="https://media.imi.chat/widget/js/imichatinit.js?t="+new Date().toISOString(),e.insertAdjacentElement("afterend",t),t.addEventListener("load",function(){console.log(new Date().toISOString(),"Livechat script loaded successfully!")}),t.addEventListener("error",function(){console.log(new Date().toISOString(),"Error loading Livechat script");i.o(e)})}catch(e){console.error(e)}},o:function(e){e.insertAdjacentHTML("afterend",'<iframe id="tls_al_frm" frameborder="0" style="overflow:hidden;height:208px;width:394px;position:fixed;display:block;right:48px;bottom:12px;z-index:99999;display:none;"></iframe>');var t=document.getElementById("tls_al_frm"),n=t.contentWindow,d=n.document;d.open();d.write("<!doctype html><html><head><meta charset='utf-8'><title>Untitled Document</title><style>body{font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;color:#99a0b0;font-size:14px}.popover__content{background-color:#fbfbfe;padding:1.5rem;border-radius:5px;width:300px;box-shadow:0 2px 5px 0 rgba(0,0,0,0.26);position:relative}.popover__message{font-weight:600;color:#56627c;font-size:16px}.pull-left{float:left}.clearfix{clear:both}.hdr-txt{width:218px;margin-top:3px}.para-txt a{text-decoration:none;color:#005cde}.close-btn{position:absolute;right:15px;top:15px}.close-btn a{text-decoration:none;font-weight:400;color:#56627c;font-size:16px}</style></head><body><div class='popover__content'><div class='close-btn'><a href='#' onclick='closeTLSAlert()'>X</a></div><div class='popover__message'><div class='pull-left hdr-txt'>This browser version is not supported on LiveChat.</div></div><div class='clearfix'></div><p class='para-txt'>Please update your browser to the latest version and re-open the website to access the widget.</p></div><script>function closeTLSAlert(){window.parent.postMessage({key:'close_tls_alert',value:'close_tls_alert',action:'close_tls_alert'},'*');}<\/script></body></html>");d.close();t.style.display='block';window.addEventListener('message',function(e){'close_tls_alert'===e.data.action&&i.s()})},s:function(){var e=document.getElementById('tls_al_frm');e&&e.remove()}};i.t();</script>
+
+</main>
 </body>
 </html>
