@@ -10,37 +10,46 @@
 
   body{
     min-height:100vh;
-    background-color:#0a0e16;       /* fallback while image loads / letterbox color */
-    background-image:url("chat_background.png");
-    background-size:cover;          /* fill the viewport */
-    background-position:center center;
-    background-repeat:no-repeat;
-    background-attachment:fixed;     /* stays put while widget scrolls */
+    background:#0a1526;            /* navy from the image; fills any empty space seamlessly */
     font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
     overflow-x:hidden;
   }
 
-  /* On very tall/narrow (mobile portrait) screens, "cover" can crop too hard.
-     Switch to contain so the whole graphic stays visible, with a dark field around it. */
-  @media (max-aspect-ratio: 3/4){
-    body{
-      background-size:contain;
-      background-position:top center;
-      background-color:#06090f;
-    }
+  /* The hero image, centered, always shown WHOLE (never cropped),
+     scaling to fit whatever screen it's on. Navy body shows behind it. */
+  .hero{
+    position:fixed;inset:0;z-index:0;
+    display:flex;align-items:center;justify-content:center;
+    padding:0;
+  }
+  .hero img{
+    max-width:100%;
+    max-height:100%;
+    width:auto;height:auto;
+    object-fit:contain;
+    display:block;
   }
 
-  /* subtle vignette so the chat widget reads well in the corner regardless of image */
-  .vignette{
-    position:fixed;inset:0;z-index:0;pointer-events:none;
-    background:radial-gradient(120% 90% at 78% 80%, rgba(4,8,14,.55), transparent 45%);
+  /* Desktop & landscape phone: image is wide like the screen -> fills nicely,
+     pin toward top so logos/headline read first and the chat sits over the lower area. */
+  @media (min-aspect-ratio: 1/1){
+    .hero{align-items:flex-start}
+    .hero img{max-height:100vh}
+  }
+
+  /* Portrait phone: wide image becomes a top banner; navy fills below
+     where the chat widget lives. Everything in the graphic stays visible. */
+  @media (max-aspect-ratio: 3/4){
+    .hero{align-items:flex-start}
+    .hero img{width:100%;max-height:none}
   }
 
   main{position:relative;z-index:1;min-height:100vh}
 </style>
 </head>
 <body>
-  <div class="vignette"></div>
+  <div class="hero"><img src="chat_background.png" alt="Webex Ballpark Experience"></div>
+
   <main>
 
     <!-- WORKING WEBEX LIVECHAT SCRIPT -->
