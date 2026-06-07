@@ -28,6 +28,13 @@
   #slot1{left:25.89%; top:22.19%; width:23.23%; height:59.34%}
   #slot2{left:49.12%; top:22.19%; width:23.03%; height:59.34%}
   #slot3{left:73.65%; top:22.19%; width:22.19%; height:59.34%}
+
+  /* QR code sits in the white "QR CODE" box in the bottom-left footer.
+     Inset a little so the code keeps a clean white quiet zone (scannable). */
+  #qrslot{position:absolute;left:4.81%;top:85.34%;width:6.77%;height:9.58%;
+    display:flex;align-items:center;justify-content:center}
+  #qrslot img{width:86%;height:86%;object-fit:contain;
+    image-rendering:-webkit-optimize-contrast;image-rendering:crisp-edges}
 </style>
 </head>
 <body>
@@ -37,6 +44,7 @@
     <div class="slot" id="slot1"></div>
     <div class="slot" id="slot2"></div>
     <div class="slot" id="slot3"></div>
+    <div id="qrslot"><img src="qr.png" alt="Scan to start"></div>
   </div>
 </div>
 
