@@ -7,12 +7,14 @@
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%;background:#0a1526;overflow:hidden}
-  /* The whole page is the background image at its native 1537x1023 ratio,
-     letterboxed to fit any screen. The four slots are positioned as
-     percentages of that image, so they always land on the orange boxes. */
+  /* The whole page is the background image. We size the board with the
+     viewport-units min() trick so it works in every browser (Edge's
+     aspect-ratio:auto can collapse to zero width — this avoids that). */
   #stage{position:fixed;inset:0;display:flex;align-items:center;justify-content:center}
-  #board{position:relative;aspect-ratio:1537 / 1023;
-    max-width:100vw;max-height:100vh;width:auto;height:auto;
+  #board{position:relative;
+    /* keep the 1537:1023 ratio, fitting inside the screen either way */
+    width:min(100vw, 150.05vh);          /* 1537/1023 = 1.5005 */
+    height:min(66.64vw, 100vh);          /* 1023/1537 = 0.6664 */
     background:url('bg.png') center/contain no-repeat}
   /* a slot sits exactly over each orange rectangle */
   .slot{position:absolute;display:flex;align-items:center;justify-content:center;
