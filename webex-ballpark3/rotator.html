@@ -8,8 +8,11 @@
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%;background:#0a0805;overflow:hidden;
     font-family:'Oswald',Arial,sans-serif}
-  /* the live view fills the whole screen */
-  #frame{position:fixed;inset:0;width:100%;height:100%;border:0;display:block}
+  /* each view is its own iframe, stacked and faded in/out.
+     They all stay LOADED so playback continues in the background. */
+  .frame{position:fixed;inset:0;width:100%;height:100%;border:0;display:block;
+    opacity:0;pointer-events:none;transition:opacity .5s ease;z-index:1}
+  .frame.active{opacity:1;pointer-events:auto;z-index:2}
 
   /* slim control bar, fades out when idle so it's invisible on the TV */
   #bar{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);
@@ -34,13 +37,12 @@
 </head>
 <body>
   <div id="prog"></div>
-  <iframe id="frame" allow="fullscreen"></iframe>
+  <div id="frames"></div>
 
   <div id="bar">
     <button id="playBtn">⏸ Pause</button>
     <span class="sep"></span>
-    <button data-i="0">Dashboard</button>
-    <button data-i="1">Wallboard</button>
+    <span id="viewBtns"></span>
     <span class="sep"></span>
     <span class="lbl" id="next">—</span>
   </div>
@@ -57,24 +59,40 @@ const VIEWS = [
 const SECONDS = 15;          // how long each view stays up
 /* ================================= */
 
-const frame = document.getElementById("frame");
+const framesWrap = document.getElementById("frames");
 const prog  = document.getElementById("prog");
 const bar   = document.getElementById("bar");
 const playBtn = document.getElementById("playBtn");
 const nextLbl = document.getElementById("next");
-const viewBtns = [...document.querySelectorAll("#bar button[data-i]")];
+const viewBtnsWrap = document.getElementById("viewBtns");
+
+// Build one iframe per view ONCE. They all load and keep running.
+const frames = VIEWS.map(v=>{
+  const f = document.createElement("iframe");
+  f.className = "frame";
+  f.src = v.url;            // loaded once, never reloaded -> playback continues
+  f.setAttribute("allow","fullscreen");
+  framesWrap.appendChild(f);
+  return f;
+});
+
+// Build the view buttons
+const viewBtns = VIEWS.map((v,i)=>{
+  const b = document.createElement("button");
+  b.textContent = v.name; b.dataset.i = i;
+  b.onclick = ()=>{ show(i); setPlaying(false); };  // click a view = jump + pause
+  viewBtnsWrap.appendChild(b);
+  return b;
+});
 
 let cur = 0;
 let playing = true;
-let elapsed = 0;            // seconds into the current view
+let elapsed = 0;
 let ticker = null;
 
-function load(i){
+function show(i){
   cur = (i + VIEWS.length) % VIEWS.length;
-  // cache-bust the iframe so each load is fresh and the hash always re-applies
-  const u = VIEWS[cur].url;
-  const bust = (u.includes("#") ? u.replace("#", "?r="+Date.now()+"#") : u + "?r="+Date.now());
-  frame.src = bust;
+  frames.forEach((f,k)=> f.classList.toggle("active", k===cur));
   elapsed = 0;
   paint();
 }
@@ -89,7 +107,7 @@ function paint(){
 function tick(){
   if(!playing) return;
   elapsed++;
-  if(elapsed >= SECONDS){ load(cur + 1); return; }
+  if(elapsed >= SECONDS){ show(cur + 1); return; }
   paint();
 }
 
@@ -101,22 +119,18 @@ function setPlaying(on){
 
 /* controls */
 playBtn.onclick = ()=> setPlaying(!playing);
-viewBtns.forEach(b=>{
-  b.onclick = ()=>{ load(+b.dataset.i); setPlaying(false); };  // click a view = jump + pause
-});
-/* keyboard: space = pause/play, 1/2 = jump to view, arrows = prev/next */
 document.addEventListener("keydown", e=>{
   if(e.code === "Space"){ e.preventDefault(); setPlaying(!playing); }
-  else if(e.key === "ArrowRight"){ load(cur+1); }
-  else if(e.key === "ArrowLeft"){ load(cur-1); }
-  else if(/^[1-9]$/.test(e.key)){ const i=+e.key-1; if(i<VIEWS.length){ load(i); setPlaying(false); } }
+  else if(e.key === "ArrowRight"){ show(cur+1); }
+  else if(e.key === "ArrowLeft"){ show(cur-1); }
+  else if(/^[1-9]$/.test(e.key)){ const i=+e.key-1; if(i<VIEWS.length){ show(i); setPlaying(false); } }
 });
 /* flash the control bar briefly on load so people know it's there */
 bar.classList.add("show");
 setTimeout(()=> bar.classList.remove("show"), 2600);
 
 /* go */
-load(0);
+show(0);
 ticker = setInterval(tick, 1000);
 </script>
 </body>
