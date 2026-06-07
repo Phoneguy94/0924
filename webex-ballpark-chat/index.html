@@ -10,46 +10,31 @@
 
   body{
     min-height:100vh;
-    background:#0a1526;            /* navy from the image; fills any empty space seamlessly */
+    background-color:#0a1526;                 /* navy from the image */
+    background-image:url("chat_background.png");
+    background-size:cover;                      /* FILL the screen - looks great on desktop & landscape */
+    background-position:center center;
+    background-repeat:no-repeat;
+    background-attachment:fixed;
     font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
     overflow-x:hidden;
   }
 
-  /* The hero image, centered, always shown WHOLE (never cropped),
-     scaling to fit whatever screen it's on. Navy body shows behind it. */
-  .hero{
-    position:fixed;inset:0;z-index:0;
-    display:flex;align-items:center;justify-content:center;
-    padding:0;
-  }
-  .hero img{
-    max-width:100%;
-    max-height:100%;
-    width:auto;height:auto;
-    object-fit:contain;
-    display:block;
-  }
-
-  /* Desktop & landscape phone: image is wide like the screen -> fills nicely,
-     pin toward top so logos/headline read first and the chat sits over the lower area. */
-  @media (min-aspect-ratio: 1/1){
-    .hero{align-items:flex-start}
-    .hero img{max-height:100vh}
-  }
-
-  /* Portrait phone: wide image becomes a top banner; navy fills below
-     where the chat widget lives. Everything in the graphic stays visible. */
+  /* ONLY change behavior on portrait phones, where 'cover' crops too hard.
+     There, show the whole graphic full-width at the top, navy fills below
+     (where the chat widget sits). Desktop & landscape keep the nice 'cover' fill. */
   @media (max-aspect-ratio: 3/4){
-    .hero{align-items:flex-start}
-    .hero img{width:100%;max-height:none}
+    body{
+      background-size:100% auto;     /* full width, full image visible, no crop */
+      background-position:center top;
+      background-attachment:scroll;
+    }
   }
 
   main{position:relative;z-index:1;min-height:100vh}
 </style>
 </head>
 <body>
-  <div class="hero"><img src="chat_background.png" alt="Webex Ballpark Experience"></div>
-
   <main>
 
     <!-- WORKING WEBEX LIVECHAT SCRIPT -->
