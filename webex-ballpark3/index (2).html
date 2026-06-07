@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webex Ballpark — Contact Center Operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* warm dusk-at-the-ballpark palette */
+  --bg:#1a1410; --panel:#241b14; --panel-2:#1c1510; --panel-edge:#4a3624;
+  --ink:#f5ecdf; --ink-dim:#b89c80; --ink-faint:#7d6450;
+  --accent:#ffc629; --accent-2:#ff8c3b;
+  --good:#7cc24a; --warn:#ff9800; --bad:#ef5350;
+  --radius:14px; --gap:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  color:var(--ink); font-family:'Barlow',sans-serif; min-height:100vh; padding:18px;
+  -webkit-font-smoothing:antialiased; position:relative; overflow-x:hidden;
+}
+/* fixed stadium backdrop sits behind everything */
+#backdrop{position:fixed; inset:0; z-index:-2;
+  background:url('stadium.png') center/cover no-repeat;}
+/* warm vignette + readability scrim over the scene */
+body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(140% 90% at 50% 8%, transparent 0%, rgba(20,12,8,.35) 55%, rgba(12,8,5,.72) 100%),
+    linear-gradient(180deg, rgba(20,12,8,.30) 0%, rgba(20,12,8,.10) 35%, rgba(12,8,5,.55) 100%);}
+.scoreboard{max-width:1480px;margin:0 auto;display:flex;flex-direction:column;gap:var(--gap)}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:14px 22px;
+  background:linear-gradient(180deg, rgba(40,29,20,.88), rgba(30,22,16,.92));border:1px solid var(--panel-edge);border-radius:var(--radius);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.brand{display:flex;align-items:center;gap:16px}
+.brand .bats{font-size:30px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+.brand h1{font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;font-size:clamp(22px,3vw,38px);line-height:1}
+.brand .sub{font-family:'Barlow Condensed',sans-serif;letter-spacing:4px;color:var(--accent);font-size:13px;font-weight:600;text-transform:uppercase}
+.topbar-right{display:flex;align-items:center;gap:14px}
+.clock{font-family:'Oswald',sans-serif;letter-spacing:1px;font-size:15px;color:var(--ink-dim);
+  border:1px solid var(--panel-edge);border-radius:8px;padding:8px 14px;text-transform:uppercase;min-width:230px;text-align:center}
+.live{display:flex;align-items:center;gap:8px;background:#2a0f12;border:1px solid #5a1a20;color:#ff5a63;
+  font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:2px;font-size:14px;padding:8px 14px;border-radius:8px}
+.live .dot{width:9px;height:9px;border-radius:50%;background:#ff3b44;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap)}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+.panel{background:linear-gradient(180deg, rgba(36,27,20,.86), rgba(28,21,16,.90));
+  border:1px solid var(--panel-edge);
+  border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.panel::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;
+  background:linear-gradient(90deg,var(--accent),transparent 70%);opacity:.6}
+.panel-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.panel-num{width:26px;height:26px;border-radius:6px;display:grid;place-items:center;background:var(--accent);
+  color:#1a1205;font-family:'Oswald',sans-serif;font-weight:700;font-size:15px}
+.panel-title{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:1.5px;font-size:16px;text-transform:uppercase}
+.panel-title small{color:var(--ink-dim);font-weight:400;letter-spacing:1px}
+.mock-flag{margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1px;
+  color:#ffb74d;border:1px solid #5a4420;background:#241d0d;padding:2px 7px;border-radius:20px;text-transform:uppercase}
+.season{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:center}
+.season-rows{display:flex;flex-direction:column;gap:12px}
+.srow{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px}
+.srow .s-label{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:1px;font-size:14px;color:var(--ink-dim)}
+.srow .s-val{font-family:'Oswald',sans-serif;font-weight:700;font-size:24px}
+.srow .s-delta{font-family:'Oswald',sans-serif;font-weight:600;font-size:14px;min-width:54px;text-align:right}
+.up{color:var(--good)} .down{color:var(--bad)}
+.spark{width:100%;height:90px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.kpi{background:var(--panel-2);border:1px solid var(--panel-edge);border-radius:10px;padding:14px 16px}
+.kpi .label{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:1px;font-size:12px;color:var(--ink-dim)}
+.kpi .val{font-family:'Oswald',sans-serif;font-weight:700;font-size:34px;color:var(--accent);line-height:1.1;margin-top:4px;font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse}
+thead th{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:1px;font-size:12px;
+  color:var(--accent);text-align:right;padding:8px 10px;border-bottom:1px solid var(--panel-edge)}
+thead th:first-child{text-align:left}
+tbody td{padding:8px 10px;font-size:14px;text-align:right;border-bottom:1px solid rgba(255,255,255,.04);font-variant-numeric:tabular-nums}
+tbody td:first-child{text-align:left;font-weight:600}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+.sl-pill{display:inline-block;min-width:46px;padding:2px 8px;border-radius:20px;font-family:'Oswald',sans-serif;font-weight:600;font-size:13px}
+.sl-good{background:rgba(76,175,80,.15);color:#6fcf73}
+.sl-warn{background:rgba(255,152,0,.15);color:#ffb74d}
+.sl-bad{background:rgba(239,68,68,.15);color:#ff7b82}
+.bullpen{display:grid;grid-template-columns:150px 1fr;gap:20px;align-items:center}
+.donut-wrap{position:relative}
+.donut-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.donut-center .n{font-family:'Oswald',sans-serif;font-weight:700;font-size:28px}
+.donut-center .l{font-size:10px;letter-spacing:1px;color:var(--ink-dim);text-transform:uppercase}
+.legend{display:flex;flex-direction:column;gap:6px}
+.legend-row{display:flex;align-items:center;gap:10px;font-size:13.5px}
+.legend-row .sw{width:11px;height:11px;border-radius:3px}
+.legend-row .name{flex:1;text-transform:capitalize}
+.legend-row .ct{font-family:'Oswald',sans-serif;font-weight:600}
+.legend-row .pct{color:var(--ink-dim);font-size:12px;min-width:36px;text-align:right}
+.active-tags{display:flex;gap:8px;margin-bottom:16px}
+.tag{flex:1;text-align:center;border:1px solid var(--panel-edge);border-radius:10px;padding:8px;background:var(--panel-2);border-left:3px solid var(--accent)}
+.tag.inactive{border-left-color:var(--ink-faint)}
+.tag .t-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-dim)}
+.tag .t-num{font-family:'Oswald',sans-serif;font-weight:700;font-size:24px;color:var(--accent)}
+.tag.inactive .t-num{color:var(--ink)}
+.field-wrap{display:flex;justify-content:center}
+svg.field{width:100%;max-width:560px;height:auto}
+.sz{display:grid;grid-template-columns:1fr 150px;gap:20px;align-items:center}
+.sz-rows{display:flex;flex-direction:column;gap:12px}
+.sz-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.sz-row .lab{font-size:13px;color:var(--ink-dim)}
+.sz-row .barbg{grid-column:1/-1;height:8px;background:var(--panel-2);border-radius:6px;overflow:hidden}
+.sz-row .barfill{height:100%;border-radius:6px;transition:width .6s ease}
+.sz-row .v{font-family:'Oswald',sans-serif;font-weight:700;font-size:16px}
+.csat{display:grid;grid-template-columns:150px 1fr;gap:20px;align-items:center}
+.csat-score{text-align:center}
+.csat-score .big{font-family:'Oswald',sans-serif;font-weight:700;font-size:46px;color:var(--accent);line-height:1}
+.csat-score .out{font-size:12px;color:var(--ink-dim);letter-spacing:1px}
+.csat-bars{display:flex;flex-direction:column;gap:8px}
+.csat-row{display:grid;grid-template-columns:54px 1fr 42px;align-items:center;gap:10px;font-size:13px}
+.csat-row .bg{height:10px;background:var(--panel-2);border-radius:6px;overflow:hidden}
+.csat-row .fill{height:100%;border-radius:6px;transition:width .6s ease}
+.controls{display:flex;align-items:center;gap:12px;justify-content:center;padding:10px;
+  background:linear-gradient(180deg, rgba(36,27,20,.82), rgba(28,21,16,.88));border:1px solid var(--panel-edge);border-radius:var(--radius);flex-wrap:wrap;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.controls button{font-family:'Oswald',sans-serif;letter-spacing:1px;background:var(--panel);color:var(--ink);
+  border:1px solid var(--panel-edge);border-radius:8px;padding:8px 16px;cursor:pointer;font-size:13px}
+.controls button:hover{border-color:var(--accent);color:var(--accent)}
+.controls input[type=range]{accent-color:var(--accent)}
+.controls .scrub{flex:1;min-width:200px}
+.controls .lbl{font-size:12px;color:var(--ink-dim);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
+.footer{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:14px 22px;
+  background:linear-gradient(180deg, rgba(36,27,20,.86), rgba(28,21,16,.90));border:1px solid var(--panel-edge);border-radius:var(--radius);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  font-size:13px;color:var(--ink-dim)}
+.footer b{color:var(--ink)}
+.footer .source-chip{font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
+.fade-up{animation:fadeUp .5s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="backdrop"></div>
+
+<div class="scoreboard" id="app">Loading…</div>
+<script>
+/* ===== PLAYBACK & THEME CONFIG — tweak for the demo ===== */
+const PLAYBACK = { msPerInterval:3750, autoplay:true, loop:true, showControls:true };
+const THEMES = { baseball:{ bats:"⚾", titleWord:"BALLPARK" } };
+const ACTIVE_THEME = "baseball";
+const MOCK = { season:true, intent:true, strike:true, csat:true, queue:false, bullpen:false };
+
+const STATE_COLORS={available:"#4caf50",connected:"#1ba1e2",wrapup:"#ff9800","on-hold":"#9c27b0",
+  consulting:"#00bcd4",ringing:"#ffc629","hold-done":"#7e8a9c",idle:"#5b6675","logged-out":"#3a4350"};
+const slClass=v=>v>=80?"sl-good":v>=50?"sl-warn":"sl-bad";
+const fmtInt=n=>n.toLocaleString();
+let DATA=null, idx=0, timer=null, playing=false;
+
+function scaffold(){
+  const t=THEMES[ACTIVE_THEME];
+  const flag=on=>on?'<span class="mock-flag">Mock</span>':'';
+  document.getElementById("app").innerHTML=`
+    <div class="topbar fade-up">
+      <div class="brand"><span class="bats">${t.bats}</span>
+        <div><h1>WEBEX ${t.titleWord}</h1><div class="sub">Contact Center Operations</div></div></div>
+      <div class="topbar-right"><span class="clock" id="clock">—</span>
+        <span class="live"><span class="dot"></span>LIVE</span></div></div>
+    <div class="panel fade-up"><div class="panel-head"><span class="panel-num">1</span>
+        <span class="panel-title">Monthly Scoreboard <small>— Season Stats</small></span>${flag(MOCK.season)}</div>
+      <div class="season"><div class="season-rows" id="seasonRows"></div>
+        <svg class="spark" id="spark" viewBox="0 0 320 90" preserveAspectRatio="none"></svg></div></div>
+    <div class="panel fade-up"><div class="panel-head"><span class="panel-num">2</span>
+        <span class="panel-title">Live Snapshot <small id="intLabel"></small></span></div>
+      <div class="kpis" id="kpis"></div></div>
+    <div class="grid">
+      <div class="panel fade-up"><div class="panel-head"><span class="panel-num">3</span>
+          <span class="panel-title">Queue Standings</span>${flag(MOCK.queue)}</div>
+        <table><thead><tr><th>Queue</th><th>Presented</th><th>Handled</th><th>Avg Wait</th><th>SL</th></tr></thead>
+          <tbody id="queueBody"></tbody></table></div>
+      <div class="panel fade-up"><div class="panel-head"><span class="panel-num">4</span>
+          <span class="panel-title">Bullpen Report <small>— Agent States</small></span>${flag(MOCK.bullpen)}</div>
+        <div class="active-tags" id="activeTags"></div>
+        <div class="bullpen"><div class="donut-wrap">
+          <svg viewBox="0 0 140 140" width="150" height="150" id="donut"></svg>
+          <div class="donut-center"><div class="n" id="totalAgents">—</div><div class="l">Total Agents</div></div></div>
+        <div class="legend" id="legend"></div></div></div></div>
+    <div class="grid">
+      <div class="panel fade-up"><div class="panel-head"><span class="panel-num">5</span>
+          <span class="panel-title">Strike Zone <small>— Intent Match Quality</small></span>${flag(MOCK.strike)}</div>
+        <div class="sz"><div class="sz-rows" id="szRows"></div>
+          <svg viewBox="0 0 120 140" width="150" id="szGrid"></svg></div></div>
+      <div class="panel fade-up"><div class="panel-head"><span class="panel-num">6</span>
+          <span class="panel-title">CSAT <small>— Post-Call Survey</small></span>${flag(MOCK.csat)}</div>
+        <div class="csat"><div class="csat-score"><div class="big" id="csatBig">—</div><div class="out">OUT OF 5</div></div>
+          <div class="csat-bars" id="csatBars"></div></div></div></div>
+    <div class="panel fade-up"><div class="panel-head"><span class="panel-num">7</span>
+        <span class="panel-title">Intent Spray Chart <small>— Volume by Intent</small></span>${flag(MOCK.intent)}</div>
+      <div id="spray"></div></div>
+    ${PLAYBACK.showControls?`<div class="controls fade-up">
+      <button id="playBtn">⏸ Pause</button><span class="lbl">Interval</span>
+      <input type="range" class="scrub" id="scrub" min="0" value="0">
+      <span class="lbl">Speed</span>
+      <input type="range" id="speed" min="500" max="8000" step="250" value="${PLAYBACK.msPerInterval}">
+      <span class="lbl" id="speedLbl"></span></div>`:''}
+    <div class="footer fade-up"><span class="source-chip"><b>Source:</b> <span id="srcSys"></span></span>
+      <span class="source-chip"><b>Refresh Mode:</b> <span id="srcMode"></span></span></div>`;
+}
+
+function drawSeason(){
+  const s=DATA.season; const rows=document.getElementById("seasonRows");
+  rows.innerHTML=s.metrics.map(m=>{
+    const up=(m.delta.startsWith("+")&&m.label!=="Agent Handovers")||(m.label==="Agent Handovers"&&m.delta.startsWith("-"));
+    const val=m.fmt==="pct"?m.value+"%":fmtInt(m.value);
+    return `<div class="srow"><span class="s-label">${m.label}</span><span class="s-val">${val}</span>
+      <span class="s-delta ${up?'up':'down'}">${up?'▲':'▼'} ${m.delta.replace(/[+-]/,'')}</span></div>`;}).join("");
+  const W=320,H=90,colors=["#4caf50","#1ba1e2","#ffc629","#ff5a63"]; let svg="";
+  s.metrics.forEach((m,i)=>{const tr=m.trend,mn=Math.min(...tr),mx=Math.max(...tr),rng=(mx-mn)||1;
+    const pts=tr.map((v,j)=>`${20+j*(W-40)/(tr.length-1)},${H-10-((v-mn)/rng)*(H-30)}`).join(" ");
+    svg+=`<polyline points="${pts}" fill="none" stroke="${colors[i]}" stroke-width="2.5" opacity="0.9"/>`;
+    tr.forEach((v,j)=>{svg+=`<circle cx="${20+j*(W-40)/(tr.length-1)}" cy="${H-10-((v-mn)/rng)*(H-30)}" r="3" fill="${colors[i]}"/>`;});});
+  s.months.forEach((mo,j)=>{svg+=`<text x="${20+j*(W-40)/(s.months.length-1)}" y="${H-1}" fill="#5b6675" font-size="9" font-family="Barlow Condensed" text-anchor="middle">${mo}</text>`;});
+  document.getElementById("spark").innerHTML=svg;
+  document.getElementById("srcSys").textContent=`${DATA.source.system} — ${DATA.source.reports.join(", ")}`;
+  document.getElementById("srcMode").textContent=DATA.source.refreshMode;
+}
+
+function renderInterval(i){
+  const snap=DATA.timeline[i];
+  document.getElementById("clock").textContent=snap.intervalLabel;
+  document.getElementById("intLabel").textContent="— "+snap.intervalLabel;
+  const su=snap.summary;
+  document.getElementById("kpis").innerHTML=`
+    <div class="kpi"><div class="label">Calls Presented</div><div class="val">${su.callsPresented}</div></div>
+    <div class="kpi"><div class="label">Calls Handled</div><div class="val">${su.callsHandled}</div></div>
+    <div class="kpi"><div class="label">Avg Queue Time</div><div class="val">${su.avgQueueTime}</div></div>
+    <div class="kpi"><div class="label">Service Level</div><div class="val">${su.serviceLevel}%</div></div>`;
+  document.getElementById("queueBody").innerHTML=snap.queueStandings.map(q=>`
+    <tr><td>${q.queue}</td><td>${q.callsPresented}</td><td>${q.callsHandled}</td><td>${q.avgQueueTime}</td>
+    <td><span class="sl-pill ${slClass(q.serviceLevel)}">${q.serviceLevel}%</span></td></tr>`).join("");
+  document.getElementById("activeTags").innerHTML=snap.bullpenReport.map(b=>`
+    <div class="tag ${b.status.toLowerCase()==='inactive'?'inactive':''}">
+      <div class="t-num">${b.count}</div><div class="t-label">${b.status}</div></div>`).join("");
+  const states=snap.agentStateSummary, total=states.reduce((s,x)=>s+x.count,0)||1;
+  document.getElementById("totalAgents").textContent=total;
+  const R=52,Ci=2*Math.PI*R; let acc=0,donut="",legend="";
+  states.forEach(s=>{const frac=s.count/total;
+    donut+=`<circle cx="70" cy="70" r="${R}" fill="none" stroke="${STATE_COLORS[s.state]||'#888'}" stroke-width="16"
+      stroke-dasharray="${frac*Ci} ${Ci-frac*Ci}" stroke-dashoffset="${-acc*Ci}" transform="rotate(-90 70 70)"/>`;
+    legend+=`<div class="legend-row"><span class="sw" style="background:${STATE_COLORS[s.state]||'#888'}"></span>
+      <span class="name">${s.state.replace('-',' ')}</span><span class="ct">${s.count}</span>
+      <span class="pct">${Math.round(frac*100)}%</span></div>`; acc+=frac;});
+  document.getElementById("donut").innerHTML=donut;
+  document.getElementById("legend").innerHTML=legend;
+  const sz=snap.strikeZone, szColors=["#4caf50","#a3c93a","#ff9800","#ef4444"];
+  document.getElementById("szRows").innerHTML=sz.map((b,k)=>`
+    <div class="sz-row"><span class="lab">${b.bucket}</span><span class="v" style="color:${szColors[k]}">${b.pct}%</span>
+    <div class="barbg"><div class="barfill" style="width:${b.pct}%;background:${szColors[k]}"></div></div></div>`).join("");
+  const strength=sz[0].pct/100; let grid="";
+  for(let r=0;r<5;r++)for(let c=0;c<3;c++){const dc=Math.abs(c-1)/1.5,dr=Math.abs(r-2)/2.5;
+    const heat=Math.max(0,strength-(dc+dr)*0.4);
+    const col=heat>0.55?"#ef4444":heat>0.4?"#ff9800":heat>0.25?"#ffc629":heat>0.12?"#1ba1e2":"#16314a";
+    grid+=`<rect x="${10+c*32}" y="${10+r*24}" width="30" height="22" rx="3" fill="${col}" opacity="${0.4+heat}"/>`;}
+  grid+=`<rect x="9" y="9" width="98" height="122" fill="none" stroke="#3a4a5e" stroke-width="2"/>`;
+  document.getElementById("szGrid").innerHTML=grid;
+  const cs=snap.csat;
+  document.getElementById("csatBig").textContent=cs.score.toFixed(1);
+  const csColors={5:"#4caf50",4:"#8bc34a",3:"#ffc629",2:"#ff9800",1:"#ef4444"};
+  document.getElementById("csatBars").innerHTML=cs.distribution.map(d=>`
+    <div class="csat-row"><span>${d.stars} ★</span>
+      <div class="bg"><div class="fill" style="width:${d.pct}%;background:${csColors[d.stars]}"></div></div>
+      <span style="text-align:right;font-family:Oswald">${d.pct}%</span></div>`).join("");
+  document.getElementById("spray").innerHTML=sprayChart(snap.intentVolume);
+  if(PLAYBACK.showControls){document.getElementById("scrub").value=i;
+    document.getElementById("speedLbl").textContent=(PLAYBACK.msPerInterval/1000).toFixed(2)+"s/int";}
+}
+
+function sprayChart(items){
+  const W=560,H=360,hx=W/2,hy=H-40;
+  const max=Math.max(...items.map(q=>q.volume),1);
+  const colors=["#ffc629","#1ba1e2","#4caf50","#ff9800","#9c27b0","#00bcd4","#ff5a63","#7e8a9c"];
+
+  // Rank by volume (desc). Biggest -> center field (straight up, 90deg).
+  // Remaining alternate right/left of center, working outward, so big hits
+  // stay near center and smaller ones drift toward the gaps/lines.
+  const ranked=[...items].map((q,i)=>({...q,c:colors[i%colors.length]}))
+    .sort((a,b)=>b.volume-a.volume);
+
+  const HALF_FAN=40;          // degrees each side of center -> stays in fair territory
+  const n=ranked.length;
+  const placed=ranked.map((q,r)=>{
+    let ang;
+    if(r===0){ ang=90; }                              // biggest = dead center
+    else{
+      const side=(r%2===1)?1:-1;                      // alternate R,L,R,L...
+      const step=Math.ceil(r/2);                      // 1,1,2,2,3,3...
+      const maxStep=Math.ceil((n-1)/2)||1;
+      ang=90 + side*(HALF_FAN*step/maxStep);
+    }
+    // length scales with volume but is clamped to stay inside the outfield wall
+    const len=120 + (q.volume/max)*150;               // 120..270 (center reaches deep)
+    const rad=ang*Math.PI/180;
+    return {...q, x:hx+Math.cos(rad)*len*1.0, y:hy-Math.sin(rad)*len};
+  });
+
+  return `<div class="field-wrap"><svg class="field" viewBox="0 0 ${W} ${H}">
+    <defs><radialGradient id="grass" cx="50%" cy="90%" r="90%">
+      <stop offset="0%" stop-color="#357a48"/><stop offset="100%" stop-color="#1d4a2c"/></radialGradient></defs>
+    <path d="M ${hx} ${hy} L ${hx-260} ${hy-200} A 300 300 0 0 1 ${hx+260} ${hy-200} Z" fill="url(#grass)" stroke="#2a5e38" stroke-width="2"/>
+    <path d="M ${hx} ${hy} L ${hx-95} ${hy-95} L ${hx} ${hy-150} L ${hx+95} ${hy-95} Z" fill="#9c6b3f" opacity="0.85"/>
+    <path d="M ${hx} ${hy-20} L ${hx-62} ${hy-82} L ${hx} ${hy-128} L ${hx+62} ${hy-82} Z" fill="#357a48"/>
+    ${[[hx,hy],[hx-95,hy-95],[hx,hy-150],[hx+95,hy-95]].map(([x,y])=>`<rect x="${x-5}" y="${y-5}" width="10" height="10" fill="#fff" transform="rotate(45 ${x} ${y})"/>`).join("")}
+    ${placed.map(h=>`<line x1="${hx}" y1="${hy}" x2="${h.x}" y2="${h.y}" stroke="${h.c}" stroke-width="${1.5+(h.volume/max)*3}" opacity="0.85"/>
+      <circle cx="${h.x}" cy="${h.y}" r="${4+(h.volume/max)*6}" fill="${h.c}"/>
+      <text x="${h.x}" y="${h.y-13}" fill="#e9eef5" font-size="11" font-family="Barlow Condensed" text-anchor="middle">${h.intent}</text>
+      <text x="${h.x}" y="${h.y+19}" fill="${h.c}" font-size="13" font-weight="700" font-family="Oswald" text-anchor="middle">${h.volume}</text>`).join("")}
+  </svg></div>`;
+}
+
+function tick(){ idx=(idx+1)%DATA.timeline.length; if(idx===0&&!PLAYBACK.loop){stop();return;} renderInterval(idx); }
+function start(){ playing=true; timer=setInterval(tick,PLAYBACK.msPerInterval); if(PLAYBACK.showControls)document.getElementById("playBtn").textContent="⏸ Pause"; }
+function stop(){ playing=false; clearInterval(timer); if(PLAYBACK.showControls)document.getElementById("playBtn").textContent="▶ Play"; }
+
+fetch("data.json").then(r=>r.json()).then(d=>{
+  DATA=d; scaffold(); drawSeason(); renderInterval(0);
+  if(PLAYBACK.showControls){
+    const scrub=document.getElementById("scrub"); scrub.max=d.timeline.length-1;
+    document.getElementById("playBtn").onclick=()=>playing?stop():start();
+    scrub.oninput=e=>{stop();idx=+e.target.value;renderInterval(idx);};
+    document.getElementById("speed").oninput=e=>{PLAYBACK.msPerInterval=+e.target.value;
+      document.getElementById("speedLbl").textContent=(PLAYBACK.msPerInterval/1000).toFixed(2)+"s/int";
+      if(playing){stop();start();}};
+  }
+  if(PLAYBACK.autoplay) start();
+}).catch(err=>{document.getElementById("app").innerHTML=
+  `<div class="panel"><div class="panel-title">Couldn't load data.json</div>
+   <p style="color:var(--ink-dim);margin-top:8px">${err}. Keep data.json next to index.html.</p></div>`;});
+</script>
+</body>
+</html>

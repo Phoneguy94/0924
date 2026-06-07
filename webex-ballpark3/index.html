@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webex Ballpark — Contact Center Operations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* warm dusk-at-the-ballpark palette */
+  --bg:#1a1410; --panel:#241b14; --panel-2:#1c1510; --panel-edge:#4a3624;
+  --ink:#f5ecdf; --ink-dim:#b89c80; --ink-faint:#7d6450;
+  --accent:#ffc629; --accent-2:#ff8c3b;
+  --good:#7cc24a; --warn:#ff9800; --bad:#ef5350;
+  --radius:14px; --gap:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  color:var(--ink); font-family:'Barlow',sans-serif; min-height:100vh; padding:18px;
+  -webkit-font-smoothing:antialiased; position:relative; overflow-x:hidden;
+}
+/* fixed stadium backdrop sits behind everything */
+#backdrop{position:fixed; inset:0; z-index:-2;
+  background:url('stadium.png') center/cover no-repeat;}
+/* warm vignette + readability scrim over the scene */
+body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
+  background:
+    radial-gradient(140% 90% at 50% 8%, transparent 0%, rgba(20,12,8,.35) 55%, rgba(12,8,5,.72) 100%),
+    linear-gradient(180deg, rgba(20,12,8,.30) 0%, rgba(20,12,8,.10) 35%, rgba(12,8,5,.55) 100%);}
+.scoreboard{width:100%;margin:0;display:flex;flex-direction:column;gap:var(--gap)}
+
+/* ===== FILL-THE-SCREEN broadcast grid =====
+   In fill mode the board becomes a full-viewport grid: panels spread
+   horizontally to use the whole width and the rows size to the height.
+   Toggle off for the classic stacked + scroll layout. */
+body.fill{padding:10px;overflow:hidden;height:100vh}
+body.fill .scoreboard{
+  height:calc(100vh - 20px);
+  display:grid;
+  gap:10px;
+  grid-template-columns:repeat(2, 1fr);
+  grid-template-rows:auto auto 1.3fr 0.7fr 54px auto;
+  grid-template-areas:
+    "top     top"
+    "season  kpis"
+    "queue   spray"
+    "bullpen spray"
+    "bullpen strike"
+    "foot    foot";
+}
+body.fill .topbar{grid-area:top}
+body.fill #p-season{grid-area:season}
+body.fill #p-kpis{grid-area:kpis}
+body.fill #p-queue{grid-area:queue}
+body.fill #p-bullpen{grid-area:bullpen}
+body.fill #p-spray{grid-area:spray}
+body.fill #p-strike{grid-area:strike}
+body.fill #p-csat{display:none}        /* CSAT parked — hidden, code kept */
+body.fill #footrow{grid-area:foot;display:flex;flex-direction:column;gap:8px}
+/* panels in fill mode: clip overflow, let inner content breathe */
+body.fill .panel{overflow:hidden;display:flex;flex-direction:column;padding:12px 16px}
+body.fill .panel-head{margin-bottom:8px}
+body.fill .panel .season,
+body.fill .panel .bullpen,
+body.fill .panel .sz-rows,
+body.fill .panel .csat,
+body.fill .panel table{flex:1;min-height:0}
+/* queue table — large and readable, fills the panel */
+body.fill #p-queue tbody td{padding:10px 16px;font-size:20px}
+body.fill #p-queue thead th{padding:8px 16px;font-size:15px}
+body.fill #p-queue .panel-head{margin-bottom:8px}
+body.fill #p-queue .sl-pill{font-size:17px;min-width:54px;padding:3px 10px}
+/* bullpen readable in taller left column (spans 2 rows) */
+body.fill #p-bullpen .bullpen{grid-template-columns:140px 1fr;gap:22px}
+body.fill #p-bullpen #donut{width:130px;height:130px}
+body.fill #p-bullpen .active-tags{margin-bottom:12px}
+body.fill #p-bullpen .tag .t-num{font-size:24px}
+body.fill #p-bullpen .legend{display:grid;grid-template-columns:1fr 1fr;gap:6px 22px}
+body.fill #p-bullpen .legend-row{font-size:14px}
+body.fill #p-season .srow .s-val{font-size:21px}
+body.fill #p-season .spark{height:auto}
+/* spray fills its panel (spans 2 cols) at field size */
+body.fill #spray{flex:0 1 auto;min-height:0;height:100%;display:flex;align-items:center;justify-content:center}
+body.fill #spray .field-wrap{height:100%;display:flex;align-items:center;justify-content:center}
+body.fill #spray svg.field{max-width:none;height:100%;width:auto;max-height:100%}
+body.fill .spray-row{height:100%}
+body.fill #fitwrap{display:block}
+
+/* toggle button */
+#fitToggle{position:fixed;top:10px;right:10px;z-index:50;
+  font-family:'Oswald',sans-serif;letter-spacing:1px;font-size:12px;
+  background:rgba(36,27,20,.9);color:var(--ink);border:1px solid var(--panel-edge);
+  border-radius:8px;padding:7px 12px;cursor:pointer;backdrop-filter:blur(6px)}
+#fitToggle:hover{border-color:var(--accent);color:var(--accent)}
+#wallToggle{position:fixed;top:10px;right:118px;z-index:50;
+  font-family:'Oswald',sans-serif;letter-spacing:1px;font-size:12px;
+  background:rgba(36,27,20,.9);color:var(--ink);border:1px solid var(--panel-edge);
+  border-radius:8px;padding:7px 12px;cursor:pointer;backdrop-filter:blur(6px)}
+#wallToggle:hover{border-color:var(--accent);color:var(--accent)}
+#wallToggle.active{background:var(--accent);color:#1a1205;border-color:var(--accent)}
+
+/* ===== WALLBOARD MODE — 3 big glanceable metrics ===== */
+#wallboard{display:none;position:fixed;inset:0;z-index:40;padding:80px 30px 30px}
+body.wall #wallboard{display:flex;flex-direction:column;gap:18px}
+body.wall #fitwrap{display:none}           /* hide the 7-panel showcase */
+.wall-head{display:flex;align-items:center;justify-content:space-between;gap:20px;
+  padding:14px 26px;border:1px solid var(--panel-edge);border-radius:var(--radius);
+  background:linear-gradient(180deg, rgba(40,29,20,.88), rgba(30,22,16,.92));
+  backdrop-filter:blur(6px);box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.wall-head h2{font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;font-size:clamp(20px,2.6vw,34px)}
+.wall-head .wclock{font-family:'Oswald',sans-serif;letter-spacing:1px;font-size:18px;color:var(--ink-dim)}
+.wall-tiles{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:18px;min-height:0}
+.wtile{border:1px solid var(--panel-edge);border-radius:18px;
+  background:linear-gradient(180deg, rgba(28,20,14,.80), rgba(22,16,11,.86));
+  backdrop-filter:blur(10px);box-shadow:0 14px 40px rgba(0,0,0,.5);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;
+  position:relative;overflow:hidden}
+.wtile::before{content:'';position:absolute;inset:0 0 auto 0;height:5px;background:var(--accent);opacity:.7}
+.wtile .wlabel{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:3px;
+  font-size:clamp(16px,1.8vw,24px);color:var(--ink-dim)}
+.wtile .wval{font-family:'Oswald',sans-serif;font-weight:700;font-size:clamp(70px,13vw,190px);
+  line-height:.9;color:var(--accent)}
+.wtile .wsub{font-family:'Barlow Condensed',sans-serif;letter-spacing:2px;font-size:clamp(14px,1.4vw,20px);
+  color:var(--ink-faint);text-transform:uppercase}
+/* status coloring */
+.wtile.good .wval{color:#7cc24a} .wtile.good::before{background:#7cc24a}
+.wtile.warn .wval{color:#ff9800} .wtile.warn::before{background:#ff9800}
+.wtile.bad  .wval{color:#ef5350} .wtile.bad::before{background:#ef5350}
+.wtile.bad{animation:wpulse 1.6s ease-in-out infinite}
+@keyframes wpulse{0%,100%{box-shadow:0 14px 40px rgba(0,0,0,.5)}50%{box-shadow:0 0 40px rgba(239,83,80,.4)}}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:16px 22px;
+  position:relative;overflow:hidden;border:1px solid var(--panel-edge);border-radius:var(--radius);
+  box-shadow:0 10px 30px rgba(0,0,0,.45);
+  /* bridge + skyline image, anchored right; dark scrim fades L->R for readable text */
+  background:
+    linear-gradient(90deg, rgba(20,13,8,.94) 0%, rgba(20,13,8,.80) 34%, rgba(20,13,8,.45) 60%, rgba(20,13,8,.30) 100%),
+    url('titlestrip.png');
+  background-size:cover; background-position:center 60%;}
+/* keep title text above the image, with a soft shadow */
+.topbar>*{position:relative;z-index:2}
+.brand h1,.brand .sub{text-shadow:0 2px 8px rgba(0,0,0,.85)}
+.brand{display:flex;align-items:center;gap:16px}
+.brand .bar-logo{margin-left:24px}
+.brand .bats{font-size:30px;filter:drop-shadow(0 2px 4px rgba(0,0,0,.5))}
+.brand h1{font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;font-size:clamp(22px,3vw,38px);line-height:1}
+.brand .sub{font-family:'Barlow Condensed',sans-serif;letter-spacing:4px;color:var(--accent);font-size:13px;font-weight:600;text-transform:uppercase}
+.topbar-right{display:flex;align-items:center;gap:14px}
+.bar-logo{height:38px;width:auto;filter:drop-shadow(0 2px 4px rgba(0,0,0,.6))}
+.bar-logo[alt="Veytec"]{height:50px}
+.clock{font-family:'Oswald',sans-serif;letter-spacing:1px;font-size:15px;color:var(--ink);
+  background:rgba(20,13,8,.7);backdrop-filter:blur(4px);
+  border:1px solid var(--panel-edge);border-radius:8px;padding:8px 14px;text-transform:uppercase;min-width:230px;text-align:center}
+.live{display:flex;align-items:center;gap:8px;background:#2a0f12;border:1px solid #5a1a20;color:#ff5a63;
+  font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:2px;font-size:14px;padding:8px 14px;border-radius:8px}
+.live .dot{width:9px;height:9px;border-radius:50%;background:#ff3b44;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:var(--gap)}
+@media (max-width:900px){.grid{grid-template-columns:1fr}}
+/* default (scroll) mode: keep a readable centered column and pair the mid panels */
+body:not(.fill) .scoreboard{max-width:1480px;margin:0 auto}
+body:not(.fill) #footrow{display:flex;flex-direction:column;gap:var(--gap)}
+@media (min-width:901px){
+  body:not(.fill) #p-queue,body:not(.fill) #p-strike{grid-column:auto}
+  body:not(.fill) .scoreboard{
+    display:grid;gap:var(--gap);
+    grid-template-columns:1fr 1fr;
+    grid-template-areas:
+      "top top" "season kpis"
+      "queue bullpen" "strike spray" "foot foot";}
+  body:not(.fill) .topbar{grid-area:top}
+  body:not(.fill) #p-season{grid-area:season}
+  body:not(.fill) #p-kpis{grid-area:kpis}
+  body:not(.fill) #p-queue{grid-area:queue}
+  body:not(.fill) #p-bullpen{grid-area:bullpen}
+  body:not(.fill) #p-strike{grid-area:strike}
+  body:not(.fill) #p-csat{display:none}    /* CSAT parked */
+  body:not(.fill) #p-spray{grid-area:spray}
+  body:not(.fill) #footrow{grid-area:foot}
+}
+.panel{background:linear-gradient(180deg, rgba(28,20,14,.62), rgba(22,16,11,.68));
+  border:1px solid var(--panel-edge);
+  border-radius:var(--radius);padding:18px 20px;position:relative;overflow:hidden;
+  backdrop-filter:blur(10px) saturate(1.1);-webkit-backdrop-filter:blur(10px) saturate(1.1);
+  box-shadow:0 10px 30px rgba(0,0,0,.45)}
+.panel::before{content:'';position:absolute;inset:0 0 auto 0;height:3px;
+  background:linear-gradient(90deg,var(--accent),transparent 70%);opacity:.6}
+.panel-head{display:flex;align-items:center;gap:10px;margin-bottom:16px}
+.panel-num{width:26px;height:26px;border-radius:6px;display:grid;place-items:center;background:var(--accent);
+  color:#1a1205;font-family:'Oswald',sans-serif;font-weight:700;font-size:15px}
+.panel-title{font-family:'Oswald',sans-serif;font-weight:600;letter-spacing:1.5px;font-size:16px;text-transform:uppercase}
+.panel-title small{color:var(--ink-dim);font-weight:400;letter-spacing:1px}
+.mock-flag{margin-left:auto;font-family:'Barlow Condensed',sans-serif;font-size:10px;letter-spacing:1px;
+  color:#ffb74d;border:1px solid #5a4420;background:#241d0d;padding:2px 7px;border-radius:20px;text-transform:uppercase}
+.season{display:grid;grid-template-columns:1.3fr 1fr;gap:20px;align-items:center}
+/* Game Summary running-totals grid */
+.game-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;flex:1;min-height:0}
+.gs-cell{background:var(--panel-2);border:1px solid var(--panel-edge);border-radius:10px;
+  padding:10px 12px;display:flex;flex-direction:column;gap:2px;min-width:0}
+.gs-cell .gs-label{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;
+  letter-spacing:1px;font-size:11px;color:var(--ink-dim)}
+.gs-cell .gs-val{font-family:'Oswald',sans-serif;font-weight:700;font-size:24px;color:var(--accent);
+  line-height:1.1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gs-cell .gs-sub{font-size:11px;color:var(--ink-faint)}
+body.fill .game-summary{grid-template-columns:repeat(3,1fr)}
+body.fill #p-kpis .kpis{grid-template-columns:repeat(2,1fr);gap:10px}
+body.fill #p-kpis .kpi{padding:12px 18px;justify-content:center}
+body.fill #p-kpis .kpi .label{font-size:14px}
+body.fill #p-kpis .kpi .val{font-size:42px;margin-top:2px}
+body.fill #p-season .gs-cell{padding:10px 18px;justify-content:center}
+body.fill #p-season .gs-cell .gs-label{font-size:13px}
+body.fill #p-season .gs-cell .gs-val{font-size:32px}
+body.fill #p-season .gs-cell .gs-sub{font-size:12px}
+.panel.expanded .game-summary .gs-val{font-size:34px}
+.season-rows{display:flex;flex-direction:column;gap:12px}
+.srow{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px}
+.srow .s-label{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:1px;font-size:14px;color:var(--ink-dim)}
+.srow .s-val{font-family:'Oswald',sans-serif;font-weight:700;font-size:24px}
+.srow .s-delta{font-family:'Oswald',sans-serif;font-weight:600;font-size:14px;min-width:54px;text-align:right}
+.up{color:var(--good)} .down{color:var(--bad)}
+.spark{width:100%;height:90px}
+.kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;flex:1;min-height:0}
+.kpi{background:var(--panel-2);border:1px solid var(--panel-edge);border-radius:10px;padding:14px 16px}
+.kpi .label{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:1px;font-size:12px;color:var(--ink-dim)}
+.kpi .val{font-family:'Oswald',sans-serif;font-weight:700;font-size:34px;color:var(--accent);line-height:1.1;margin-top:4px;font-variant-numeric:tabular-nums}
+table{width:100%;border-collapse:collapse}
+thead th{font-family:'Barlow Condensed',sans-serif;text-transform:uppercase;letter-spacing:1px;font-size:12px;
+  color:var(--accent);text-align:right;padding:8px 10px;border-bottom:1px solid var(--panel-edge)}
+thead th:first-child{text-align:left}
+tbody td{padding:8px 10px;font-size:14px;text-align:right;border-bottom:1px solid rgba(255,255,255,.04);font-variant-numeric:tabular-nums}
+tbody td:first-child{text-align:left;font-weight:600}
+tbody tr:hover{background:rgba(255,255,255,.025)}
+.sl-pill{display:inline-block;min-width:46px;padding:2px 8px;border-radius:20px;font-family:'Oswald',sans-serif;font-weight:600;font-size:13px}
+.sl-good{background:rgba(76,175,80,.15);color:#6fcf73}
+.sl-warn{background:rgba(255,152,0,.15);color:#ffb74d}
+.sl-bad{background:rgba(239,68,68,.15);color:#ff7b82}
+.bullpen{display:grid;grid-template-columns:150px 1fr;gap:20px;align-items:center}
+.donut-wrap{position:relative}
+.donut-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center}
+.donut-center .n{font-family:'Oswald',sans-serif;font-weight:700;font-size:28px}
+.donut-center .l{font-size:10px;letter-spacing:1px;color:var(--ink-dim);text-transform:uppercase}
+.legend{display:flex;flex-direction:column;gap:6px}
+.legend-row{display:flex;align-items:center;gap:10px;font-size:13.5px}
+.legend-row .sw{width:11px;height:11px;border-radius:3px}
+.legend-row .name{flex:1;text-transform:capitalize}
+.legend-row .ct{font-family:'Oswald',sans-serif;font-weight:600}
+.legend-row .pct{color:var(--ink-dim);font-size:12px;min-width:36px;text-align:right}
+.active-tags{display:flex;gap:8px;margin-bottom:16px}
+.tag{flex:1;text-align:center;border:1px solid var(--panel-edge);border-radius:10px;padding:8px;background:var(--panel-2);border-left:3px solid var(--accent)}
+.tag.inactive{border-left-color:var(--ink-faint)}
+.tag .t-label{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--ink-dim)}
+.tag .t-num{font-family:'Oswald',sans-serif;font-weight:700;font-size:24px;color:var(--accent)}
+.tag.inactive .t-num{color:var(--ink)}
+.field-wrap{display:flex;justify-content:center}
+svg.field{width:100%;max-width:560px;height:auto}
+.sz{display:grid;grid-template-columns:1fr 150px;gap:20px;align-items:center}
+.sz-rows{display:flex;flex-direction:column;gap:12px;flex:1;justify-content:center}
+/* ===== Top Intents scrolling ticker ===== */
+#p-strike{padding:0 !important;overflow:hidden}
+.ticker-wrap{display:flex;align-items:center;height:100%;min-height:48px}
+.ticker-label{flex:0 0 auto;background:var(--accent);color:#1a1205;
+  font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:2px;font-size:15px;
+  padding:0 18px;height:100%;display:flex;align-items:center;white-space:nowrap}
+.ticker-viewport{flex:1;overflow:hidden;position:relative;height:100%;display:flex;align-items:center}
+.ticker-viewport .sz-rows{display:block;flex:none;width:100%}
+.ticker-track{display:inline-flex;align-items:center;gap:0;white-space:nowrap;
+  animation:crawl 30s linear infinite;will-change:transform}
+.ticker-track:hover{animation-play-state:paused}
+@keyframes crawl{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+.tick-item{font-family:'Oswald',sans-serif;font-size:18px;color:var(--ink);padding:0 6px}
+.tick-rank{font-weight:700}
+.tick-name{font-weight:500}
+.tick-count{font-weight:700;color:var(--accent)}
+.tick-sep{color:var(--ink-faint);padding:0 18px;font-size:14px}
+/* GAME OVER / closed banner (Queue Standings after hours) */
+.closed-banner{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center}
+.closed-banner .closed-icon{font-size:46px;opacity:.55;margin-bottom:4px}
+.closed-banner .closed-text{font-family:'Oswald',sans-serif;font-weight:700;letter-spacing:3px;
+  font-size:44px;color:var(--accent);line-height:1}
+.closed-banner .closed-sub{font-family:'Barlow Condensed',sans-serif;letter-spacing:4px;
+  text-transform:uppercase;font-size:16px;color:var(--ink-dim)}
+.sz-row{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center}
+.sz-row .lab{font-size:13px;color:var(--ink-dim)}
+.sz-row .barbg{grid-column:1/-1;height:8px;background:var(--panel-2);border-radius:6px;overflow:hidden}
+.sz-row .barfill{height:100%;border-radius:6px;transition:width .6s ease}
+.sz-row .v{font-family:'Oswald',sans-serif;font-weight:700;font-size:16px}
+.csat{display:grid;grid-template-columns:150px 1fr;gap:20px;align-items:center}
+.csat-score{text-align:center}
+.csat-score .big{font-family:'Oswald',sans-serif;font-weight:700;font-size:46px;color:var(--accent);line-height:1}
+.csat-score .out{font-size:12px;color:var(--ink-dim);letter-spacing:1px}
+.csat-bars{display:flex;flex-direction:column;gap:8px}
+.csat-row{display:grid;grid-template-columns:54px 1fr 42px;align-items:center;gap:10px;font-size:13px}
+.csat-row .bg{height:10px;background:var(--panel-2);border-radius:6px;overflow:hidden}
+.csat-row .fill{height:100%;border-radius:6px;transition:width .6s ease}
+.controls{display:flex;align-items:center;gap:12px;justify-content:center;padding:10px;
+  background:linear-gradient(180deg, rgba(36,27,20,.82), rgba(28,21,16,.88));border:1px solid var(--panel-edge);border-radius:var(--radius);flex-wrap:wrap;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px)}
+.controls button{font-family:'Oswald',sans-serif;letter-spacing:1px;background:var(--panel);color:var(--ink);
+  border:1px solid var(--panel-edge);border-radius:8px;padding:8px 16px;cursor:pointer;font-size:13px}
+.controls button:hover{border-color:var(--accent);color:var(--accent)}
+.controls input[type=range]{accent-color:var(--accent)}
+.controls .scrub{flex:1;min-width:200px}
+.controls .lbl{font-size:12px;color:var(--ink-dim);font-family:'Barlow Condensed',sans-serif;letter-spacing:1px;text-transform:uppercase}
+.footer{display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap;padding:14px 22px;
+  background:linear-gradient(180deg, rgba(36,27,20,.86), rgba(28,21,16,.90));border:1px solid var(--panel-edge);border-radius:var(--radius);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  font-size:13px;color:var(--ink-dim)}
+.footer b{color:var(--ink)}
+.footer .source-chip{font-family:'Barlow Condensed',sans-serif;letter-spacing:1px}
+.fade-up{animation:fadeUp .5s ease both}
+
+/* ===== spray chart with logos flanking the field ===== */
+.spray-row{display:flex;align-items:center;justify-content:space-between;gap:10px;height:100%;flex:1;min-height:0}
+.spray-row #spray{flex:0 1 auto;height:100%;display:flex;align-items:center;justify-content:center}
+.spray-logo{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  opacity:.92;padding:10px;min-width:0}
+.spray-logo .logo-img{max-width:80%;max-height:90px;height:auto;width:auto;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+.spray-logo .webex-mark{max-width:80%;width:200px;height:auto;
+  filter:drop-shadow(0 2px 6px rgba(0,0,0,.5))}
+.spray-logo .logo-tag{font-family:'Barlow Condensed',sans-serif;font-size:11px;letter-spacing:1px;
+  color:var(--ink-dim);text-align:center;text-transform:uppercase}
+/* when expanded, let the field grow and logos stay proportional */
+.panel.expanded .spray-row{height:calc(100% - 60px)}
+.panel.expanded .spray-logo .logo-img{max-height:160px}
+.panel.expanded .spray-logo .webex-mark{width:300px}
+
+/* ===== click-to-expand panels ===== */
+.expand-btn{position:absolute;top:10px;right:10px;z-index:5;
+  width:26px;height:26px;border-radius:6px;display:grid;place-items:center;
+  background:rgba(20,13,8,.65);border:1px solid var(--panel-edge);color:var(--ink-dim);
+  cursor:pointer;font-size:14px;line-height:1;backdrop-filter:blur(4px);transition:all .15s}
+.expand-btn:hover{border-color:var(--accent);color:var(--accent)}
+.panel{position:relative}
+/* dim everything behind the expanded panel */
+#overlay{position:fixed;inset:0;z-index:90;background:rgba(8,5,3,.78);
+  backdrop-filter:blur(3px);display:none;animation:fadeIn .2s ease both}
+#overlay.show{display:block}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+/* the expanded panel floats above the overlay */
+.panel.expanded{position:fixed;z-index:100;
+  top:50%;left:50%;transform:translate(-50%,-50%);
+  width:min(86vw,1300px);height:min(82vh,900px);
+  margin:0;overflow:auto;
+  background:linear-gradient(180deg, rgba(28,20,14,.96), rgba(22,16,11,.98));
+  box-shadow:0 30px 80px rgba(0,0,0,.7);
+  animation:popIn .22s cubic-bezier(.2,.9,.3,1.2) both}
+@keyframes popIn{from{transform:translate(-50%,-50%) scale(.9);opacity:.4}to{transform:translate(-50%,-50%) scale(1);opacity:1}}
+.panel.expanded .expand-btn{font-size:18px;width:32px;height:32px}
+/* scale up inner content when expanded so it fills the bigger box */
+.panel.expanded .panel-title{font-size:22px}
+.panel.expanded .kpi .val{font-size:48px}
+.panel.expanded table{font-size:1.15em}
+.panel.expanded tbody td{padding:12px 14px;font-size:16px}
+.panel.expanded .legend-row{font-size:16px}
+.panel.expanded .sz-row .lab{font-size:16px}
+.panel.expanded #spray svg.field,.panel.expanded .field-wrap{height:100%}
+.panel.expanded .season,.panel.expanded .bullpen,.panel.expanded .sz,
+.panel.expanded .csat,.panel.expanded #spray{height:calc(100% - 60px)}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+</style>
+</head>
+<body>
+<div id="backdrop"></div>
+<div id="overlay"></div>
+<button id="fitToggle">⤢ Fit: ON</button>
+<button id="wallToggle">▦ Wallboard</button>
+<div id="wallboard"></div>
+<div id="fitwrap">
+<div class="scoreboard" id="app">Loading…</div>
+</div>
+<script>
+/* ===== PLAYBACK & THEME CONFIG — tweak for the demo ===== */
+const PLAYBACK = { msPerInterval:3750, autoplay:true, loop:true, showControls:true };
+// FIT_DEFAULT: true = start in fill-the-screen mode (broadcast grid, no scroll,
+//              panels spread across the full width — best for kiosk TV).
+//              false = classic stacked layout with scroll. Toggle anytime.
+const FIT_DEFAULT = true;
+const THEMES = { baseball:{ bats:"⚾", titleWord:"BALLPARK" } };
+const ACTIVE_THEME = "baseball";
+const MOCK = { season:true, intent:true, strike:true, csat:true, queue:false, bullpen:false };
+
+const STATE_COLORS={available:"#4caf50",connected:"#1ba1e2",wrapup:"#ff9800","on-hold":"#9c27b0",
+  consulting:"#00bcd4",ringing:"#ffc629","hold-done":"#7e8a9c",idle:"#5b6675","logged-out":"#3a4350"};
+const slClass=v=>v>=80?"sl-good":v>=50?"sl-warn":"sl-bad";
+const fmtInt=n=>n.toLocaleString();
+let DATA=null, idx=0, timer=null, playing=false;
+
+function scaffold(){
+  const t=THEMES[ACTIVE_THEME];
+  const flag=on=>on?'<span class="mock-flag">Mock</span>':'';
+  document.getElementById("app").innerHTML=`
+    <div class="topbar fade-up">
+      <div class="brand"><span class="bats">${t.bats}</span>
+        <div><h1>WEBEX ${t.titleWord}</h1><div class="sub">Contact Center Operations</div></div>
+        <img src="veytec.png" alt="Veytec" class="bar-logo">
+        <img src="webex.png" alt="Webex by Cisco" class="bar-logo"></div>
+      <div class="topbar-right">
+        <span class="clock" id="clock">—</span>
+        <span class="live"><span class="dot"></span>LIVE</span></div></div>
+    <div class="panel fade-up" id="p-season"><div class="panel-head"><span class="panel-num">1</span>
+        <span class="panel-title">Game Summary <small>— Today So Far</small></span></div>
+      <div id="gameSummary" class="game-summary"></div></div>
+    <div class="panel fade-up" id="p-kpis"><div class="panel-head"><span class="panel-num">2</span>
+        <span class="panel-title">Live Snapshot <small id="intLabel"></small></span></div>
+      <div class="kpis" id="kpis"></div></div>
+    <div class="panel fade-up" id="p-queue"><div class="panel-head"><span class="panel-num">3</span>
+        <span class="panel-title">Queue Standings</span></div>
+      <table id="queueTable"><thead><tr><th>Queue</th><th>Presented</th><th>Handled</th><th>Avg Wait</th><th>SL</th></tr></thead>
+        <tbody id="queueBody"></tbody></table>
+      <div id="queueClosed" class="closed-banner" style="display:none">
+        <div class="closed-icon">⚾</div>
+        <div class="closed-text">GAME OVER</div>
+        <div class="closed-sub">Closed</div>
+      </div></div>
+    <div class="panel fade-up" id="p-bullpen"><div class="panel-head"><span class="panel-num">4</span>
+        <span class="panel-title">Bullpen Report <small>— Agent States</small></span>${flag(MOCK.bullpen)}</div>
+      <div class="active-tags" id="activeTags"></div>
+      <div class="bullpen"><div class="donut-wrap">
+        <svg viewBox="0 0 140 140" width="150" height="150" id="donut"></svg>
+        <div class="donut-center"><div class="n" id="totalAgents">—</div><div class="l">Total Agents</div></div></div>
+      <div class="legend" id="legend"></div></div></div>
+    <div class="panel fade-up" id="p-strike">
+      <div class="ticker-wrap">
+        <span class="ticker-label">⚾ TOP INTENTS — TODAY</span>
+        <div class="ticker-viewport"><div class="sz-rows" id="szRows"></div></div>
+      </div></div>
+    <div class="panel fade-up" id="p-csat"><div class="panel-head"><span class="panel-num">6</span>
+        <span class="panel-title">CSAT <small>— Post-Call Survey</small></span>${flag(MOCK.csat)}</div>
+      <div class="csat"><div class="csat-score"><div class="big" id="csatBig">—</div><div class="out">OUT OF 5</div></div>
+        <div class="csat-bars" id="csatBars"></div></div></div>
+    <div class="panel fade-up" id="p-spray"><div class="panel-head"><span class="panel-num">7</span>
+        <span class="panel-title">Intent Spray Chart <small>— Volume by Intent</small></span>${flag(MOCK.intent)}</div>
+      <div id="spray"></div></div>
+    <div id="footrow">
+    ${PLAYBACK.showControls?`<div class="controls fade-up">
+      <button id="playBtn">⏸ Pause</button><span class="lbl">Interval</span>
+      <input type="range" class="scrub" id="scrub" min="0" value="0">
+      <span class="lbl">Speed</span>
+      <input type="range" id="speed" min="500" max="8000" step="250" value="${PLAYBACK.msPerInterval}">
+      <span class="lbl" id="speedLbl"></span></div>`:''}
+    <div class="footer fade-up"><span class="source-chip"><b>Source:</b> <span id="srcSys"></span></span>
+      <span class="source-chip"><b>Refresh Mode:</b> <span id="srcMode"></span></span></div></div>`;
+}
+
+function drawSourceLine(){
+  document.getElementById("srcSys").textContent=`${DATA.source.system} — ${DATA.source.reports.join(", ")}`;
+  document.getElementById("srcMode").textContent=DATA.source.refreshMode;
+}
+
+// running totals from the first interval through interval i (inclusive)
+function drawGameSummary(i){
+  let calls=0, handled=0, withinSL=0, waitWeighted=0;
+  const intentTot={}, queueTot={};
+  let peak={count:-1,label:""};
+  for(let k=0;k<=i;k++){
+    const s=DATA.timeline[k];
+    calls   += s.summary.callsPresented;
+    handled += s.summary.callsHandled;
+    // approximate within-SL from each interval's overall SL%
+    withinSL+= Math.round(s.summary.callsHandled * (s.summary.serviceLevel/100));
+    // weighted wait by presented
+    const ws=s.summary.avgQueueTime.split(":"); const wsec=(+ws[0])*60+(+ws[1]);
+    waitWeighted += wsec*s.summary.callsPresented;
+    (s.intentVolume||[]).forEach(iv=>intentTot[iv.intent]=(intentTot[iv.intent]||0)+iv.volume);
+    (s.queueStandings||[]).forEach(q=>queueTot[q.queue]=(queueTot[q.queue]||0)+q.callsPresented);
+    if(s.summary.callsPresented>peak.count){ peak={count:s.summary.callsPresented,label:s.intervalLabel}; }
+  }
+  const slPct = handled? Math.round(withinSL/handled*100):0;
+  const avgWait = calls? Math.round(waitWeighted/calls):0;
+  const mmss=`${String(Math.floor(avgWait/60)).padStart(2,"0")}:${String(avgWait%60).padStart(2,"0")}`;
+  const topIntent = Object.entries(intentTot).sort((a,b)=>b[1]-a[1])[0]||["—",0];
+  const busiestQ  = Object.entries(queueTot).sort((a,b)=>b[1]-a[1])[0]||["—",0];
+  // peak label -> just the start time
+  const peakTime = peak.label ? peak.label.split(" ").slice(1,3).join(" ") : "—";
+
+  const stats=[
+    {label:"Calls Presented", val:fmtInt(calls), sub:"so far today"},
+    {label:"Calls Handled",   val:fmtInt(handled), sub:`${calls?Math.round(handled/calls*100):0}% of presented`},
+    {label:"Service Level",   val:slPct+"%", sub:"running average"},
+    {label:"Avg Queue Time",  val:mmss, sub:"weighted"},
+    {label:"Top Intent",      val:topIntent[0], sub:`${fmtInt(topIntent[1])} calls`},
+    {label:"Busiest Queue",   val:busiestQ[0], sub:`${fmtInt(busiestQ[1])} presented`},
+  ];
+  document.getElementById("gameSummary").innerHTML = stats.map(s=>`
+    <div class="gs-cell">
+      <div class="gs-label">${s.label}</div>
+      <div class="gs-val">${s.val}</div>
+      <div class="gs-sub">${s.sub}</div>
+    </div>`).join("");
+}
+
+function renderInterval(i){
+  const snap=DATA.timeline[i];
+  document.getElementById("clock").textContent=snap.intervalLabel;
+  document.getElementById("intLabel").textContent="— "+snap.intervalLabel;
+  const su=snap.summary;
+  document.getElementById("kpis").innerHTML=`
+    <div class="kpi"><div class="label">Calls Presented</div><div class="val">${su.callsPresented}</div></div>
+    <div class="kpi"><div class="label">Calls Handled</div><div class="val">${su.callsHandled}</div></div>
+    <div class="kpi"><div class="label">Avg Queue Time</div><div class="val">${su.avgQueueTime}</div></div>
+    <div class="kpi"><div class="label">Service Level</div><div class="val">${su.serviceLevel}%</div></div>`;
+  const closed = !snap.queueStandings || snap.queueStandings.length===0 || snap.summary.callsPresented===0;
+  document.getElementById("queueTable").style.display = closed ? "none" : "";
+  document.getElementById("queueClosed").style.display = closed ? "flex" : "none";
+  document.getElementById("queueBody").innerHTML=snap.queueStandings.map(q=>`
+    <tr><td>${q.queue}</td><td>${q.callsPresented}</td><td>${q.callsHandled}</td><td>${q.avgQueueTime}</td>
+    <td><span class="sl-pill ${slClass(q.serviceLevel)}">${q.serviceLevel}%</span></td></tr>`).join("");
+  document.getElementById("activeTags").innerHTML=snap.bullpenReport.map(b=>`
+    <div class="tag ${b.status.toLowerCase()==='inactive'?'inactive':''}">
+      <div class="t-num">${b.count}</div><div class="t-label">${b.status}</div></div>`).join("");
+  const states=snap.agentStateSummary, total=states.reduce((s,x)=>s+x.count,0)||1;
+  document.getElementById("totalAgents").textContent=total;
+  const R=52,Ci=2*Math.PI*R; let acc=0,donut="",legend="";
+  states.forEach(s=>{const frac=s.count/total;
+    donut+=`<circle cx="70" cy="70" r="${R}" fill="none" stroke="${STATE_COLORS[s.state]||'#888'}" stroke-width="16"
+      stroke-dasharray="${frac*Ci} ${Ci-frac*Ci}" stroke-dashoffset="${-acc*Ci}" transform="rotate(-90 70 70)"/>`;
+    legend+=`<div class="legend-row"><span class="sw" style="background:${STATE_COLORS[s.state]||'#888'}"></span>
+      <span class="name">${s.state.replace('-',' ')}</span><span class="ct">${s.count}</span>
+      <span class="pct">${Math.round(frac*100)}%</span></div>`; acc+=frac;});
+  document.getElementById("donut").innerHTML=donut;
+  document.getElementById("legend").innerHTML=legend;
+  // Strike Zone -> Top Intents leaderboard (running total through interval i)
+  const intentRun={};
+  for(let k=0;k<=i;k++){
+    (DATA.timeline[k].intentVolume||[]).forEach(iv=>{
+      intentRun[iv.intent]=(intentRun[iv.intent]||0)+iv.volume;
+    });
+  }
+  const ranked=Object.entries(intentRun).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const rankMax=ranked.length?ranked[0][1]:1;
+  const szColors=["#ffc629","#1ba1e2","#4caf50","#ff9800","#9c27b0"];
+  const tickerItems = ranked.map(([name,cnt],k)=>
+    `<span class="tick-item"><span class="tick-rank" style="color:${szColors[k]}">${k+1}.</span> `+
+    `<span class="tick-name">${name}</span> <span class="tick-count">${fmtInt(cnt)}</span></span>`
+  ).join('<span class="tick-sep">•</span>');
+  // duplicate the content so the crawl loops seamlessly
+  document.getElementById("szRows").innerHTML =
+    `<div class="ticker-track">${tickerItems}<span class="tick-sep">•</span>${tickerItems}</div>`;
+  const cs=snap.csat;
+  document.getElementById("csatBig").textContent=cs.score.toFixed(1);
+  const csColors={5:"#4caf50",4:"#8bc34a",3:"#ffc629",2:"#ff9800",1:"#ef4444"};
+  document.getElementById("csatBars").innerHTML=cs.distribution.map(d=>`
+    <div class="csat-row"><span>${d.stars} ★</span>
+      <div class="bg"><div class="fill" style="width:${d.pct}%;background:${csColors[d.stars]}"></div></div>
+      <span style="text-align:right;font-family:Oswald">${d.pct}%</span></div>`).join("");
+  document.getElementById("spray").innerHTML=sprayChart(snap.intentVolume);
+  drawGameSummary(i);
+  renderWallboard(i);
+  if(PLAYBACK.showControls){document.getElementById("scrub").value=i;
+    document.getElementById("speedLbl").textContent=(PLAYBACK.msPerInterval/1000).toFixed(2)+"s/int";}
+}
+
+function sprayChart(items){
+  const W=560,H=360,hx=W/2,hy=H-40;
+  const max=Math.max(...items.map(q=>q.volume),1);
+  const colors=["#ffc629","#1ba1e2","#4caf50","#ff9800","#9c27b0","#00bcd4","#ff5a63","#7e8a9c"];
+
+  // Rank by volume (desc). Biggest -> center field (straight up, 90deg).
+  // Remaining alternate right/left of center, working outward, so big hits
+  // stay near center and smaller ones drift toward the gaps/lines.
+  const ranked=[...items].map((q,i)=>({...q,c:colors[i%colors.length]}))
+    .sort((a,b)=>b.volume-a.volume);
+
+  const HALF_FAN=40;          // degrees each side of center -> stays in fair territory
+  const n=ranked.length;
+  const placed=ranked.map((q,r)=>{
+    let ang;
+    if(r===0){ ang=90; }                              // biggest = dead center
+    else{
+      const side=(r%2===1)?1:-1;                      // alternate R,L,R,L...
+      const step=Math.ceil(r/2);                      // 1,1,2,2,3,3...
+      const maxStep=Math.ceil((n-1)/2)||1;
+      ang=90 + side*(HALF_FAN*step/maxStep);
+    }
+    // length scales with volume but is clamped to stay inside the outfield wall
+    const len=120 + (q.volume/max)*150;               // 120..270 (center reaches deep)
+    const rad=ang*Math.PI/180;
+    return {...q, x:hx+Math.cos(rad)*len*1.0, y:hy-Math.sin(rad)*len};
+  });
+
+  return `<div class="field-wrap"><svg class="field" viewBox="0 0 ${W} ${H}">
+    <defs><radialGradient id="grass" cx="50%" cy="90%" r="90%">
+      <stop offset="0%" stop-color="#357a48"/><stop offset="100%" stop-color="#1d4a2c"/></radialGradient>
+      <filter id="lblshadow" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0" dy="1" stdDeviation="1.4" flood-color="#000" flood-opacity="0.9"/></filter></defs>
+    <path d="M ${hx} ${hy} L ${hx-260} ${hy-200} A 300 300 0 0 1 ${hx+260} ${hy-200} Z" fill="url(#grass)" stroke="#2a5e38" stroke-width="2"/>
+    <path d="M ${hx} ${hy} L ${hx-95} ${hy-95} L ${hx} ${hy-150} L ${hx+95} ${hy-95} Z" fill="#9c6b3f" opacity="0.85"/>
+    <path d="M ${hx} ${hy-20} L ${hx-62} ${hy-82} L ${hx} ${hy-128} L ${hx+62} ${hy-82} Z" fill="#357a48"/>
+    ${[[hx,hy],[hx-95,hy-95],[hx,hy-150],[hx+95,hy-95]].map(([x,y])=>`<rect x="${x-5}" y="${y-5}" width="10" height="10" fill="#fff" transform="rotate(45 ${x} ${y})"/>`).join("")}
+    ${placed.map(h=>`<line x1="${hx}" y1="${hy}" x2="${h.x}" y2="${h.y}" stroke="${h.c}" stroke-width="${1.5+(h.volume/max)*3}" opacity="0.85"/>
+      <circle cx="${h.x}" cy="${h.y}" r="${4+(h.volume/max)*6}" fill="${h.c}" stroke="#fff" stroke-width="1.5"/>
+      <text x="${h.x}" y="${h.y-22}" fill="#ffffff" font-size="16" font-weight="700" font-family="Oswald" text-anchor="middle" filter="url(#lblshadow)">${h.volume}</text>
+      <text x="${h.x}" y="${h.y-9}" fill="#f0e8da" font-size="10.5" font-family="Barlow Condensed" font-weight="600" text-anchor="middle" filter="url(#lblshadow)">${h.intent}</text>`).join("")}
+  </svg></div>`;
+}
+
+function tick(){ idx=(idx+1)%DATA.timeline.length; if(idx===0&&!PLAYBACK.loop){stop();return;} renderInterval(idx); }
+function start(){ playing=true; timer=setInterval(tick,PLAYBACK.msPerInterval); if(PLAYBACK.showControls)document.getElementById("playBtn").textContent="⏸ Pause"; }
+function stop(){ playing=false; clearInterval(timer); if(PLAYBACK.showControls)document.getElementById("playBtn").textContent="▶ Play"; }
+
+/* ===== fill-the-screen mode toggle ===== */
+let fillMode=FIT_DEFAULT;
+function applyFit(){
+  document.body.classList.toggle("fill", fillMode);
+  const btn=document.getElementById("fitToggle");
+  if(btn) btn.textContent = fillMode ? "⤢ Fill: ON" : "⤢ Fill: OFF";
+}
+function setupFitToggle(){
+  const btn=document.getElementById("fitToggle");
+  btn.onclick=()=>{ fillMode=!fillMode; applyFit(); };
+}
+
+/* ===== Wallboard mode (3 big metrics) ===== */
+let wallMode=false;
+function setupWallToggle(){
+  const btn=document.getElementById("wallToggle");
+  btn.onclick=()=>{
+    wallMode=!wallMode;
+    document.body.classList.toggle("wall", wallMode);
+    btn.classList.toggle("active", wallMode);
+    document.getElementById("fitToggle").style.display = wallMode ? "none" : "";
+    renderWallboard(idx);
+  };
+}
+function renderWallboard(i){
+  if(!wallMode) return;
+  const snap=DATA.timeline[i];
+
+  // longest current wait across active queues (mm:ss -> seconds)
+  let longest=0, longestQ="—";
+  (snap.queueStandings||[]).forEach(q=>{
+    const p=q.avgQueueTime.split(":"); const sec=(+p[0])*60+(+p[1]);
+    if(sec>longest){ longest=sec; longestQ=q.queue; }
+  });
+  const waitTxt = `${String(Math.floor(longest/60)).padStart(2,"0")}:${String(longest%60).padStart(2,"0")}`;
+  const waitClass = longest>=300?"bad":longest>=120?"warn":"good";
+
+  // answer rate (service level)
+  const sl=snap.summary.serviceLevel;
+  const slClass2 = sl>=80?"good":sl>=50?"warn":"bad";
+
+  // agents available right now
+  const avail = (snap.agentStateSummary||[]).find(s=>s.state==="available");
+  const availN = avail?avail.count:0;
+  const totalAgents=(snap.agentStateSummary||[]).reduce((s,x)=>s+x.count,0);
+  const availClass = availN>=5?"good":availN>=1?"warn":"bad";
+
+  const closed = !snap.queueStandings || snap.queueStandings.length===0 || snap.summary.callsPresented===0;
+
+  document.getElementById("wallboard").innerHTML = `
+    <div class="wall-head">
+      <h2>⚾ WEBEX BALLPARK — FLOOR VIEW</h2>
+      <span class="wclock">${snap.intervalLabel}</span>
+    </div>
+    <div class="wall-tiles">
+      ${closed ? `
+      <div class="wtile" style="grid-column:1/-1">
+        <div class="wlabel">After Hours</div>
+        <div class="wval" style="font-size:clamp(50px,9vw,130px)">GAME OVER</div>
+        <div class="wsub">Queues Closed</div>
+      </div>` : `
+      <div class="wtile ${waitClass}">
+        <div class="wlabel">Longest Wait</div>
+        <div class="wval">${waitTxt}</div>
+        <div class="wsub">${longestQ}</div>
+      </div>
+      <div class="wtile ${slClass2}">
+        <div class="wlabel">Answer Rate</div>
+        <div class="wval">${sl}%</div>
+        <div class="wsub">Service Level</div>
+      </div>
+      <div class="wtile ${availClass}">
+        <div class="wlabel">Available</div>
+        <div class="wval">${availN}</div>
+        <div class="wsub">of ${totalAgents} agents</div>
+      </div>`}
+    </div>`;
+}
+
+/* ===== click-to-expand panels ===== */
+function setupExpand(){
+  const overlay=document.getElementById("overlay");
+  let openPanel=null;
+  function close(){
+    if(!openPanel) return;
+    openPanel.classList.remove("expanded");
+    const b=openPanel.querySelector(".expand-btn"); if(b) b.textContent="⤢";
+    overlay.classList.remove("show");
+    openPanel=null;
+  }
+  function open(panel){
+    openPanel=panel;
+    panel.classList.add("expanded");
+    const b=panel.querySelector(".expand-btn"); if(b) b.textContent="✕";
+    overlay.classList.add("show");
+  }
+  // add an expand button to every panel
+  document.querySelectorAll(".panel").forEach(panel=>{
+    const btn=document.createElement("button");
+    btn.className="expand-btn"; btn.textContent="⤢"; btn.title="Expand";
+    btn.onclick=(e)=>{ e.stopPropagation();
+      (panel===openPanel)?close():(close(),open(panel)); };
+    panel.appendChild(btn);
+  });
+  overlay.onclick=close;
+  document.addEventListener("keydown",e=>{ if(e.key==="Escape") close(); });
+}
+
+fetch("data.json").then(r=>r.json()).then(d=>{
+  DATA=d; scaffold(); drawSourceLine(); renderInterval(0);
+  if(PLAYBACK.showControls){
+    const scrub=document.getElementById("scrub"); scrub.max=d.timeline.length-1;
+    document.getElementById("playBtn").onclick=()=>playing?stop():start();
+    scrub.oninput=e=>{stop();idx=+e.target.value;renderInterval(idx);};
+    document.getElementById("speed").oninput=e=>{PLAYBACK.msPerInterval=+e.target.value;
+      document.getElementById("speedLbl").textContent=(PLAYBACK.msPerInterval/1000).toFixed(2)+"s/int";
+      if(playing){stop();start();}};
+  }
+  setupFitToggle();
+  setupWallToggle();
+  setupExpand();
+  applyFit();
+  if(PLAYBACK.autoplay) start();
+}).catch(err=>{document.getElementById("app").innerHTML=
+  `<div class="panel"><div class="panel-title">Couldn't load data.json</div>
+   <p style="color:var(--ink-dim);margin-top:8px">${err}. Keep data.json next to index.html.</p></div>`;});
+</script>
+</body>
+</html>
