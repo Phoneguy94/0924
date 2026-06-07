@@ -708,6 +708,30 @@ function setupExpand(){
   document.addEventListener("keydown",e=>{ if(e.key==="Escape") close(); });
 }
 
+/* ===== URL-hash view control (for the rotator / deep links) =====
+   #wallboard  -> floor view (3 big tiles)
+   #scroll     -> classic stacked layout (fill off)
+   #dashboard or no hash -> normal fill dashboard
+   Reuses the existing toggle buttons under the hood, so behavior is identical. */
+function applyHashView(){
+  const h = (location.hash || "").replace("#","").toLowerCase();
+  const wantWall = (h === "wallboard" || h === "floor" || h === "wall");
+
+  // force wallboard ON/OFF to match the hash
+  if(wantWall !== wallMode){
+    document.getElementById("wallToggle").click();
+  }
+
+  // only touch fill mode when NOT in wallboard
+  if(!wantWall){
+    const wantScroll = (h === "scroll");
+    // fillMode === true means we are NOT in scroll layout
+    if(wantScroll === fillMode){
+      document.getElementById("fitToggle").click();
+    }
+  }
+}
+
 fetch("data.json").then(r=>r.json()).then(d=>{
   DATA=d; scaffold(); drawSourceLine(); renderInterval(0);
   if(PLAYBACK.showControls){
@@ -722,6 +746,8 @@ fetch("data.json").then(r=>r.json()).then(d=>{
   setupWallToggle();
   setupExpand();
   applyFit();
+  applyHashView();                                    // read URL hash and set the view
+  window.addEventListener("hashchange", applyHashView); // react if hash changes live
   if(PLAYBACK.autoplay) start();
 }).catch(err=>{document.getElementById("app").innerHTML=
   `<div class="panel"><div class="panel-title">Couldn't load data.json</div>
