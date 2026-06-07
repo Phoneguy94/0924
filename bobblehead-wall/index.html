@@ -19,17 +19,19 @@
   /* a slot sits exactly over each orange rectangle */
   .slot{position:absolute;display:flex;align-items:center;justify-content:center;
     overflow:hidden;border-radius:14px}
-  /* the image is centered and scaled to fit inside the box without distortion */
-  .slot img{max-width:94%;max-height:94%;width:auto;height:auto;object-fit:contain;
-    border-radius:8px;
+  /* the image FILLS the whole box (cover), cropping edges as needed */
+  .slot img{width:100%;height:100%;object-fit:cover;object-position:center;
+    border-radius:12px;
     animation:fadeIn .6s ease both}
   @keyframes fadeIn{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
 
-  /* slot positions measured from the background (percentages of the board) */
-  #slot0{left:3.90%;  top:22.19%; width:21.99%; height:59.34%}
-  #slot1{left:25.89%; top:22.19%; width:23.23%; height:59.34%}
-  #slot2{left:49.12%; top:22.19%; width:23.03%; height:59.34%}
-  #slot3{left:73.65%; top:22.19%; width:22.19%; height:59.34%}
+  /* slot positions measured from the background (percentages of the board).
+     Insets are nudged ~0.5% inward so the filled image sits just INSIDE
+     the yellow border rather than over it. */
+  #slot0{left:4.40%;  top:22.9%; width:20.99%; height:57.9%}
+  #slot1{left:26.39%; top:22.9%; width:22.23%; height:57.9%}
+  #slot2{left:49.62%; top:22.9%; width:22.03%; height:57.9%}
+  #slot3{left:74.15%; top:22.9%; width:21.19%; height:57.9%}
 
   /* QR code sits in the white "QR CODE" box in the bottom-left footer.
      Inset a little so the code keeps a clean white quiet zone (scannable). */
@@ -57,12 +59,10 @@
    Include the file extension (.jpg or .jpeg), exactly as named.
    ============================================================ */
 const IMAGES = [
-  "Image_June_5_2026_4_29_AM.jpeg",
-  "Image_June_5_2026_5_23_AM.jpeg",
-  "Image_June_5_2026_6_04_AM (1).jpeg",
-  "Image_June_5_2026_6_04_AM.jpeg",
-  "Image_June_6_2026_9_47_PM.jpeg",
   "Image_June_7_2026_1_09_AM.jpeg",
+  "Image_June_7_2026_1_15_AM.jpeg",
+  "Image_June_7_2026_1_22_AM.jpeg",
+  "Image_June_7_2026_1_30_AM.jpeg",
   // add as many as you like — if more than 4, the board rotates through them
 ];
 
