@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Veytec Bobblehead Kiosk</title>
-
   <style>
     body {
       margin: 0;
@@ -14,20 +13,17 @@
       text-align: center;
       overflow: hidden;
     }
-
     .header {
       padding: 22px;
       font-size: 42px;
       font-weight: bold;
       letter-spacing: 1px;
     }
-
     .subheader {
       font-size: 24px;
       opacity: 0.9;
       margin-bottom: 20px;
     }
-
     .camera-wrap {
       width: 80%;
       max-width: 900px;
@@ -37,16 +33,15 @@
       overflow: hidden;
       background: #000;
     }
-
+    /* Mirror the live preview so it feels natural at a kiosk */
+    video { transform: scaleX(-1); }
     video, canvas, img {
       width: 100%;
       display: block;
     }
-
     .button-row {
       margin-top: 24px;
     }
-
     button {
       font-size: 30px;
       font-weight: bold;
@@ -58,15 +53,22 @@
       color: #07111f;
       cursor: pointer;
     }
-
     button.secondary {
       background: white;
     }
-
+    button:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
     .hidden {
       display: none;
     }
-
+    .status {
+      margin-top: 14px;
+      font-size: 22px;
+      min-height: 28px;
+      opacity: 0.9;
+    }
     .watermark {
       position: fixed;
       bottom: 18px;
@@ -77,22 +79,20 @@
     }
   </style>
 </head>
-
 <body>
   <div class="header">⚾ Smile for Your Bobblehead</div>
   <div class="subheader">Look at the camera and tap Take Picture</div>
-
   <div class="camera-wrap">
     <video id="video" autoplay playsinline></video>
     <canvas id="canvas" class="hidden"></canvas>
     <img id="photo" class="hidden" alt="Captured selfie" />
   </div>
-
   <div class="button-row">
     <button id="takePhoto">📸 Take Picture</button>
     <button id="retake" class="secondary hidden">↩ Retake</button>
+    <button id="submit" class="hidden">✅ Send It</button>
   </div>
-
+  <div class="status" id="status"></div>
   <div class="watermark">Powered by Veytec + Webex</div>
 
   <script>
@@ -101,54 +101,116 @@
     const photo = document.getElementById("photo");
     const takePhotoBtn = document.getElementById("takePhoto");
     const retakeBtn = document.getElementById("retake");
+    const submitBtn = document.getElementById("submit");
+    const statusEl = document.getElementById("status");
+
+    // ── CONFIG ──────────────────────────────────────────────
+    const WEBHOOK_URL = "PUT_YOUR_CONNECT_WEBHOOK_URL_HERE";
+    const MAX_WIDTH = 640;     // AI-reference sweet spot
+    const JPEG_QUALITY = 0.7;  // keeps base64 ~55–110 KB
+    // ────────────────────────────────────────────────────────
+
+    let capturedBase64 = "";   // raw base64, no data: prefix
 
     async function startCamera() {
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: {
-            facingMode: "user",
-            width: { ideal: 1280 },
-            height: { ideal: 720 }
-          },
+          video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
           audio: false
         });
-
         video.srcObject = stream;
       } catch (err) {
-        alert("Camera could not start. Check browser/device camera permissions.");
+        alert("Camera could not start. Check device camera permissions.");
         console.error(err);
       }
     }
 
+    // Draw the current video frame onto a small canvas, return raw base64
+    function downscaleToBase64() {
+      const sw = video.videoWidth;
+      const sh = video.videoHeight;
+      const scale = Math.min(1, MAX_WIDTH / sw);
+      const dw = Math.round(sw * scale);
+      const dh = Math.round(sh * scale);
+
+      canvas.width = dw;
+      canvas.height = dh;
+      const ctx = canvas.getContext("2d");
+
+      // Un-mirror on capture so the saved image isn't reversed
+      ctx.save();
+      ctx.translate(dw, 0);
+      ctx.scale(-1, 1);
+      ctx.drawImage(video, 0, 0, dw, dh);
+      ctx.restore();
+
+      const dataUrl = canvas.toDataURL("image/jpeg", JPEG_QUALITY);
+      // strip the "data:image/jpeg;base64," prefix — send raw base64
+      return dataUrl.split(",")[1];
+    }
+
     takePhotoBtn.addEventListener("click", () => {
-      const width = video.videoWidth;
-      const height = video.videoHeight;
+      capturedBase64 = downscaleToBase64();
+      photo.src = "data:image/jpeg;base64," + capturedBase64;  // preview with prefix
 
-      canvas.width = width;
-      canvas.height = height;
-
-      const context = canvas.getContext("2d");
-      context.drawImage(video, 0, 0, width, height);
-
-      const imageDataUrl = canvas.toDataURL("image/jpeg", 0.92);
-      photo.src = imageDataUrl;
+      const approxKB = Math.round((capturedBase64.length * 3 / 4) / 1024);
+      statusEl.textContent = "Ready to send (~" + approxKB + " KB)";
 
       video.classList.add("hidden");
       photo.classList.remove("hidden");
-
       takePhotoBtn.classList.add("hidden");
       retakeBtn.classList.remove("hidden");
-
-      console.log("Captured selfie:", imageDataUrl);
+      submitBtn.classList.remove("hidden");
     });
 
-    retakeBtn.addEventListener("click", () => {
+    retakeBtn.addEventListener("click", resetToCamera);
+
+    submitBtn.addEventListener("click", async () => {
+      if (!capturedBase64) return;
+      submitBtn.disabled = true;
+      retakeBtn.disabled = true;
+      statusEl.textContent = "Sending…";
+
+      const payload = {
+        automation: "bobblehead_kiosk",
+        custname: "Veytec",
+        demo_type: "bobblehead",
+        imageB64: capturedBase64
+      };
+
+      try {
+        const res = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+        if (res.ok) {
+          statusEl.textContent = "Sent! Your bobblehead is on the way ⚾";
+          setTimeout(resetToCamera, 4000);  // auto-reset for next person
+        } else {
+          statusEl.textContent = "Hmm, that didn't go through (" + res.status + "). Tap Retake to try again.";
+          submitBtn.disabled = false;
+          retakeBtn.disabled = false;
+        }
+      } catch (err) {
+        console.error(err);
+        statusEl.textContent = "Couldn't reach the server. Tap Retake to try again.";
+        submitBtn.disabled = false;
+        retakeBtn.disabled = false;
+      }
+    });
+
+    function resetToCamera() {
+      capturedBase64 = "";
+      statusEl.textContent = "";
       photo.classList.add("hidden");
       video.classList.remove("hidden");
-
       retakeBtn.classList.add("hidden");
+      submitBtn.classList.add("hidden");
       takePhotoBtn.classList.remove("hidden");
-    });
+      submitBtn.disabled = false;
+      retakeBtn.disabled = false;
+    }
 
     startCamera();
   </script>
