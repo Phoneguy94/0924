@@ -108,9 +108,19 @@
     const WEBHOOK_URL = "PUT_YOUR_CONNECT_WEBHOOK_URL_HERE";
     const MAX_WIDTH = 640;     // AI-reference sweet spot
     const JPEG_QUALITY = 0.7;  // keeps base64 ~55–110 KB
+    const IDLE_TIMEOUT_MS = 30000;  // walk-away reset after photo taken
     // ────────────────────────────────────────────────────────
 
     let capturedBase64 = "";   // raw base64, no data: prefix
+    let idleTimer = null;      // resets to camera if user abandons the photo
+
+    function startIdleTimer() {
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(resetToCamera, IDLE_TIMEOUT_MS);
+    }
+    function stopIdleTimer() {
+      clearTimeout(idleTimer);
+    }
 
     async function startCamera() {
       try {
@@ -161,12 +171,13 @@
       takePhotoBtn.classList.add("hidden");
       retakeBtn.classList.remove("hidden");
       submitBtn.classList.remove("hidden");
-    });
 
-    retakeBtn.addEventListener("click", resetToCamera);
+      startIdleTimer();  // if they walk away without sending, reset
+    });
 
     submitBtn.addEventListener("click", async () => {
       if (!capturedBase64) return;
+      stopIdleTimer();  // they engaged — cancel the walk-away timer
       submitBtn.disabled = true;
       retakeBtn.disabled = true;
       statusEl.textContent = "Sending…";
@@ -188,19 +199,23 @@
           statusEl.textContent = "Sent! Your bobblehead is on the way ⚾";
           setTimeout(resetToCamera, 4000);  // auto-reset for next person
         } else {
-          statusEl.textContent = "Hmm, that didn't go through (" + res.status + "). Tap Retake to try again.";
-          submitBtn.disabled = false;
-          retakeBtn.disabled = false;
+          statusEl.textContent = "Hmm, let's try that again.";
+          setTimeout(resetToCamera, 4000);  // auto-reset, don't get stuck
         }
       } catch (err) {
         console.error(err);
-        statusEl.textContent = "Couldn't reach the server. Tap Retake to try again.";
-        submitBtn.disabled = false;
-        retakeBtn.disabled = false;
+        statusEl.textContent = "Let's try that again.";
+        setTimeout(resetToCamera, 4000);    // auto-reset on network failure too
       }
     });
 
+    retakeBtn.addEventListener("click", () => {
+      stopIdleTimer();
+      resetToCamera();
+    });
+
     function resetToCamera() {
+      stopIdleTimer();
       capturedBase64 = "";
       statusEl.textContent = "";
       photo.classList.add("hidden");
