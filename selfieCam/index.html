@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Veytec Bobblehead Kiosk</title>
+
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #07111f;
+      color: white;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 22px;
+      font-size: 42px;
+      font-weight: bold;
+      letter-spacing: 1px;
+    }
+
+    .subheader {
+      font-size: 24px;
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+
+    .camera-wrap {
+      width: 80%;
+      max-width: 900px;
+      margin: 0 auto;
+      border: 8px solid #f6c343;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #000;
+    }
+
+    video, canvas, img {
+      width: 100%;
+      display: block;
+    }
+
+    .button-row {
+      margin-top: 24px;
+    }
+
+    button {
+      font-size: 30px;
+      font-weight: bold;
+      padding: 20px 42px;
+      margin: 10px;
+      border: none;
+      border-radius: 16px;
+      background: #f6c343;
+      color: #07111f;
+      cursor: pointer;
+    }
+
+    button.secondary {
+      background: white;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .watermark {
+      position: fixed;
+      bottom: 18px;
+      right: 24px;
+      font-size: 24px;
+      opacity: 0.65;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="header">⚾ Smile for Your Bobblehead</div>
+  <div class="subheader">Look at the camera and tap Take Picture</div>
+
+  <div class="camera-wrap">
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas" class="hidden"></canvas>
+    <img id="photo" class="hidden" alt="Captured selfie" />
+  </div>
+
+  <div class="button-row">
+    <button id="takePhoto">📸 Take Picture</button>
+    <button id="retake" class="secondary hidden">↩ Retake</button>
+  </div>
+
+  <div class="watermark">Powered by Veytec + Webex</div>
+
+  <script>
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const photo = document.getElementById("photo");
+    const takePhotoBtn = document.getElementById("takePhoto");
+    const retakeBtn = document.getElementById("retake");
+
+    async function startCamera() {
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode: "user",
+            width: { ideal: 1280 },
+            height: { ideal: 720 }
+          },
+          audio: false
+        });
+
+        video.srcObject = stream;
+      } catch (err) {
+        alert("Camera could not start. Check browser/device camera permissions.");
+        console.error(err);
+      }
+    }
+
+    takePhotoBtn.addEventListener("click", () => {
+      const width = video.videoWidth;
+      const height = video.videoHeight;
+
+      canvas.width = width;
+      canvas.height = height;
+
+      const context = canvas.getContext("2d");
+      context.drawImage(video, 0, 0, width, height);
+
+      const imageDataUrl = canvas.toDataURL("image/jpeg", 0.92);
+      photo.src = imageDataUrl;
+
+      video.classList.add("hidden");
+      photo.classList.remove("hidden");
+
+      takePhotoBtn.classList.add("hidden");
+      retakeBtn.classList.remove("hidden");
+
+      console.log("Captured selfie:", imageDataUrl);
+    });
+
+    retakeBtn.addEventListener("click", () => {
+      photo.classList.add("hidden");
+      video.classList.remove("hidden");
+
+      retakeBtn.classList.add("hidden");
+      takePhotoBtn.classList.remove("hidden");
+    });
+
+    startCamera();
+  </script>
+</body>
+</html>
