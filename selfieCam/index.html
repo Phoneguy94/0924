@@ -24,21 +24,29 @@
       opacity: 0.9;
       margin-bottom: 20px;
     }
+    /* Portrait frame — tall, so people compose themselves head-to-chest */
     .camera-wrap {
       position: relative;
-      width: 80%;
-      max-width: 900px;
+      width: auto;
+      height: 62vh;              /* portrait box keyed off screen height */
+      aspect-ratio: 3 / 4;       /* matches the 768x1024 capture */
       margin: 0 auto;
       border: 8px solid #f6c343;
       border-radius: 24px;
       overflow: hidden;
       background: #000;
     }
-    /* Mirror the live preview so it feels natural at a kiosk */
-    video { transform: scaleX(-1); }
+    /* Mirror the live preview so it feels natural at a kiosk.
+       object-fit:cover fills the portrait box from the landscape feed. */
+    video {
+      transform: scaleX(-1);
+      object-fit: cover;
+    }
     video, canvas, img {
       width: 100%;
+      height: 100%;
       display: block;
+      object-fit: cover;
       pointer-events: none;          /* block Desk Pro hover/pop-out controls */
       -webkit-user-select: none;
       user-select: none;
@@ -113,7 +121,7 @@
     <button id="submit" class="hidden">✅ Send It</button>
   </div>
   <div class="status" id="status"></div>
-  <div class="watermark">Powered by Veytec + Webex &middot; <span id="ver">v1.5</span></div>
+  <div class="watermark">Powered by Veytec + Webex &middot; <span id="ver">v1.6</span></div>
 
   <script>
     const video = document.getElementById("video");
@@ -127,8 +135,9 @@
 
     // ── CONFIG ──────────────────────────────────────────────
     const WEBHOOK_URL = "https://hooks.us.webexconnect.io/events/X6LYS4HP7U";
-    const MAX_WIDTH = 640;     // AI-reference sweet spot
-    const JPEG_QUALITY = 0.7;  // keeps base64 ~55–110 KB
+    const OUT_WIDTH = 768;      // portrait output — feeds a portrait bobblehead
+    const OUT_HEIGHT = 1024;    // 3:4 portrait (768x1024)
+    const JPEG_QUALITY = 0.7;   // keeps base64 ~55–110 KB
     const IDLE_TIMEOUT_MS = 30000;  // walk-away reset after photo taken
     // ────────────────────────────────────────────────────────
 
@@ -145,8 +154,14 @@
 
     async function startCamera() {
       try {
+        // Ask for a tall stream when the device allows it; if the camera
+        // only gives landscape, the center-crop below still yields portrait.
         const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user", width: { ideal: 1280 }, height: { ideal: 720 } },
+          video: {
+            facingMode: "user",
+            width:  { ideal: 1080 },
+            height: { ideal: 1440 }
+          },
           audio: false
         });
         video.srcObject = stream;
@@ -156,27 +171,45 @@
       }
     }
 
-    // Draw the current video frame onto a small canvas, return raw base64
-    function downscaleToBase64() {
+    // Center-crop a 3:4 portrait region out of the camera frame and
+    // draw it to a 768x1024 canvas. Returns raw base64 (no data: prefix).
+    function captureToBase64() {
       const sw = video.videoWidth;
       const sh = video.videoHeight;
-      const scale = Math.min(1, MAX_WIDTH / sw);
-      const dw = Math.round(sw * scale);
-      const dh = Math.round(sh * scale);
+      const targetAR = OUT_WIDTH / OUT_HEIGHT;   // 0.75 (3:4 portrait)
+      const srcAR = sw / sh;
 
-      canvas.width = dw;
-      canvas.height = dh;
+      // Figure out the largest 3:4 box that fits inside the source frame,
+      // centered — this is the crop, so no squish/stretch.
+      let cropW, cropH;
+      if (srcAR > targetAR) {
+        // source is wider than 3:4 (the usual landscape webcam case)
+        cropH = sh;
+        cropW = sh * targetAR;
+      } else {
+        // source is taller than 3:4
+        cropW = sw;
+        cropH = sw / targetAR;
+      }
+      const cropX = (sw - cropW) / 2;
+      const cropY = (sh - cropH) / 2;
+
+      canvas.width = OUT_WIDTH;
+      canvas.height = OUT_HEIGHT;
       const ctx = canvas.getContext("2d");
 
       // Un-mirror on capture so the saved image isn't reversed
       ctx.save();
-      ctx.translate(dw, 0);
+      ctx.translate(OUT_WIDTH, 0);
       ctx.scale(-1, 1);
-      ctx.drawImage(video, 0, 0, dw, dh);
+      ctx.drawImage(
+        video,
+        cropX, cropY, cropW, cropH,   // source crop region
+        0, 0, OUT_WIDTH, OUT_HEIGHT   // destination (full portrait canvas)
+      );
       ctx.restore();
 
       const dataUrl = canvas.toDataURL("image/jpeg", JPEG_QUALITY);
-      // strip the "data:image/jpeg;base64," prefix — send raw base64
       return dataUrl.split(",")[1];
     }
 
@@ -201,7 +234,7 @@
     });
 
     function captureNow() {
-      capturedBase64 = downscaleToBase64();
+      capturedBase64 = captureToBase64();
       photo.src = "data:image/jpeg;base64," + capturedBase64;  // preview with prefix
 
       const approxKB = Math.round((capturedBase64.length * 3 / 4) / 1024);
