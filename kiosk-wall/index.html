@@ -28,7 +28,9 @@
 
   body{
     background:
-      radial-gradient(120% 90% at 50% -10%, #15314f 0%, var(--ink) 55%, #060f1a 100%);
+      linear-gradient(rgba(8,18,32,.74), rgba(6,15,26,.82)),
+      url("Kiosk_background.png") center center / cover no-repeat,
+      #0B1A2B;
     font-family:"Inter","Segoe UI",system-ui,sans-serif;
     color:var(--chalk);
     height:100vh;
@@ -84,7 +86,7 @@
   .card{
     position:absolute;
     top:50%; left:50%;
-    height:62vh;                /* portrait card keyed off screen height */
+    height:70vh;                /* portrait card keyed off screen height */
     aspect-ratio:864 / 1320;    /* image (864x1184) + room for the nameplate */
     margin:0;
     border-radius:14px;
@@ -123,10 +125,10 @@
 
   /* the five visible positions: -2 -1 0(center) +1 +2 */
   .pos-c   { transform:translate(-50%,-50%) translateX(0)        scale(1)    rotateY(0deg);   opacity:1;   z-index:50; }
-  .pos-l1  { transform:translate(-50%,-50%) translateX(-26vh)    scale(.72)  rotateY(36deg);  opacity:.82; z-index:40; filter:brightness(.78); }
-  .pos-r1  { transform:translate(-50%,-50%) translateX(26vh)     scale(.72)  rotateY(-36deg); opacity:.82; z-index:40; filter:brightness(.78); }
-  .pos-l2  { transform:translate(-50%,-50%) translateX(-45vh)    scale(.52)  rotateY(44deg);  opacity:.5;  z-index:30; filter:brightness(.6); }
-  .pos-r2  { transform:translate(-50%,-50%) translateX(45vh)     scale(.52)  rotateY(-44deg); opacity:.5;  z-index:30; filter:brightness(.6); }
+  .pos-l1  { transform:translate(-50%,-50%) translateX(-30vh)    scale(.72)  rotateY(36deg);  opacity:.82; z-index:40; filter:brightness(.78); }
+  .pos-r1  { transform:translate(-50%,-50%) translateX(30vh)     scale(.72)  rotateY(-36deg); opacity:.82; z-index:40; filter:brightness(.78); }
+  .pos-l2  { transform:translate(-50%,-50%) translateX(-52vh)    scale(.52)  rotateY(44deg);  opacity:.5;  z-index:30; filter:brightness(.6); }
+  .pos-r2  { transform:translate(-50%,-50%) translateX(52vh)     scale(.52)  rotateY(-44deg); opacity:.5;  z-index:30; filter:brightness(.6); }
   /* anything else parked off-stage */
   .pos-hide{ transform:translate(-50%,-50%) translateX(0) scale(.4); opacity:0; z-index:1; pointer-events:none; }
 
@@ -203,7 +205,7 @@ const REFRESH_MS = 60000;             // re-check Airtable for new bobbleheads e
      scope:  data.records:read
      base:   this base
    Then delete/rotate it after the event.                        */
-const AIRTABLE_TOKEN = "patYsJQ4hhojOhYuk.a0839f88a7ae231ce3bf1db6816c451efd8cc6dc7a313a99d4216dc1e557336e";
+const AIRTABLE_TOKEN = "PASTE_READ_ONLY_TOKEN_HERE";
 /* ============================================================ */
 
 const track   = document.getElementById("track");
