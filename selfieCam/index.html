@@ -2,42 +2,60 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Veytec Bobblehead Kiosk</title>
   <style>
-    body {
+    html, body {
       margin: 0;
+      height: 100%;
+    }
+    body {
       font-family: Arial, sans-serif;
       background: #07111f;
       color: white;
       text-align: center;
+      /* fit everything inside the visible viewport, no scrolling needed */
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+      box-sizing: border-box;
       overflow: hidden;
     }
     .header {
-      padding: 22px;
-      font-size: 42px;
+      flex: 0 0 auto;
+      padding: 14px 16px 4px;
+      font-size: clamp(24px, 6vw, 42px);
       font-weight: bold;
       letter-spacing: 1px;
+      line-height: 1.1;
     }
     .subheader {
-      font-size: 24px;
+      flex: 0 0 auto;
+      font-size: clamp(15px, 3.5vw, 24px);
       opacity: 0.9;
-      margin-bottom: 20px;
+      margin-bottom: 12px;
+      padding: 0 16px;
     }
-    /* Portrait frame — tall, so people compose themselves head-to-chest */
+    /* Portrait frame — now shrinks to share space with the buttons.
+       flex:1 lets it take the leftover room; max-height caps it. */
     .camera-wrap {
       position: relative;
+      flex: 1 1 auto;
+      min-height: 0;             /* critical: lets a flex child actually shrink */
       width: auto;
-      height: 62vh;              /* portrait box keyed off screen height */
       aspect-ratio: 3 / 4;       /* matches the 768x1024 capture */
+      max-height: 58vh;
+      max-width: 90vw;
       margin: 0 auto;
       border: 8px solid #f6c343;
       border-radius: 24px;
       overflow: hidden;
       background: #000;
     }
-    /* Mirror the live preview so it feels natural at a kiosk.
-       object-fit:cover fills the portrait box from the landscape feed. */
     video {
       transform: scaleX(-1);
       object-fit: cover;
@@ -47,19 +65,18 @@
       height: 100%;
       display: block;
       object-fit: cover;
-      pointer-events: none;          /* block Desk Pro hover/pop-out controls */
+      pointer-events: none;
       -webkit-user-select: none;
       user-select: none;
       -webkit-touch-callout: none;
     }
-    /* Big 3-2-1 countdown over the live video */
     .countdown {
       position: absolute;
       inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 220px;
+      font-size: clamp(120px, 30vw, 220px);
       font-weight: bold;
       color: #fff;
       text-shadow: 0 0 30px rgba(0,0,0,0.8);
@@ -67,13 +84,15 @@
       pointer-events: none;
     }
     .button-row {
-      margin-top: 24px;
+      flex: 0 0 auto;
+      margin-top: 14px;
+      padding-bottom: 6px;
     }
     button {
-      font-size: 30px;
+      font-size: clamp(20px, 5vw, 30px);
       font-weight: bold;
-      padding: 20px 42px;
-      margin: 10px;
+      padding: clamp(12px, 3vw, 20px) clamp(24px, 7vw, 42px);
+      margin: 8px;
       border: none;
       border-radius: 16px;
       background: #f6c343;
@@ -91,16 +110,17 @@
       display: none;
     }
     .status {
-      margin-top: 14px;
-      font-size: 22px;
-      min-height: 28px;
+      flex: 0 0 auto;
+      margin-top: 6px;
+      font-size: clamp(16px, 4vw, 22px);
+      min-height: 24px;
       opacity: 0.9;
     }
     .watermark {
-      position: fixed;
-      bottom: 18px;
-      right: 24px;
-      font-size: 24px;
+      flex: 0 0 auto;
+      margin-top: auto;
+      padding: 8px 16px;
+      font-size: clamp(13px, 3vw, 18px);
       opacity: 0.65;
       font-weight: bold;
     }
@@ -121,7 +141,7 @@
     <button id="submit" class="hidden">✅ Send It</button>
   </div>
   <div class="status" id="status"></div>
-  <div class="watermark">Powered by Veytec + Webex &middot; <span id="ver">v1.6</span></div>
+  <div class="watermark">Powered by Veytec + Webex &middot; <span id="ver">v1.7</span></div>
 
   <script>
     const video = document.getElementById("video");
