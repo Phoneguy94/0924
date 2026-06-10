@@ -175,11 +175,9 @@
 
   <header>
     <div class="eyebrow">Webex Ballpark · Live Roster</div>
-    <h1>On <span class="accent">Deck</span></h1>
   </header>
 
   <div class="stage">
-    <div class="spotlight"></div>
     <div class="track" id="track"></div>
     <div class="msg" id="loading"><div class="big">Warming up the bullpen…</div><div>Loading today’s lineup</div></div>
     <div class="msg hidden" id="empty"><div class="big">No players on deck yet</div><div>Step up to the kiosk to join the roster</div></div>
@@ -205,7 +203,7 @@ const REFRESH_MS = 60000;             // re-check Airtable for new bobbleheads e
      scope:  data.records:read
      base:   this base
    Then delete/rotate it after the event.                        */
-const AIRTABLE_TOKEN = "patYsJQ4hhojOhYuk.a0839f88a7ae231ce3bf1db6816c451efd8cc6dc7a313a99d4216dc1e557336e";
+const AIRTABLE_TOKEN = "PASTE_READ_ONLY_TOKEN_HERE";
 /* ============================================================ */
 
 const track   = document.getElementById("track");
@@ -248,8 +246,7 @@ function buildCards(){
     c.className = "card pos-hide";
     c.innerHTML =
       `<img class="photo" src="${url}" alt="Bobblehead ${i+1}" loading="eager">` +
-      `<div class="plate"><span class="stitch"></span>` +
-      `<span class="pill">Now Batting</span><span class="stitch"></span></div>`;
+      `<div class="plate"></div>`;
     track.appendChild(c);
     return c;
   });
@@ -273,6 +270,16 @@ function layout(){
     else if(d === -2) cls = "pos-l2";
     else if(d ===  2) cls = "pos-r2";
     el.className = "card " + cls;
+    // only the center card shows the nameplate
+    const plate = el.querySelector(".plate");
+    if(d === 0){
+      plate.innerHTML =
+        `<span class="stitch"></span>` +
+        `<span class="pill">Now Batting</span>` +
+        `<span class="stitch"></span>`;
+    } else {
+      plate.innerHTML = "";
+    }
     // for a 3- or 4-card pool, suppress the far slots so it doesn't look sparse
     if(n <= 4 && (cls==="pos-l2"||cls==="pos-r2")) el.classList.replace(cls,"pos-hide");
   });
