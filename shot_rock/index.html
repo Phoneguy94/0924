@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Shot Rock Auto Prototype</title>
+<style>
+  :root{--bg:#07111f;--panel:#0f2037;--ink:#eef6ff;--muted:#9fb2c9;--accent:#55d6ff;--good:#38d996;--warn:#ffd166;--bad:#ff6b6b;}
+  *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#07111f,#0a1526);color:var(--ink);font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;}
+  header{padding:18px 16px 10px} h1{font-size:24px;margin:0 0 4px} .sub{color:var(--muted);font-size:14px;line-height:1.35}
+  main{padding:0 12px 24px;max-width:980px;margin:auto}.card{background:rgba(15,32,55,.92);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:14px;margin:12px 0;box-shadow:0 10px 30px rgba(0,0,0,.25)}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.btn{appearance:none;border:0;border-radius:12px;background:#173558;color:var(--ink);padding:12px 14px;font-weight:700;cursor:pointer}.btn.primary{background:linear-gradient(135deg,#1887ff,#43d1ff);color:#001426}.btn.warn{background:#443211;color:#ffd166}.btn.bad{background:#49222a;color:#ffb3b3}.btn:disabled{opacity:.45;cursor:not-allowed}
+  input[type=file]{display:none}.pill{border-radius:999px;background:#102b49;color:var(--muted);padding:7px 10px;font-size:12px}.pill.good{color:#b9ffe1;background:#0d382c}.pill.warn{color:#ffe7a0;background:#3d300f}.pill.bad{color:#ffc7c7;background:#3d1720}
+  #stageWrap{position:relative;width:100%;background:#06101c;border-radius:14px;overflow:hidden;touch-action:none}.canvasStack{position:relative;width:100%}canvas{display:block;width:100%;height:auto}#overlay{position:absolute;left:0;top:0;z-index:2}.hint{color:var(--muted);font-size:13px;line-height:1.35}.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}.metric{background:#0a1a2d;border-radius:12px;padding:12px}.metric b{display:block;font-size:13px;color:var(--muted);margin-bottom:4px}.metric span{font-size:20px;font-weight:800}table{width:100%;border-collapse:collapse;font-size:14px}th,td{padding:10px;border-bottom:1px solid rgba(255,255,255,.08);text-align:left}th{color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em}.small{font-size:12px;color:var(--muted)}.legend{display:flex;gap:8px;flex-wrap:wrap;margin-top:8px}.dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:5px}.red{background:#ff4545}.yellow{background:#ffd400}.blue{background:#38a1ff}.green{background:#38d996}.mode{font-weight:800;color:#fff}.slider{width:150px}.sep{height:1px;background:rgba(255,255,255,.08);margin:12px 0}
+</style>
+</head>
+<body>
+<header>
+  <h1>🥌 Shot Rock Auto Prototype</h1>
+  <div class="sub">Auto-detects house center + closest red/yellow stones from one image. Built for Sunday testing. Use manual correction only when the auto overlay is wrong.</div>
+</header>
+<main>
+  <section class="card">
+    <div class="row">
+      <label class="btn primary" for="fileInput">Take / Upload Photo</label>
+      <input id="fileInput" type="file" accept="image/*" capture="environment">
+      <button id="analyzeBtn" class="btn" disabled>Analyze Auto</button>
+      <button id="resetBtn" class="btn bad" disabled>Reset</button>
+      <span id="status" class="pill">No image loaded</span>
+    </div>
+    <div class="sep"></div>
+    <div class="row">
+      <button id="modeCenter" class="btn warn">Fix Center</button>
+      <button id="modeStone" class="btn warn">Add / Fix Stone</button>
+      <button id="modeDelete" class="btn warn">Delete Stone</button>
+      <button id="modeView" class="btn">View</button>
+      <span class="pill">Tap canvas in selected mode</span>
+    </div>
+    <p class="hint"><b>Important:</b> This is a browser-only prototype. It does simple color/shape computer vision, not production-grade CV. Best test photos: tight on button + 4/8 rings, closest 1–3 stones visible, good light.</p>
+  </section>
+
+  <section class="card">
+    <div id="stageWrap">
+      <div class="canvasStack">
+        <canvas id="imgCanvas"></canvas>
+        <canvas id="overlay"></canvas>
+      </div>
+    </div>
+    <div class="legend">
+      <span><i class="dot green"></i>House center</span>
+      <span><i class="dot red"></i>Red stone</span>
+      <span><i class="dot yellow"></i>Yellow stone</span>
+      <span><i class="dot blue"></i>Measured line</span>
+    </div>
+  </section>
+
+  <section class="card">
+    <div class="grid">
+      <div class="metric"><b>Shot Rock</b><span id="winner">—</span></div>
+      <div class="metric"><b>Estimated Margin</b><span id="margin">—</span></div>
+      <div class="metric"><b>Confidence</b><span id="confidence">—</span></div>
+      <div class="metric"><b>Detected Stones</b><span id="stoneCount">0</span></div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3 style="margin-top:0">Top Stones</h3>
+    <table>
+      <thead><tr><th>Rank</th><th>Color</th><th>Relative Distance</th><th>Source</th></tr></thead>
+      <tbody id="results"><tr><td colspan="4" class="small">Load a photo and run Analyze Auto.</td></tr></tbody>
+    </table>
+    <p class="small">Distances are relative image-plane distances after this prototype's rough center estimate. Do not treat as official inches yet.</p>
+  </section>
+</main>
+<script>
+const fileInput=document.getElementById('fileInput'), analyzeBtn=document.getElementById('analyzeBtn'), resetBtn=document.getElementById('resetBtn');
+const imgCanvas=document.getElementById('imgCanvas'), overlay=document.getElementById('overlay');
+const ctx=imgCanvas.getContext('2d',{willReadFrequently:true}), octx=overlay.getContext('2d');
+const statusEl=document.getElementById('status');
+let img=new Image(), scale=1, W=0,H=0, center=null, stones=[], mode='view', imageLoaded=false;
+const MAXW=1400;
+function setStatus(txt,kind=''){statusEl.textContent=txt;statusEl.className='pill '+kind}
+function fitCanvases(w,h){W=w;H=h; imgCanvas.width=overlay.width=w; imgCanvas.height=overlay.height=h;}
+function drawImage(){ctx.clearRect(0,0,W,H);ctx.drawImage(img,0,0,W,H);}
+function resetAnalysis(){center=null;stones=[];drawOverlay();updateResults();}
+fileInput.onchange=e=>{const f=e.target.files[0]; if(!f)return; const url=URL.createObjectURL(f); img.onload=()=>{let w=img.naturalWidth,h=img.naturalHeight; const r=Math.min(1,MAXW/w); fitCanvases(Math.round(w*r),Math.round(h*r)); drawImage(); imageLoaded=true; analyzeBtn.disabled=false; resetBtn.disabled=false; setStatus('Image loaded. Tap Analyze Auto.','good'); resetAnalysis();}; img.src=url;};
+resetBtn.onclick=()=>{if(imageLoaded){drawImage();resetAnalysis();setStatus('Reset. Tap Analyze Auto.','warn')}};
+analyzeBtn.onclick=()=>analyze();
+function rgbToHsv(r,g,b){r/=255;g/=255;b/=255;let max=Math.max(r,g,b),min=Math.min(r,g,b),h,s,v=max,d=max-min;s=max===0?0:d/max;if(max===min)h=0;else{switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break}h/=6}return [h*360,s,v]}
+function analyze(){ if(!imageLoaded)return; drawImage(); const data=ctx.getImageData(0,0,W,H).data; setStatus('Analyzing rings and stones...','warn');
+  center=detectCenter(data); stones=detectStones(data,center); stones.sort((a,b)=>dist(a,center)-dist(b,center)); stones=stones.slice(0,6); drawOverlay(); updateResults(); setStatus('Auto analysis complete. Review overlay.','good'); }
+function detectCenter(data){
+  // Use red/blue ring pixels as weighted geometry. It estimates the center of visible ring arcs.
+  let pts=[]; const step=Math.max(2,Math.floor(Math.max(W,H)/700));
+  for(let y=0;y<H;y+=step){for(let x=0;x<W;x+=step){let i=(y*W+x)*4,r=data[i],g=data[i+1],b=data[i+2];let [h,s,v]=rgbToHsv(r,g,b); let isRed=(s>.35&&v>.25&&(h<18||h>340)); let isBlue=(s>.28&&v>.25&&h>185&&h<245); if(isRed||isBlue)pts.push({x,y,w:isBlue?1.15:1});}}
+  if(pts.length<80) return {x:W/2,y:H/2,confidence:.25,source:'fallback'};
+  // Trim to pixels near middle-ish and compute robust weighted median/mean blend.
+  const xs=pts.map(p=>p.x).sort((a,b)=>a-b), ys=pts.map(p=>p.y).sort((a,b)=>a-b); const q=(arr,t)=>arr[Math.max(0,Math.min(arr.length-1,Math.floor(arr.length*t)))];
+  const minX=q(xs,.03),maxX=q(xs,.97),minY=q(ys,.03),maxY=q(ys,.97);
+  let cx=(minX+maxX)/2, cy=(minY+maxY)/2;
+  // If button/pin colored area exists, detect central red/white circular cluster and pull center toward it.
+  let bpts=[]; const rx=(maxX-minX)*.33, ry=(maxY-minY)*.33;
+  for(const p of pts){ if(Math.abs(p.x-cx)<rx && Math.abs(p.y-cy)<ry) bpts.push(p); }
+  if(bpts.length>20){let sx=0,sy=0,sw=0; for(const p of bpts){sx+=p.x*p.w;sy+=p.y*p.w;sw+=p.w} cx=.65*cx+.35*(sx/sw); cy=.65*cy+.35*(sy/sw);}
+  let conf=Math.min(.9, .35+pts.length/(W*H/step/step)*8);
+  return {x:cx,y:cy,confidence:conf,source:'auto ring color'};
+}
+function detectStones(data,c){
+  const reds=components(data,(h,s,v,r,g,b)=>s>.32&&v>.28&&(h<22||h>340));
+  const yellows=components(data,(h,s,v,r,g,b)=>s>.32&&v>.35&&h>35&&h<75);
+  let out=[];
+  for(const comp of reds){const st=componentToStone(comp,'Red',c); if(st)out.push(st)}
+  for(const comp of yellows){const st=componentToStone(comp,'Yellow',c); if(st)out.push(st)}
+  // dedupe close blobs and filter likely stones by size/distance to center.
+  out=out.filter(s=>s.area>25 && s.r>5 && s.r<Math.max(W,H)*.12 && dist(s,c)<Math.max(W,H)*.55);
+  out.sort((a,b)=>a.d-b.d);
+  let ded=[]; for(const s of out){ if(!ded.some(t=>dist(s,t)<Math.max(s.r,t.r)*1.2)) ded.push(s); }
+  return ded;
+}
+function components(data,pred){
+  const step=2, mw=Math.floor(W/step), mh=Math.floor(H/step), mask=new Uint8Array(mw*mh);
+  for(let yy=0;yy<mh;yy++){for(let xx=0;xx<mw;xx++){let x=xx*step,y=yy*step,i=(y*W+x)*4,r=data[i],g=data[i+1],b=data[i+2];let [h,s,v]=rgbToHsv(r,g,b); if(pred(h,s,v,r,g,b))mask[yy*mw+xx]=1;}}
+  const seen=new Uint8Array(mw*mh), comps=[]; const qx=[],qy=[];
+  for(let y=0;y<mh;y++)for(let x=0;x<mw;x++){let idx=y*mw+x;if(!mask[idx]||seen[idx])continue; let minx=x,maxx=x,miny=y,maxy=y,count=0,sx=0,sy=0; qx.length=qy.length=0; qx.push(x);qy.push(y);seen[idx]=1;
+    for(let qi=0;qi<qx.length;qi++){let cx=qx[qi],cy=qy[qi];count++;sx+=cx;sy+=cy; if(cx<minx)minx=cx;if(cx>maxx)maxx=cx;if(cy<miny)miny=cy;if(cy>maxy)maxy=cy;
+      for(const [dx,dy] of [[1,0],[-1,0],[0,1],[0,-1]]){let nx=cx+dx,ny=cy+dy;if(nx<0||ny<0||nx>=mw||ny>=mh)continue;let ni=ny*mw+nx;if(mask[ni]&&!seen[ni]){seen[ni]=1;qx.push(nx);qy.push(ny)}}}
+    if(count>8) comps.push({x:sx/count*step,y:sy/count*step,minx:minx*step,maxx:maxx*step,miny:miny*step,maxy:maxy*step,area:count*step*step});
+  }
+  return comps;
+}
+function componentToStone(comp,color,c){
+  const bw=comp.maxx-comp.minx,bh=comp.maxy-comp.miny; if(bw<6||bh<6)return null; const r=Math.max(bw,bh)*.9; const x=comp.x,y=comp.y; return {x,y,r,area:comp.area,color,source:'auto handle/color',d:dist({x,y},c)};
+}
+function dist(a,b){return Math.hypot(a.x-b.x,a.y-b.y)}
+function drawOverlay(){octx.clearRect(0,0,W,H); if(!imageLoaded)return; if(center){octx.save();octx.strokeStyle='#38d996';octx.fillStyle='#38d996';octx.lineWidth=4; octx.beginPath();octx.arc(center.x,center.y,10,0,Math.PI*2);octx.stroke(); octx.beginPath();octx.moveTo(center.x-18,center.y);octx.lineTo(center.x+18,center.y);octx.moveTo(center.x,center.y-18);octx.lineTo(center.x,center.y+18);octx.stroke(); label('CENTER',center.x+14,center.y-14,'#38d996'); octx.restore();}
+  const ranked=[...stones].sort((a,b)=>dist(a,center)-dist(b,center)); ranked.forEach((s,idx)=>{const color=s.color==='Red'?'#ff4545':'#ffd400'; if(center){octx.strokeStyle='rgba(85,214,255,.75)';octx.lineWidth=2;octx.beginPath();octx.moveTo(center.x,center.y);octx.lineTo(s.x,s.y);octx.stroke();} octx.strokeStyle=color;octx.fillStyle=color;octx.lineWidth=4;octx.beginPath();octx.arc(s.x,s.y,Math.max(12,s.r),0,Math.PI*2);octx.stroke(); octx.beginPath();octx.arc(s.x,s.y,6,0,Math.PI*2);octx.fill(); label(`#${idx+1} ${s.color}`,s.x+12,s.y-12,color);});}
+function label(txt,x,y,color){octx.font='700 22px system-ui';octx.lineWidth=5;octx.strokeStyle='rgba(0,0,0,.75)';octx.strokeText(txt,x,y);octx.fillStyle=color;octx.fillText(txt,x,y)}
+function updateResults(){ const ranked=center?[...stones].sort((a,b)=>dist(a,center)-dist(b,center)):[]; document.getElementById('stoneCount').textContent=stones.length; const tb=document.getElementById('results'); tb.innerHTML=''; if(!center||ranked.length===0){document.getElementById('winner').textContent='—';document.getElementById('margin').textContent='—';document.getElementById('confidence').textContent='—';tb.innerHTML='<tr><td colspan="4" class="small">No stones detected yet.</td></tr>';return;}
+  const d0=dist(ranked[0],center); document.getElementById('winner').textContent=ranked[0].color; if(ranked.length>1){const m=dist(ranked[1],center)-d0; document.getElementById('margin').textContent='~'+Math.round((m/d0)*1000)/10+'%';} else document.getElementById('margin').textContent='Only 1 stone';
+  let conf='Review'; if(center.confidence>.65&&ranked.length>=2){let gap=dist(ranked[1],center)-d0; conf=gap>d0*.08?'High':'Review';} if(center.source==='fallback'||ranked.length<2)conf='Low'; document.getElementById('confidence').textContent=conf;
+  ranked.slice(0,6).forEach((s,i)=>{const tr=document.createElement('tr'); const rel=Math.round(dist(s,center)/d0*1000)/10; tr.innerHTML=`<td>${i+1}</td><td>${s.color}</td><td>${rel}%</td><td>${s.source}</td>`; tb.appendChild(tr);});}
+function setMode(m){mode=m; document.querySelectorAll('.btn').forEach(b=>b.classList.remove('primary')); const map={center:'modeCenter',stone:'modeStone',delete:'modeDelete',view:'modeView'}; document.getElementById(map[m]).classList.add('primary'); setStatus('Mode: '+m,'warn');}
+document.getElementById('modeCenter').onclick=()=>setMode('center');document.getElementById('modeStone').onclick=()=>setMode('stone');document.getElementById('modeDelete').onclick=()=>setMode('delete');document.getElementById('modeView').onclick=()=>setMode('view');
+overlay.addEventListener('pointerdown',e=>{if(!imageLoaded)return; const rect=overlay.getBoundingClientRect(); const x=(e.clientX-rect.left)*W/rect.width,y=(e.clientY-rect.top)*H/rect.height; if(mode==='center'){center={x,y,confidence:1,source:'manual'};} else if(mode==='stone'){let color=prompt('Stone color? Type R or Y','Y'); if(!color)return; color=color.trim().toUpperCase().startsWith('R')?'Red':'Yellow'; stones.push({x,y,r:24,area:1000,color,source:'manual',d:center?dist({x,y},center):0});} else if(mode==='delete'){let k=-1,best=9999; stones.forEach((s,i)=>{let d=dist({x,y},s); if(d<best){best=d;k=i}}); if(k>=0&&best<60)stones.splice(k,1);} drawOverlay();updateResults();});
+setMode('view');
+</script>
+</body>
+</html>
