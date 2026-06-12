@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Shot Rock</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@500;600;700&family=Inter:wght@400;500;600&display=swap');
+  :root{
+    --ice:#e8edf1;--ice-deep:#cdd8e0;--house-blue:#1c4f8f;--house-red:#c0392b;
+    --ink:#11202b;--ink-soft:#5a6b76;--line:#b6c4cd;--amber:#e8920c;--amber-deep:#c2750a;
+    --panel:#fbfcfd;--good:#1f8a4c;--warn:#d98b0a;--stop:#c0392b;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{font-family:'Inter',system-ui,sans-serif;background:var(--ice);color:var(--ink);
+    display:flex;flex-direction:column;overflow:hidden;}
+  header{display:flex;align-items:baseline;gap:.6rem;padding:.7rem 1rem;
+    border-bottom:1px solid var(--line);background:var(--panel);flex:none;}
+  .mark{font-family:'Barlow Semi Condensed',sans-serif;font-weight:700;letter-spacing:.04em;
+    font-size:1.2rem;text-transform:uppercase;}
+  .mark .rk{color:var(--house-red);}
+  .tagline{font-size:.7rem;color:var(--ink-soft);}
+  .endid{margin-left:auto;font-family:'Barlow Semi Condensed',sans-serif;font-size:.66rem;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft);
+    border:1px solid var(--line);padding:.2rem .55rem;border-radius:3px;}
+  main{flex:1;display:flex;min-height:0;}
+  @media (max-width:820px){ main{flex-direction:column;} }
+  .stage{flex:1;min-width:0;position:relative;background:var(--ice-deep);
+    display:flex;align-items:center;justify-content:center;overflow:hidden;}
+  #canvas{touch-action:none;cursor:crosshair;max-width:100%;max-height:100%;display:block;}
+  .empty{text-align:center;color:var(--ink-soft);padding:2rem;max-width:370px;}
+  .empty svg{width:54px;height:54px;opacity:.5;margin-bottom:1rem;}
+  .empty h2{font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:1.15rem;
+    color:var(--ink);margin-bottom:.4rem;}
+  .empty p{font-size:.84rem;line-height:1.5;}
+  .loadbtn{margin-top:1.1rem;display:inline-block;background:var(--amber);color:#fff;
+    font-weight:600;font-size:.9rem;padding:.7rem 1.3rem;border-radius:4px;cursor:pointer;
+    border:none;font-family:inherit;}
+  .loadbtn:hover{background:var(--amber-deep);}
+  .panel{width:340px;flex:none;background:var(--panel);border-left:1px solid var(--line);
+    display:flex;flex-direction:column;min-height:0;}
+  @media (max-width:820px){.panel{width:auto;border-left:none;border-top:1px solid var(--line);max-height:54vh;}}
+  .pscroll{overflow-y:auto;flex:1;}
+  .status{padding:.55rem 1rem;font-size:.74rem;color:var(--amber-deep);background:#fff8ec;
+    border-bottom:1px solid #f0e2c8;display:none;line-height:1.4;}
+  .status.show{display:block;}
+  .stepblock{padding:.8rem 1rem;border-bottom:1px solid #eef2f4;}
+  .stepblock h3{font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:.88rem;
+    margin-bottom:.3rem;display:flex;align-items:center;gap:.45rem;letter-spacing:.01em;}
+  .stepblock h3 .n{width:1.3rem;height:1.3rem;border-radius:50%;background:var(--amber);color:#fff;
+    display:grid;place-items:center;font-size:.72rem;flex:none;}
+  .stepblock p{font-size:.75rem;color:var(--ink-soft);line-height:1.5;}
+  .seg{display:flex;gap:.3rem;margin-top:.6rem;background:#eef2f4;padding:.25rem;border-radius:5px;}
+  .seg button{flex:1;font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:.66rem;
+    letter-spacing:.03em;text-transform:uppercase;padding:.5rem .2rem;border:none;background:transparent;
+    color:var(--ink-soft);border-radius:4px;cursor:pointer;}
+  .seg button.on{background:#fff;color:var(--ink);box-shadow:0 1px 2px rgba(0,0,0,.1);}
+  .swatches{display:flex;gap:.45rem;margin-top:.6rem;}
+  .sw{width:1.7rem;height:1.7rem;border-radius:50%;cursor:pointer;border:2px solid transparent;
+    box-shadow:0 1px 2px rgba(0,0,0,.2);}
+  .sw.sel{border-color:var(--ink);}
+  .toggle-row{display:flex;align-items:center;gap:.5rem;margin-top:.55rem;font-size:.76rem;color:var(--ink-soft);}
+  .toggle{position:relative;width:2.2rem;height:1.2rem;background:#cdd8e0;border-radius:1rem;cursor:pointer;flex:none;transition:.15s;}
+  .toggle.on{background:var(--amber);}
+  .toggle::after{content:'';position:absolute;top:2px;left:2px;width:.9rem;height:.9rem;background:#fff;border-radius:50%;transition:.15s;}
+  .toggle.on::after{transform:translateX(1rem);}
+  .result{border-top:1px solid var(--line);padding:.9rem 1rem;flex:none;background:#fff;}
+  .result.hidden{display:none;}
+  .verdict{display:flex;align-items:center;gap:.6rem;margin-bottom:.7rem;}
+  .vstone{width:1.6rem;height:1.6rem;border-radius:50%;flex:none;border:2px solid rgba(0,0,0,.2);
+    box-shadow:0 1px 2px rgba(0,0,0,.2);}
+  .vtext{font-family:'Barlow Semi Condensed',sans-serif;}
+  .vtext .win{font-weight:700;font-size:1.1rem;}
+  .vtext .mar{font-size:.8rem;color:var(--ink-soft);}
+  .conf{margin-left:auto;font-family:'Barlow Semi Condensed',sans-serif;font-size:.62rem;
+    letter-spacing:.1em;text-transform:uppercase;padding:.24rem .6rem;border-radius:3px;
+    font-weight:600;color:#fff;}
+  .conf.good{background:var(--good);}.conf.warn{background:var(--warn);}.conf.stop{background:var(--stop);}
+  table{width:100%;border-collapse:collapse;font-size:.82rem;}
+  th{font-family:'Barlow Semi Condensed',sans-serif;text-align:left;font-weight:600;
+    color:var(--ink-soft);font-size:.66rem;letter-spacing:.08em;text-transform:uppercase;
+    padding:.3rem .4rem;border-bottom:1px solid var(--line);}
+  td{padding:.36rem .4rem;border-bottom:1px solid #eef2f4;}
+  td.dist{font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;text-align:right;}
+  .rkdot{width:.8rem;height:.8rem;border-radius:50%;display:inline-block;vertical-align:middle;
+    margin-right:.4rem;border:1px solid rgba(0,0,0,.2);}
+  .disclaim{font-size:.66rem;color:var(--ink-soft);line-height:1.45;margin-top:.6rem;font-style:italic;}
+  .toolbar{display:flex;gap:.5rem;padding:.7rem 1rem;border-top:1px solid var(--line);
+    background:var(--panel);flex:none;flex-wrap:wrap;}
+  .btn{flex:1;min-width:90px;font-family:'Barlow Semi Condensed',sans-serif;font-weight:600;font-size:.78rem;
+    letter-spacing:.03em;text-transform:uppercase;padding:.6rem;border-radius:4px;
+    border:1px solid var(--line);background:#fff;color:var(--ink);cursor:pointer;transition:.15s;}
+  .btn:hover{border-color:var(--ink-soft);}
+  .btn.primary{background:var(--amber);border-color:var(--amber);color:#fff;}
+  .btn.primary:hover{background:var(--amber-deep);}
+  .btn.save{background:var(--good);border-color:var(--good);color:#fff;}
+  .btn:disabled{opacity:.4;cursor:not-allowed;}
+  input[type=file]{display:none;}
+  .spinner{display:inline-block;width:.8rem;height:.8rem;border:2px solid #f0c98a;
+    border-top-color:var(--amber);border-radius:50%;animation:spin .7s linear infinite;vertical-align:middle;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  .saved-note{font-size:.72rem;color:var(--good);padding:0 1rem .5rem;display:none;}
+  .saved-note.show{display:block;}
+</style>
+</head>
+<body>
+<header>
+  <span class="mark"><span class="rk">Shot</span> Rock</span>
+  <span class="tagline">detect · confirm · measure</span>
+  <span class="endid" id="endid">End —</span>
+</header>
+
+<main>
+  <div class="stage" id="stage">
+    <div class="empty" id="empty">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4">
+        <circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5.5"/><circle cx="12" cy="12" r="2"/>
+      </svg>
+      <h2>Measure an end</h2>
+      <p>Frame the close rocks with the button and the 4- and 8-foot rings around them. The tool detects the house and stones, you confirm, and it measures. Each end you measure is saved as data to make detection better.</p>
+      <label class="loadbtn">Load photo<input type="file" id="file" accept="image/*"></label>
+    </div>
+    <canvas id="canvas" style="display:none"></canvas>
+  </div>
+
+  <aside class="panel">
+    <div class="status" id="status"></div>
+    <div class="pscroll">
+      <div class="stepblock">
+        <h3><span class="n">1</span>Confirm the house</h3>
+        <p>Auto-detect places the rings. Drag the <b>center dot</b> or a <b>ring edge</b> so the red and green rings sit on the 4- and 8-foot paint around your rocks.</p>
+        <div class="toggle-row"><div class="toggle" id="dbgtoggle"></div><span>Show what auto-detect saw</span></div>
+      </div>
+      <div class="stepblock">
+        <h3><span class="n">2</span>Confirm the stones</h3>
+        <p>Auto-detected stones appear as dots. Switch to Stones to fix them: tap empty ice to add, tap a stone to remove. Pick the color first.</p>
+        <div class="seg" id="seg">
+          <button data-m="house" class="on">House</button>
+          <button data-m="stones">Stones</button>
+        </div>
+        <div class="swatches" id="swatches" style="display:none"></div>
+      </div>
+    </div>
+    <div class="result hidden" id="result"></div>
+    <div class="saved-note" id="savednote">✓ End saved to dataset</div>
+    <div class="toolbar">
+      <button class="btn" id="redetect">Auto</button>
+      <button class="btn primary" id="measure" disabled>Measure</button>
+      <button class="btn save" id="save" disabled>Save end</button>
+      <button class="btn" id="export" disabled>Export data</button>
+    </div>
+  </aside>
+</main>
+
+<script>
+const R_INNER_IN=24, R_OUTER_IN=48;   // bracket the close rocks: 4-foot & 8-foot rings
+const STONE_COLORS=[{name:'Red',hex:'#c0392b'},{name:'Yellow',hex:'#e8b800'},
+  {name:'Blue',hex:'#2563b0'},{name:'Green',hex:'#1f8a4c'}];
+
+let img=null,imgDataURL=null,scale=1,imgW=0,imgH=0;
+let mode='house', curColor=STONE_COLORS[0], showDebug=false;
+let house={cx:0,cy:0,a:0,b:0,th:0};
+let stones=[], debugMarks=[];
+let solution=null, drag=null;
+let dataset=[], endNum=1;
+
+const canvas=document.getElementById('canvas'),ctx=canvas.getContext('2d');
+const stage=document.getElementById('stage'),statusEl=document.getElementById('status');
+
+/* ---------- load ---------- */
+document.getElementById('file').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f) return;
+  const reader=new FileReader();
+  reader.onload=()=>{
+    imgDataURL=reader.result;
+    const probe=new Image();
+    probe.onload=()=>{
+      img=probe;stones=[];solution=null;debugMarks=[];
+      document.getElementById('empty').style.display='none';
+      canvas.style.display='block';
+      document.getElementById('result').classList.add('hidden');
+      document.getElementById('endid').textContent='End '+endNum;
+      requestAnimationFrame(()=>{ fitCanvas();
+        setStatus('<span class="spinner"></span> Detecting…',true);
+        setTimeout(autoDetect,30); });
+    };
+    probe.onerror=()=>setStatus("Couldn't display that image. If it's HEIC, save as JPG first.",true);
+    probe.src=reader.result;
+  };
+  reader.readAsDataURL(f);
+});
+function fitCanvas(){
+  let maxW=stage.clientWidth-24,maxH=stage.clientHeight-24;
+  if(maxW<40)maxW=window.innerWidth-24;
+  if(maxH<40)maxH=Math.round(window.innerHeight*0.6)-24;
+  scale=Math.min(maxW/img.width,maxH/img.height,1);
+  if(!isFinite(scale)||scale<=0)scale=1;
+  imgW=Math.max(1,Math.round(img.width*scale));imgH=Math.max(1,Math.round(img.height*scale));
+  canvas.width=imgW;canvas.height=imgH;
+}
+window.addEventListener('resize',()=>{if(img){const ow=imgW,oh=imgH;fitCanvas();
+  const sx=imgW/ow,sy=imgH/oh;
+  house.cx*=sx;house.cy*=sy;house.a*=sx;house.b*=sy;
+  stones=stones.map(s=>({...s,x:s.x*sx,y:s.y*sy}));
+  debugMarks=debugMarks.map(m=>({...m,x:m.x*sx,y:m.y*sy}));solution=null;draw();}});
+function setStatus(t,keep){statusEl.innerHTML=t;statusEl.classList.add('show');
+  if(!keep)setTimeout(()=>statusEl.classList.remove('show'),3200);}
+
+/* ============================================================ AUTO-DETECT */
+function autoDetect(){
+  const buf=document.createElement('canvas');buf.width=imgW;buf.height=imgH;
+  const bx=buf.getContext('2d');bx.drawImage(img,0,0,imgW,imgH);
+  const px=bx.getImageData(0,0,imgW,imgH).data;
+  detectHouse(px);
+  detectStones(px);
+  solution=null;
+  const sMsg = stones.length ? (stones.length+' stone'+(stones.length>1?'s':'')) : 'no stones';
+  setStatus('Auto-detect: house placed · '+sMsg+'. Confirm both, then Measure.');
+  draw(); refreshButtons();
+}
+function rgb2hsv(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn;
+  let h=0;if(d){if(mx===r)h=((g-b)/d)%6;else if(mx===g)h=(b-r)/d+2;else h=(r-g)/d+4;h*=60;if(h<0)h+=360;}
+  return{h,s:mx?d/mx:0,v:mx};}
+
+function detectHouse(px){
+  const gray=new Float32Array(imgW*imgH);
+  for(let i=0;i<imgW*imgH;i++)gray[i]=0.299*px[i*4]+0.587*px[i*4+1]+0.114*px[i*4+2];
+  const edge=sobel(gray,imgW,imgH);
+  const dist=chamfer(edge,imgW,imgH);
+  let rx=0,ry=0,rn=0;
+  for(let y=0;y<imgH;y++)for(let x=0;x<imgW;x++){
+    const i=(y*imgW+x)*4;const {h,s,v}=rgb2hsv(px[i],px[i+1],px[i+2]);
+    if((h<12||h>168)&&s>0.30&&v>0.25){rx+=x;ry+=y;rn++;}}
+  const cp = rn>50 ? [rx/rn,ry/rn] : [imgW/2,imgH/2];
+  const SC=[24/48,1.0], n=90, cosA=[],sinA=[];
+  for(let k=0;k<n;k++){const t=k/n*2*Math.PI;cosA.push(Math.cos(t));sinA.push(Math.sin(t));}
+  const big=Math.max(imgW,imgH);
+  function score(cx,cy,a,b,th){const ca=Math.cos(th),sa=Math.sin(th);let mn=1;
+    for(const s of SC){let hit=0;
+      for(let k=0;k<n;k++){const ex=a*s*cosA[k],ey=b*s*sinA[k];
+        const x=cx+ex*ca-ey*sa,y=cy+ex*sa+ey*ca,xi=x|0,yi=y|0;
+        if(xi>=0&&xi<imgW&&yi>=0&&yi<imgH&&dist[yi*imgW+xi]<4)hit++;}
+      const hr=hit/n;if(hr<mn)mn=hr;}
+    return mn+0.15*(a/big)-0.0015*Math.hypot(cx-cp[0],cy-cp[1]);}
+  let best={sc:-1e9,p:[cp[0],cp[1],big*0.35,big*0.28,0]};
+  for(let ai=0;ai<16;ai++){const a=(0.22+0.42*ai/15)*big;
+    for(const asp of [0.45,0.6,0.75,0.9]){const b=a*asp;
+      for(let cxs=-2;cxs<=2;cxs++)for(let cys=-2;cys<=2;cys++){
+        const cx=cp[0]+cxs*0.06*imgW,cy=cp[1]+cys*0.06*imgH;
+        for(const th of [0,0.3,-0.3]){const sc=score(cx,cy,a,b,th);
+          if(sc>best.sc)best={sc,p:[cx,cy,a,b,th]};}}}}
+  let [cx,cy,a,b,th]=best.p,step=[6,6,10,8,0.10],cur=best.sc;
+  for(let it=0;it<160;it++){let imp=false;
+    for(let i=0;i<5;i++)for(const d of [1,-1]){const p=[cx,cy,a,b,th];p[i]+=d*step[i];
+      if(p[3]/p[2]<0.4||p[3]/p[2]>1.05||p[2]<25)continue;
+      const sc=score(p[0],p[1],p[2],p[3],p[4]);
+      if(sc>cur){cur=sc;cx=p[0];cy=p[1];a=p[2];b=p[3];th=p[4];imp=true;}}
+    if(!imp){step=step.map(s=>s*0.5);if(step[0]<0.4)break;}}
+  house={cx,cy,a,b,th};
+}
+
+function detectStones(px){
+  stones=[];debugMarks=[];
+  // saturated handle blobs; confirm granite below; classify color; base = below handle
+  const W=imgW,H=imgH,area=W*H;
+  const sat=new Uint8Array(W*H);
+  for(let i=0;i<W*H;i++){const {h,s,v}=rgb2hsv(px[i*4],px[i*4+1],px[i*4+2]);
+    if(s>0.36&&v>0.33)sat[i]=1;}
+  // close
+  morphClose(sat,W,H);
+  const blobs=connected(sat,W,H);
+  for(const bl of blobs){
+    if(bl.count<area*0.0004||bl.count>area*0.02)continue;
+    const bw=bl.maxx-bl.minx+1,bh=bl.maxy-bl.miny+1;
+    if(bw/bh<0.4||bw/bh>3.8)continue;
+    const fill=bl.count/(bw*bh); if(fill<0.45)continue;
+    // granite below check
+    let gy0=Math.min(H,bl.maxy+1),gy1=Math.min(H,bl.maxy+Math.round(bh*1.4)),gn=0,gg=0;
+    for(let y=gy0;y<gy1;y++)for(let x=Math.max(0,bl.minx);x<Math.min(W,bl.maxx);x++){
+      const {s,v}=rgb2hsv(px[(y*W+x)*4],px[(y*W+x)*4+1],px[(y*W+x)*4+2]);gn++;
+      if(s<0.30&&v>0.20&&v<0.82)gg++;}
+    const granite= gn? gg/gn : 0;
+    debugMarks.push({x:bl.cx,y:bl.cy,kind:'blob',granite:granite});
+    if(granite<0.16)continue;
+    // color from blob hue
+    let hsum=0,hc=0;
+    for(const i of bl.sample){const {h}=rgb2hsv(px[i*4],px[i*4+1],px[i*4+2]);hsum+=h;hc++;}
+    const hmed=hsum/Math.max(1,hc);let col=STONE_COLORS[0];
+    if(hmed<16||hmed>165)col=STONE_COLORS[0];
+    else if(hmed>=16&&hmed<48)col=STONE_COLORS[1];
+    else if(hmed>=95&&hmed<140)col=STONE_COLORS[2];
+    else if(hmed>=48&&hmed<95)col=STONE_COLORS[3];
+    const cx=(bl.minx+bl.maxx)/2, base_y=Math.min(H-1, bl.maxy+bh*1.5);
+    stones.push({x:cx,y:base_y,color:col});
+  }
+  // de-dup
+  const dedup=[];
+  for(const s of stones){if(dedup.every(o=>(s.x-o.x)**2+(s.y-o.y)**2>(W*0.06)**2))dedup.push(s);}
+  stones=dedup;
+}
+function sobel(g,w,h){const e=new Uint8Array(w*h),mag=new Float32Array(w*h);let mx=0;
+  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x;
+    const gx=-g[i-w-1]-2*g[i-1]-g[i+w-1]+g[i-w+1]+2*g[i+1]+g[i+w+1];
+    const gy=-g[i-w-1]-2*g[i-w]-g[i-w+1]+g[i+w-1]+2*g[i+w]+g[i+w+1];
+    const m=Math.hypot(gx,gy);mag[i]=m;if(m>mx)mx=m;}
+  const t=mx*0.18;for(let i=0;i<w*h;i++)if(mag[i]>t)e[i]=1;return e;}
+function chamfer(edge,w,h){const INF=1e6,d=new Float32Array(w*h);
+  for(let i=0;i<w*h;i++)d[i]=edge[i]?0:INF;
+  for(let y=0;y<h;y++)for(let x=0;x<w;x++){const i=y*w+x;
+    if(x>0)d[i]=Math.min(d[i],d[i-1]+1);if(y>0)d[i]=Math.min(d[i],d[i-w]+1);
+    if(x>0&&y>0)d[i]=Math.min(d[i],d[i-w-1]+1.414);
+    if(x<w-1&&y>0)d[i]=Math.min(d[i],d[i-w+1]+1.414);}
+  for(let y=h-1;y>=0;y--)for(let x=w-1;x>=0;x--){const i=y*w+x;
+    if(x<w-1)d[i]=Math.min(d[i],d[i+1]+1);if(y<h-1)d[i]=Math.min(d[i],d[i+w]+1);
+    if(x<w-1&&y<h-1)d[i]=Math.min(d[i],d[i+w+1]+1.414);
+    if(x>0&&y<h-1)d[i]=Math.min(d[i],d[i+w-1]+1.414);}
+  return d;}
+function morphClose(m,w,h){const t=m.slice();
+  for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){const i=y*w+x;
+    if(t[i]||t[i-1]||t[i+1]||t[i-w]||t[i+w])m[i]=1;}}
+function connected(m,w,h){const seen=new Uint8Array(w*h),out=[],st=[];
+  for(let s=0;s<w*h;s++){if(!m[s]||seen[s])continue;
+    let count=0,minx=1e9,maxx=-1,miny=1e9,maxy=-1,sx=0,sy=0;const sample=[];
+    st.length=0;st.push(s);seen[s]=1;
+    while(st.length){const i=st.pop();count++;const x=i%w,y=(i/w)|0;
+      if(x<minx)minx=x;if(x>maxx)maxx=x;if(y<miny)miny=y;if(y>maxy)maxy=y;sx+=x;sy+=y;
+      if(sample.length<60)sample.push(i);
+      if(x>0&&m[i-1]&&!seen[i-1]){seen[i-1]=1;st.push(i-1);}
+      if(x<w-1&&m[i+1]&&!seen[i+1]){seen[i+1]=1;st.push(i+1);}
+      if(y>0&&m[i-w]&&!seen[i-w]){seen[i-w]=1;st.push(i-w);}
+      if(y<h-1&&m[i+w]&&!seen[i+w]){seen[i+w]=1;st.push(i+w);}}
+    out.push({count,minx,maxx,miny,maxy,cx:sx/count,cy:sy/count,sample});}
+  return out;}
+
+/* ---------- house geometry ---------- */
+function ringPoint(s,t){const ca=Math.cos(house.th),sa=Math.sin(house.th);
+  const ex=house.a*s*Math.cos(t),ey=house.b*s*Math.sin(t);
+  return[house.cx+ex*ca-ey*sa,house.cy+ex*sa+ey*ca];}
+function ringSamples(realR){const s=realR/R_OUTER_IN,pts=[];
+  for(let k=0;k<16;k++)pts.push(ringPoint(s,k/16*2*Math.PI));return pts;}
+
+/* ---------- editing ---------- */
+const HIT=16;
+canvas.addEventListener('pointerdown',e=>{
+  if(!img)return;const r=canvas.getBoundingClientRect();
+  const x=e.clientX-r.left,y=e.clientY-r.top;
+  if(mode==='house'){
+    if(Math.hypot(x-house.cx,y-house.cy)<HIT){drag={type:'center'};return;}
+    drag={type:'ring'};applyRingDrag(x,y);return;
+  }else{
+    let bi=-1,bd=HIT*HIT;
+    stones.forEach((p,i)=>{const dd=(p.x-x)**2+(p.y-y)**2;if(dd<bd){bd=dd;bi=i;}});
+    if(bi>=0)stones.splice(bi,1); else stones.push({x,y,color:curColor});
+    solution=null;document.getElementById('result').classList.add('hidden');
+    draw();refreshButtons();}
+});
+canvas.addEventListener('pointermove',e=>{
+  if(!drag)return;const r=canvas.getBoundingClientRect();
+  const x=e.clientX-r.left,y=e.clientY-r.top;
+  if(drag.type==='center'){house.cx=x;house.cy=y;}else if(drag.type==='ring')applyRingDrag(x,y);
+  solution=null;document.getElementById('result').classList.add('hidden');draw();
+});
+window.addEventListener('pointerup',()=>{drag=null;refreshButtons();});
+function applyRingDrag(x,y){const dx=x-house.cx,dy=y-house.cy;
+  const asp=house.a>0?house.b/house.a:0.7;house.th=Math.atan2(dy,dx);
+  house.a=Math.max(25,Math.hypot(dx,dy));house.b=house.a*Math.min(1.05,Math.max(0.4,asp));}
+
+document.getElementById('redetect').onclick=()=>{setStatus('<span class="spinner"></span> Re-detecting…',true);setTimeout(autoDetect,30);};
+document.getElementById('measure').onclick=measure;
+document.getElementById('save').onclick=saveEnd;
+document.getElementById('export').onclick=exportData;
+document.getElementById('dbgtoggle').onclick=function(){showDebug=!showDebug;this.classList.toggle('on',showDebug);draw();};
+document.querySelectorAll('#seg button').forEach(b=>{b.onclick=()=>{mode=b.dataset.m;
+  document.querySelectorAll('#seg button').forEach(x=>x.classList.remove('on'));b.classList.add('on');
+  document.getElementById('swatches').style.display=mode==='stones'?'flex':'none';draw();};});
+const swWrap=document.getElementById('swatches');
+STONE_COLORS.forEach((c,i)=>{const s=document.createElement('div');
+  s.className='sw'+(i===0?' sel':'');s.style.background=c.hex;s.title=c.name;
+  s.onclick=()=>{curColor=c;[...swWrap.children].forEach(x=>x.classList.remove('sel'));s.classList.add('sel');};
+  swWrap.appendChild(s);});
+function refreshButtons(){
+  document.getElementById('measure').disabled=!(house.a>0&&stones.length>=1);
+  document.getElementById('save').disabled=!solution;
+  document.getElementById('export').disabled=dataset.length===0;
+}
+
+/* ---------- drawing ---------- */
+function draw(){
+  if(!img)return;ctx.clearRect(0,0,imgW,imgH);ctx.drawImage(img,0,0,imgW,imgH);
+  if(showDebug)drawDebug();
+  if(house.a>0)drawHouse();
+  stones.forEach(s=>{ctx.beginPath();ctx.arc(s.x,s.y,mode==='stones'?8:6,0,7);
+    ctx.fillStyle=s.color.hex;ctx.fill();ctx.lineWidth=2;
+    ctx.strokeStyle=mode==='stones'?'#11202b':'#fff';ctx.stroke();});
+  if(solution)drawSolution();
+}
+function drawDebug(){
+  debugMarks.forEach(m=>{ctx.beginPath();ctx.arc(m.x,m.y,9,0,7);
+    ctx.lineWidth=1.5;ctx.strokeStyle=m.granite>=0.16?'rgba(31,138,76,.9)':'rgba(192,57,43,.7)';
+    ctx.setLineDash([3,3]);ctx.stroke();ctx.setLineDash([]);});
+}
+function drawHouse(){const active=mode==='house';
+  [[24/48,'#c0392b'],[1.0,'#1f8a4c']].forEach(([s,col])=>{ctx.beginPath();
+    for(let k=0;k<=120;k++){const t=k/120*2*Math.PI;const p=ringPoint(s,t);
+      k?ctx.lineTo(p[0],p[1]):ctx.moveTo(p[0],p[1]);}
+    ctx.closePath();ctx.lineWidth=active?2.4:1.6;ctx.strokeStyle=col;
+    ctx.globalAlpha=active?.95:.7;ctx.stroke();ctx.globalAlpha=1;});
+  ctx.beginPath();ctx.arc(house.cx,house.cy,active?7:5,0,7);
+  ctx.fillStyle='#0d2438';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#fff';ctx.stroke();
+  if(active){const h=ringPoint(1.0,0);ctx.beginPath();ctx.arc(h[0],h[1],6,0,7);
+    ctx.fillStyle='#e8920c';ctx.fill();ctx.lineWidth=2;ctx.strokeStyle='#fff';ctx.stroke();}
+}
+function drawSolution(){const {ci,ranked}=solution;
+  ranked.forEach((s,i)=>{const col=i===0?'#e8920c':'rgba(90,107,118,.85)';
+    ctx.beginPath();ctx.moveTo(ci[0],ci[1]);ctx.lineTo(s.img[0],s.img[1]);
+    ctx.lineWidth=i===0?3:1.5;ctx.strokeStyle=col;ctx.stroke();
+    const mx=(ci[0]+s.img[0])/2,my=(ci[1]+s.img[1])/2,lbl=s.dist.toFixed(1)+'"';
+    ctx.font='600 12px Barlow Semi Condensed, sans-serif';const w=ctx.measureText(lbl).width+8;
+    ctx.fillStyle=i===0?'#e8920c':'#33424c';rr(mx-w/2,my-9,w,16,3);ctx.fill();
+    ctx.fillStyle='#fff';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(lbl,mx,my);});
+  ctx.beginPath();ctx.arc(ci[0],ci[1],6,0,7);ctx.fillStyle='#0d2438';ctx.fill();
+  ctx.lineWidth=2;ctx.strokeStyle='#fff';ctx.stroke();}
+function rr(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+
+/* ============================================================ MEASURE (validated) */
+function measure(){
+  const inner=ringSamples(R_INNER_IN),outer=ringSamples(R_OUTER_IN);
+  const Hr=recoverHomography(inner,outer);
+  const wi=centroid(inner.map(q=>applyH(Hr,q))),wo=centroid(outer.map(q=>applyH(Hr,q)));
+  const center=[(wi[0]+wo[0])/2,(wi[1]+wo[1])/2];
+  const ci=worldToImg(Hr,center);
+  const ringErr=ringResidual(Hr,center,inner,outer);
+  const ranked=stones.map(s=>{const w=applyH(Hr,[s.x,s.y]);
+    return{color:s.color,img:[s.x,s.y],dist:Math.hypot(w[0]-center[0],w[1]-center[1])};})
+    .sort((a,b)=>a.dist-b.dist);
+  solution={Hr,center,ci,ranked,ringErr};renderResult(ranked,ringErr);draw();refreshButtons();
+}
+function ringResidual(Hr,center,inner,outer){let se=0,n=0;
+  for(const[pts,R]of[[inner,R_INNER_IN],[outer,R_OUTER_IN]]){pts.forEach(q=>{const w=applyH(Hr,q);
+    se+=Math.pow(Math.hypot(w[0]-center[0],w[1]-center[1])-R,2);n++;});}
+  return Math.sqrt(se/n);}
+function renderResult(ranked,ringErr){
+  const res=document.getElementById('result');res.classList.remove('hidden');
+  document.getElementById('savednote').classList.remove('show');
+  const win=ranked[0],margin=ranked.length>1?ranked[1].dist-win.dist:Infinity;
+  const unc=Math.max(ringErr,0.3);let cls,label;
+  if(ringErr<1.5&&margin>unc*2){cls='good';label='High';}
+  else if(margin>unc){cls='warn';label='Review';}else{cls='stop';label='Use device';}
+  const rows=ranked.map(s=>`<tr><td><span class="rkdot" style="background:${s.color.hex}"></span>${s.color.name}</td>
+    <td class="dist">${s.dist.toFixed(1)}"</td></tr>`).join('');
+  res.innerHTML=`<div class="verdict"><div class="vstone" style="background:${win.color.hex}"></div>
+    <div class="vtext"><div class="win">${win.color.name} — shot rock</div>
+    <div class="mar">${isFinite(margin)?'by ~'+margin.toFixed(1)+'"':'only stone marked'}</div></div>
+    <div class="conf ${cls}">${label}</div></div>
+    <table><thead><tr><th>Stone</th><th style="text-align:right">From button</th></tr></thead>
+    <tbody>${rows}</tbody></table>
+    <div class="disclaim">Ring-fit RMS ${ringErr.toFixed(2)}". Approximate — not certified. On close calls, defer to an official device.</div>`;
+}
+
+/* ============================================================ DATASET CAPTURE */
+function saveEnd(){
+  if(!solution)return;
+  // store everything needed to retrain detection: image + confirmed truth (normalized 0..1)
+  const rec={
+    end:endNum,
+    ts:new Date().toISOString(),
+    image:imgDataURL,
+    imgW:img.width, imgH:img.height,
+    house:{cx:house.cx/imgW,cy:house.cy/imgH,a:house.a/imgW,b:house.b/imgW,th:house.th},
+    stones:stones.map(s=>({x:s.x/imgW,y:s.y/imgH,color:s.color.name})),
+    result:solution.ranked.map(r=>({color:r.color.name,dist:+r.dist.toFixed(2)})),
+    shotRock:solution.ranked[0].color.name,
+    marginIn:solution.ranked.length>1?+(solution.ranked[1].dist-solution.ranked[0].dist).toFixed(2):null,
+    ringFitRMS:+solution.ringErr.toFixed(2)
+  };
+  dataset.push(rec);
+  document.getElementById('savednote').classList.add('show');
+  setStatus('End '+endNum+' saved. '+dataset.length+' end'+(dataset.length>1?'s':'')+' in dataset. Load the next photo.');
+  endNum++;refreshButtons();
+}
+function exportData(){
+  if(!dataset.length)return;
+  const blob=new Blob([JSON.stringify(dataset,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);const a=document.createElement('a');
+  a.href=url;a.download='shotrock-dataset-'+new Date().toISOString().slice(0,10)+'.json';
+  document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url);
+  setStatus('Exported '+dataset.length+' ends. Keep this file — it trains the detector.');
+}
+
+/* homography + linalg (validated to 0.000") */
+function applyH(H,p){const x=H[0]*p[0]+H[1]*p[1]+H[2],y=H[3]*p[0]+H[4]*p[1]+H[5],
+  w=H[6]*p[0]+H[7]*p[1]+H[8];return[x/w,y/w];}
+function worldToImg(Hr,P){return applyH(invert3(Hr),P);}
+function recoverHomography(inner,outer){
+  const oc=centroid(outer);let sumr=0;outer.forEach(p=>sumr+=Math.hypot(p[0]-oc[0],p[1]-oc[1]));
+  const meanr=sumr/outer.length,s=R_OUTER_IN/meanr;
+  let p=[s,0,-s*oc[0],0,s,-s*oc[1],0,0];
+  const resid=(p)=>{const H=[p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],1];const r=[];
+    for(const[pts,R]of[[inner,R_INNER_IN],[outer,R_OUTER_IN]]){const w=pts.map(q=>applyH(H,q));
+      const c=centroid(w);w.forEach(pt=>r.push(Math.hypot(pt[0]-c[0],pt[1]-c[1])-R));}
+    const wi=centroid(inner.map(q=>applyH(H,q))),wo=centroid(outer.map(q=>applyH(H,q)));
+    r.push((wi[0]-wo[0])*3);r.push((wi[1]-wo[1])*3);return r;};
+  let lambda=1e-3,prev=sumSq(resid(p));
+  for(let it=0;it<120;it++){const r0=resid(p),m=r0.length,n=p.length;
+    const J=[];for(let i=0;i<m;i++)J.push(new Array(n).fill(0));
+    for(let j=0;j<n;j++){const dp=Math.max(1e-6,Math.abs(p[j])*1e-6);const pp=p.slice();pp[j]+=dp;
+      const rj=resid(pp);for(let i=0;i<m;i++)J[i][j]=(rj[i]-r0[i])/dp;}
+    const JtJ=matT_mat(J,J),Jtr=matT_vec(J,r0);for(let k=0;k<n;k++)JtJ[k][k]+=lambda*JtJ[k][k]+1e-9;
+    const delta=solveLin(JtJ,Jtr.map(v=>-v));if(!delta){lambda*=10;continue;}
+    const pn=p.map((v,i)=>v+delta[i]),cost=sumSq(resid(pn));
+    if(cost<prev){p=pn;prev=cost;lambda=Math.max(lambda*0.5,1e-9);}else lambda*=4;
+    if(lambda>1e7)break;}
+  return[p[0],p[1],p[2],p[3],p[4],p[5],p[6],p[7],1];}
+function centroid(pts){let x=0,y=0;pts.forEach(p=>{x+=p[0];y+=p[1];});return[x/pts.length,y/pts.length];}
+function sumSq(v){return v.reduce((a,b)=>a+b*b,0);}
+function matT_mat(A,B){const n=A[0].length,p=B[0].length,m=A.length;
+  const R=Array.from({length:n},()=>new Array(p).fill(0));
+  for(let i=0;i<n;i++)for(let j=0;j<p;j++){let s=0;for(let k=0;k<m;k++)s+=A[k][i]*B[k][j];R[i][j]=s;}return R;}
+function matT_vec(A,v){const n=A[0].length,m=A.length,r=new Array(n).fill(0);
+  for(let i=0;i<n;i++){let s=0;for(let k=0;k<m;k++)s+=A[k][i]*v[k];r[i]=s;}return r;}
+function solveLin(M,b){const n=b.length,A=M.map((r,i)=>r.concat(b[i]));
+  for(let c=0;c<n;c++){let piv=c;for(let r=c+1;r<n;r++)if(Math.abs(A[r][c])>Math.abs(A[piv][c]))piv=r;
+    if(Math.abs(A[piv][c])<1e-12)return null;[A[c],A[piv]]=[A[piv],A[c]];
+    for(let r=0;r<n;r++){if(r===c)continue;const f=A[r][c]/A[c][c];
+      for(let k=c;k<=n;k++)A[r][k]-=f*A[c][k];}}
+  const out=new Array(n);for(let i=0;i<n;i++)out[i]=A[i][n]/A[i][i];return out;}
+function invert3(m){const[a,b,c,d,e,f,g,h,i]=m;const A=e*i-f*h,B=-(d*i-f*g),C=d*h-e*g;
+  const det=a*A+b*B+c*C,D=-(b*i-c*h),E=a*i-c*g,F=-(a*h-b*g),G=b*f-c*e,Hh=-(a*f-c*d),I=a*e-b*d;
+  return[A/det,D/det,G/det,B/det,E/det,Hh/det,C/det,F/det,I/det];}
+
+refreshButtons();
+</script>
+</body>
+</html>
