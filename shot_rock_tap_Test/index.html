@@ -81,7 +81,7 @@
 <body>
 <header>
   <h1>Shot Rock · Measure V6</h1>
-  <div class="sub">Pin sets from the rings → tap each stone → it calls the shot, or tells you it's too close. Pinch to zoom.</div>
+  <div class="sub">Pin sets from the rings → double-tap each stone → it calls the shot, or tells you it's too close. Pinch to zoom.</div>
 </header>
 
 <div class="bar">
@@ -101,7 +101,7 @@
 <div class="info" id="status">Load a curling photo to begin.</div>
 <div class="hint" id="hint" style="display:none"></div>
 
-<div class="wrap"><div class="canvasWrap" id="canvasWrap"><canvas id="cv"></canvas><div class="zoomHint" id="zoomHint">pinch to zoom · drag to pan</div></div></div>
+<div class="wrap"><div class="canvasWrap" id="canvasWrap"><canvas id="cv"></canvas><div class="zoomHint" id="zoomHint">pinch = zoom · drag = pan · double-tap = place</div></div></div>
 
 <div class="results" id="results"></div>
 <div class="toast" id="toast"></div>
@@ -265,7 +265,8 @@ function endPointer(e){
   pointers.delete(e.pointerId);
   if(pointers.size<2) pinchPrev=null;
   if(pointers.size===0){
-    if(wasSingle && movedDist<6 && downImg){ handleTap(downImg); }
+    // Single tap no longer places anything (prevents phantom stones).
+    // Placement happens on double-tap only; see the dbl-tap handler below.
     draggingPin=false; panPrev=null; downImg=null;
   }
 }
@@ -280,17 +281,18 @@ function handleTap(p){
   else if(mode==='snap'){ snapPts.push({x:p.x,y:p.y}); updateSnapBtn(); redraw(); }
 }
 
-/* double-tap to zoom */
-let lastTapT=0;
+/* double-tap to PLACE (stone / pin / snap). Zoom is pinch-only now. */
+let lastTapT=0,lastTapX=0,lastTapY=0;
 canvas.addEventListener('pointerup',e=>{
   const t=Date.now();
-  if(t-lastTapT<280 && movedDist<6){
-    const rect=wrapEl.getBoundingClientRect();const ox=e.clientX-rect.left,oy=e.clientY-rect.top;
-    const ns = view.scale>view.minScale*2 ? view.minScale : view.minScale*4;
-    view.tx=ox-(ox-view.tx)*(ns/view.scale); view.ty=oy-(oy-view.ty)*(ns/view.scale); view.scale=ns;
-    clampPan();applyView();
+  const near = Math.hypot(e.clientX-lastTapX, e.clientY-lastTapY) < 40;
+  if(t-lastTapT<280 && near && movedDist<6){
+    const p=evtToImg(e);
+    handleTap(p);
+    lastTapT=0; // consume, so a triple-tap doesn't double-fire
+    return;
   }
-  lastTapT=t;
+  lastTapT=t; lastTapX=e.clientX; lastTapY=e.clientY;
 });
 
 /* ---- modes ---- */
@@ -299,7 +301,7 @@ function setMode(m){
   document.getElementById('modeStone').classList.toggle('active',m==='stone');
   document.getElementById('modePin').classList.toggle('active',m==='pin');
   document.getElementById('modeSnap').classList.toggle('active',m==='snap');
-  if(m==='stone')setHint('Tap each stone\u2019s granite. The circle is capped to one stone width, so a touching neighbor can\u2019t pull it off.');
+  if(m==='stone')setHint('Double-tap each stone\u2019s granite. The circle is capped to one stone width, so a touching neighbor can\u2019t pull it off.');
   if(m==='pin')setHint('Pinch to zoom in, then tap to drop the pin and drag to nudge it onto the exact center.');
   if(m==='snap'){snapPts=[];setHint('Tap <b>4+ points</b> spread along ONE ring, then press <b>Fit Ring \u2192 Pin</b>.');}
   updateSnapBtn();
@@ -333,16 +335,88 @@ function autoPin(){
   if(res.scaleCmPerPx)scaleCmPerPx=res.scaleCmPerPx;
   tiltFrac=res.tiltFrac||0;
   if(res.pin){
-    pin={x:res.pin.x,y:res.pin.y,method:res.method==='concentric'?'auto':'snap',conf:res.conf,sigmaPx:res.sigmaPx};
-    if(res.conf>=0.6){statusEl.textContent='Pin set from the rings. Tap each stone.';setHint('Auto-pin looks solid. If it\u2019s even slightly off, use <b>Move Pin</b> (pinch in first).');}
-    else{statusEl.textContent='Pin estimated from one ring \u2014 verify it.';setHint('Only a partial ring was found. Pinch in and check the pin; use <b>Ring-Snap</b> or <b>Move Pin</b> to correct.');}
+    const isAuto = (res.method==='concentric'||res.method==='button');
+    pin={x:res.pin.x,y:res.pin.y,method:isAuto?'auto':'snap',conf:res.conf,sigmaPx:res.sigmaPx};
+    if(res.conf>=0.6){statusEl.textContent='Pin found from the rings. Double-tap each stone.';setHint('Auto-pin locked on the button. If it\u2019s even slightly off, use <b>Move Pin</b> (pinch in first).');}
+    else{statusEl.textContent='Pin estimated \u2014 verify it.';setHint('Ring was partial or angled. Pinch in and check the pin; use <b>Ring-Snap</b> or <b>Move Pin</b> to correct.');}
   } else {
     statusEl.textContent='No pin found automatically \u2014 set it manually.';
     setHint('No clear ring arc. Use <b>Ring-Snap</b> (tap along a ring) for the most accurate pin.');
   }
 }
+/* ============================================================
+   HOUSE PIN via the BUTTON HOLE (validated on real partials).
+   1) find the filled 4ft disc (red OR blue, color-agnostic) -> coarse center + radius
+   2) refine to the little center "hole" punched in the disc -> that hole IS the pin,
+      and being small/central/fully-visible it survives a ring cut off by the frame.
+   3) the 4ft radius gives scale (known 4ft diameter = 121.92 cm).
+   ============================================================ */
+function findHousePin(){
+  const W=canvas.width,H=canvas.height,D=imgData.data;
+  // sample step keeps this fast on big phone photos
+  const step=Math.max(1,Math.round(Math.min(W,H)/360));
+  // collect red and blue filled pixels with their centroid + spread
+  function gather(kind){
+    let n=0,sx=0,sy=0; const px=[];
+    for(let y=0;y<H;y+=step)for(let x=0;x<W;x+=step){
+      const i=(y*W+x)*4,r=D[i],g=D[i+1],b=D[i+2];
+      const mx=Math.max(r,g,b),mn=Math.min(r,g,b),s=mx?(mx-mn)/mx:0;
+      let hit=false;
+      if(kind==='red') hit=(r>g+18&&r>b+14&&s>0.12);
+      else             hit=(b>r+8&&b>g+4&&s>0.10);
+      if(hit){n++;sx+=x;sy+=y;px.push(x,y);}
+    }
+    if(n<40)return null;
+    const cx=sx/n,cy=sy/n;
+    // radius = 85th pct distance (robust outer extent of the filled disc)
+    let ds=[];for(let k=0;k<px.length;k+=2)ds.push(Math.hypot(px[k]-cx,px[k+1]-cy));
+    ds.sort((a,b)=>a-b);
+    const r=ds[Math.floor(ds.length*0.85)]||0;
+    return {cx,cy,r,n};
+  }
+  const red=gather('red'), blue=gather('blue');
+  // pick the candidate that looks most like the FILLED 4ft disc: the denser, tighter one.
+  // The 4ft is the inner solid colour; the 12ft band is an annulus (sparser per-area).
+  let base=null,which='4ft';
+  if(red&&blue){ base = (red.n/(red.r*red.r)) >= (blue.n/(blue.r*blue.r)) ? red : blue; }
+  else base = red||blue;
+  if(!base) return null;
+
+  // ---- refine to the button hole: the redness/colour MINIMUM near the coarse centre ----
+  const rOut=base.r;
+  const win=Math.max(8,Math.round(rOut*0.5));
+  const sc2=Math.max(1,Math.round(win/60)); // fine sampling inside the window
+  let bestScore=-1,bx=base.cx,by=base.cy;
+  for(let oy=-win;oy<=win;oy+=sc2)for(let ox=-win;ox<=win;ox+=sc2){
+    const x=(base.cx+ox)|0,y=(base.cy+oy)|0;
+    if(x<0||y<0||x>=W||y>=H)continue;
+    const i=(y*W+x)*4,r=D[i],g=D[i+1],b=D[i+2];
+    const colour=Math.max(r-Math.max(g,b), b-Math.max(r,g)); // how strongly painted
+    const bright=(r+g+b);
+    // the hole = low colour (paint drops out) + bright (white centre) + near centre
+    const centreW=Math.exp(-((ox*ox+oy*oy)/(2*(win*0.45)*(win*0.45))));
+    const score=centreW*(bright/765)*(1/(1+Math.max(0,colour)));
+    if(score>bestScore){bestScore=score;bx=x;by=y;}
+  }
+  // scale from 4ft radius (only trust when the disc is the 4ft and reasonably whole)
+  const scaleCm = rOut>8 ? RING_CM['4ft']/(2*rOut) : null;
+  // tilt proxy: how far the hole sat from the coarse centroid, normalised by radius.
+  // big shift => partial/oblique => widen uncertainty.
+  const shift=Math.hypot(bx-base.cx,by-base.cy)/Math.max(1,rOut);
+  const tilt=Math.min(0.25,shift*0.6);
+  const sigma=Math.max(3, rOut*(0.02+shift*0.10));
+  const conf=clamp(0.85-shift*0.8,0.45,0.85);
+  return {pin:{x:bx,y:by},method:'button',conf,sigmaPx:sigma,
+          ring:{x:base.cx,y:base.cy,r:rOut,MA:2*rOut,ma:2*rOut,which},
+          scaleCmPerPx:scaleCm,tiltFrac:tilt};
+}
+
 function solveCenter(){
   const W=canvas.width,H=canvas.height;
+  // PRIMARY: button-hole finder (works on partial & angled houses)
+  const bp=findHousePin();
+  if(bp&&bp.pin) return bp;
+  // FALLBACK: original ring-ellipse eigensolver
   const er=biggestRingEllipse('red'),eb=biggestRingEllipse('blue');
   function scaleFrom(e,which){if(!e)return null;const dpx=(e.MA+e.ma)/2;return RING_CM[which]/dpx;}
   function eccTilt(e){if(!e)return 0;const ecc=1-Math.min(e.MA,e.ma)/Math.max(e.MA,e.ma);return Math.min(0.25,ecc*0.5);}
@@ -474,12 +548,16 @@ function detectStoneFromSeed(seedX,seedY){
     let minx=1e9,miny=1e9,maxx=-1,maxy=-1,sumx=0,sumy=0;
     for(const idx of comp){const lx=idx%w,ly=(idx/w)|0;minx=Math.min(minx,lx);maxx=Math.max(maxx,lx);miny=Math.min(miny,ly);maxy=Math.max(maxy,ly);sumx+=lx;sumy+=ly;}
     const area=comp.length,cx=sumx/area,cy=sumy/area,d=dist(cx,cy,sx,sy);
+    // HARD CONSTRAINT: the tap decides which stone. A blob whose centroid sits
+    // more than ~one stone-radius from the tap belongs to a neighbor (e.g. red
+    // when you tapped yellow) and is rejected outright.
+    if(d > rPred*1.05) continue;
     const bw=maxx-minx+1,bh=maxy-miny+1,boxMax=Math.max(bw,bh),aspect=Math.min(bw,bh)/Math.max(1,boxMax);
     const nearScore=1-Math.min(1,d/searchR),sizeScore=Math.min(1,area/(Math.PI*rPred*rPred*0.55)),aspectScore=clamp((aspect-0.30)/0.55,0,1);
-    const score=0.42*nearScore+0.30*sizeScore+0.28*aspectScore;
+    const score=0.62*nearScore+0.20*sizeScore+0.18*aspectScore;
     if(score>bestScore){bestScore=score;best={comp,minx,miny,maxx,maxy,cx,cy,area};}
   }
-  if(!best){toast('No stone body found \u2014 pinch in and tap the granite.');return null;}
+  if(!best){toast('No stone body found \u2014 pinch in and double-tap the granite.');return null;}
   const set=new Set(best.comp);const pts=[],bpts=[];
   for(const idx of best.comp){const lx=idx%w,ly=(idx/w)|0;const px=x0+lx,py=y0+ly;pts.push({x:px,y:py});
     let edge=false;if(lx+1>=w||!set.has(idx+1))edge=true;else if(lx-1<0||!set.has(idx-1))edge=true;else if(ly+1>=h||!set.has(idx+w))edge=true;else if(ly-1<0||!set.has(idx-w))edge=true;
@@ -499,15 +577,20 @@ function detectStoneFromSeed(seedX,seedY){
   if(scaleCmPerPx){
     const lockR=rPred;
     let bcx=circle.x,bcy=circle.y,bestCover=-1;
-    const span=Math.round(lockR*0.55);
+    // Tighter search (was 0.55R). The locked disk may only nudge, not wander
+    // toward the neighbor's granite. Coverage is also tie-broken toward the tap.
+    const span=Math.round(lockR*0.28);
+    const maxDrift=lockR*0.40; // hard ceiling on how far center may move from the tap
     for(let oy=-span;oy<=span;oy+=2)for(let ox=-span;ox<=span;ox+=2){
       const ccx=circle.x+ox, ccy=circle.y+oy;
+      if(dist(ccx,ccy,seedX,seedY) > maxDrift) continue; // stay anchored to the tap
       let inside=0,gran=0;
       for(let a=0;a<16;a++){const t=a/16*Math.PI*2;
         for(let rr=lockR*0.45;rr<=lockR*0.98;rr+=lockR*0.18){
           const px=ccx+Math.cos(t)*rr, py=ccy+Math.sin(t)*rr;inside++;
           if(isGraniteAt(px,py))gran++;}}
-      const cover=gran/Math.max(1,inside);
+      let cover=gran/Math.max(1,inside);
+      cover -= 0.0008*dist(ccx,ccy,seedX,seedY); // nudge toward the tap on ties
       if(cover>bestCover){bestCover=cover;bcx=ccx;bcy=ccy;}
     }
     circle={x:bcx,y:bcy,r:lockR};
@@ -522,6 +605,12 @@ function detectStoneFromSeed(seedX,seedY){
     let s=0;for(const q of bpts)s+=Math.abs(dist(q.x,q.y,circle.x,circle.y)-circle.r);residual=(s/bpts.length)/circle.r;
   }
 
+  // FINAL CHECK: the tap must land inside the circle we return. If it doesn't,
+  // the fit wandered to a neighbor — refuse rather than log a wrong stone.
+  if(dist(seedX,seedY,circle.x,circle.y) > circle.r){
+    toast('Tap landed outside the stone \u2014 pinch in and double-tap its center.');
+    return null;
+  }
   const label=labelColor(circle.x,circle.y,circle.r);
   const conf=stoneConfidence(circle,residual,rPred);
   return {x:circle.x,y:circle.y,r:circle.r,seed:{x:seedX,y:seedY},label,residual:residual==null?0.1:residual,conf,trusted:!!scaleCmPerPx&&conf>=55};
