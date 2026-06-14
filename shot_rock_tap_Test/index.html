@@ -12,8 +12,8 @@
   .bar{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
   button,label.file{border:1px solid #3a4b61;background:#1a2532;color:var(--ink);padding:10px 12px;border-radius:10px;font-weight:650;font-size:14px}
   button.active{background:#173d25;border-color:#2dd66a}.danger{background:#3a1b1b;border-color:#7c3333}
-  input[type=file]{display:none}.wrap{padding:12px}.canvasWrap{width:100%;overflow:auto;border:1px solid var(--line);border-radius:12px;background:#05080b;touch-action:none}
-  canvas{display:block;max-width:none;touch-action:none}
+  input[type=file]{display:none}.wrap{padding:12px}.canvasWrap{width:100%;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#05080b;touch-action:none}
+  canvas{display:block;width:100%;height:auto;max-width:100%;touch-action:none}
   .info{padding:12px 16px;color:var(--muted);font-size:14px;line-height:1.4}.results{padding:0 16px 20px}
   table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:14px}
   th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left}th{color:#cfe1f5;background:#17202b}tr:last-child td{border-bottom:0}
@@ -22,8 +22,8 @@
 </head>
 <body>
 <header>
-  <h1>Shot Rock · Tap-Seed Test</h1>
-  <div class="sub">Upload photo → auto-estimate pin → tap candidate stones. Tap is only a seed; measurement uses fitted stone edge.</div>
+  <h1>Shot Rock · Tap-Seed Test FIT V2</h1>
+  <div class="sub">Upload photo → full image stays visible → tap candidate stones. V2 constrains circle to visible granite edge.</div>
 </header>
 <div class="bar">
   <label class="file">Load Photo<input id="file" type="file" accept="image/*"></label>
@@ -76,45 +76,91 @@ function objectMaskAt(x,y){
   const shadow = v<0.58 && s<0.35;
   return dark || plastic || shadow;
 }
+function isGraniteAt(x,y){
+  const W=canvas.width,H=canvas.height,D=imgData.data;
+  if(x<0||y<0||x>=W||y>=H)return false;
+  let i=(Math.floor(y)*W+Math.floor(x))*4;
+  let r=D[i],g=D[i+1],b=D[i+2];
+  let [h,s,v]=rgbToHsv(r,g,b);
+  // Granite is dark/gray/speckled. Avoid red/blue house paint and plastic handles.
+  const sum=r+g+b;
+  const grayish = Math.abs(r-g)<55 && Math.abs(g-b)<65;
+  return (v<0.55 && s<0.42 && sum<430 && grayish);
+}
 function detectStoneFromSeed(seedX,seedY){
   const W=canvas.width,H=canvas.height;
-  const expectedR = Math.max(28, Math.min(130, Math.min(W,H)*0.085));
-  const searchR = expectedR*1.65;
+
+  // V2 fix: the tap selects the stone, but the fitted circle must hug the visible granite.
+  // Do NOT inflate to a giant generic search circle.
+  const baseR = Math.max(35, Math.min(120, Math.min(W,H)*0.095));
+  const searchR = baseR*1.65;
   const x0=clamp(Math.floor(seedX-searchR),0,W-1), x1=clamp(Math.ceil(seedX+searchR),0,W-1);
   const y0=clamp(Math.floor(seedY-searchR),0,H-1), y1=clamp(Math.ceil(seedY+searchR),0,H-1);
   const w=x1-x0+1,h=y1-y0+1, N=w*h;
-  const mask=new Uint8Array(N);
-  for(let yy=0;yy<h;yy++){for(let xx=0;xx<w;xx++){const gx=x0+xx,gy=y0+yy; const dist=Math.hypot(gx-seedX,gy-seedY); if(dist<=searchR && objectMaskAt(gx,gy)) mask[yy*w+xx]=1;}}
-  // Morphological close/dilate a bit, so handle + granite merge.
-  let m=mask;
-  for(let pass=0;pass<2;pass++) m=dilate(m,w,h);
-  for(let pass=0;pass<1;pass++) m=erode(m,w,h);
-  // Find component nearest seed.
+
+  // Build granite-only mask around the tapped stone.
+  const m=new Uint8Array(N);
+  for(let yy=0;yy<h;yy++){
+    for(let xx=0;xx<w;xx++){
+      const gx=x0+xx, gy=y0+yy;
+      if(Math.hypot(gx-seedX,gy-seedY)<=searchR && isGraniteAt(gx,gy)) m[yy*w+xx]=1;
+    }
+  }
+
+  // Close small gaps, but do not over-dilate or the fitted radius becomes too big.
+  let mm=m;
+  for(let pass=0;pass<1;pass++) mm=dilate(mm,w,h);
+  for(let pass=0;pass<1;pass++) mm=erode(mm,w,h);
+
+  // Find the granite component closest to the tap.
   const sx=clamp(Math.round(seedX-x0),0,w-1), sy=clamp(Math.round(seedY-y0),0,h-1);
-  let start=sy*w+sx;
-  if(!m[start]){
-    let best=-1,bd=1e9; const rad=Math.min(50,Math.floor(searchR));
-    for(let yy=Math.max(0,sy-rad);yy<=Math.min(h-1,sy+rad);yy++)for(let xx=Math.max(0,sx-rad);xx<=Math.min(w-1,sx+rad);xx++){let idx=yy*w+xx;if(m[idx]){let d=(xx-sx)**2+(yy-sy)**2;if(d<bd){bd=d;best=idx;}}}
-    if(best<0){alert('No stone-like object near tap. Try tapping closer to the stone body.'); return null;} start=best;
+  let best=-1, bd=1e9;
+  const maxFind=Math.floor(searchR);
+  for(let yy=Math.max(0,sy-maxFind); yy<=Math.min(h-1,sy+maxFind); yy++){
+    for(let xx=Math.max(0,sx-maxFind); xx<=Math.min(w-1,sx+maxFind); xx++){
+      const idx=yy*w+xx;
+      if(!mm[idx]) continue;
+      const d=(xx-sx)*(xx-sx)+(yy-sy)*(yy-sy);
+      if(d<bd){bd=d; best=idx;}
+    }
   }
-  const comp=floodComponent(m,w,h,start);
-  if(comp.pixels.length<80){alert('Tiny component. Try another tap.');return null;}
-  // Include neighboring object pixels around comp center so handle-only seed can pull in granite ring.
-  let cx=0,cy=0; for(const p of comp.pixels){cx+=p%w;cy+=Math.floor(p/w);} cx/=comp.pixels.length; cy/=comp.pixels.length;
-  const mergeR=expectedR*1.22; const pts=[];
-  for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){if(m[yy*w+xx] && Math.hypot(xx-cx,yy-cy)<mergeR) pts.push({x:x0+xx,y:y0+yy,lx:xx,ly:yy});}
-  if(pts.length<120){alert('Not enough object pixels to fit.');return null;}
-  const boundary = boundaryPoints(pts, x0,y0,w,h,m);
-  let circle = fitCircleKasa(boundary.length>20?boundary:pts);
-  if(!circle || !isFinite(circle.r) || circle.r<18 || circle.r>Math.min(W,H)*0.18){
-    // fallback from bbox
-    let minx=1e9,miny=1e9,maxx=-1,maxy=-1; for(const p of pts){minx=Math.min(minx,p.x);maxx=Math.max(maxx,p.x);miny=Math.min(miny,p.y);maxy=Math.max(maxy,p.y);} circle={x:(minx+maxx)/2,y:(miny+maxy)/2,r:Math.max(maxx-minx,maxy-miny)/2};
+  if(best<0){alert('No granite found near tap. Try tapping closer to the visible stone body.'); return null;}
+
+  const comp=floodComponent(mm,w,h,best);
+  if(comp.pixels.length<80){alert('Granite component too small. Try another tap.');return null;}
+
+  const pts=[];
+  let minx=1e9,miny=1e9,maxx=-1,maxy=-1;
+  for(const idx of comp.pixels){
+    const lx=idx%w, ly=Math.floor(idx/w);
+    const px=x0+lx, py=y0+ly;
+    pts.push({x:px,y:py,lx,ly});
+    minx=Math.min(minx,px); maxx=Math.max(maxx,px); miny=Math.min(miny,py); maxy=Math.max(maxy,py);
   }
-  // Pull radius toward expected if wildly off, but keep center.
-  const r=circle.r;
-  const label=labelColor(circle.x,circle.y,circle.r);
-  const pinPt=pin||{x:W/2,y:H/2}; const centerDist=Math.hypot(circle.x-pinPt.x,circle.y-pinPt.y); const edgePx=Math.max(0,centerDist-circle.r);
-  const cmPerPx=STONE_DIAMETER_CM/(2*circle.r); const edgeCm=edgePx*cmPerPx;
+
+  const boxW=maxx-minx, boxH=maxy-miny;
+  const bboxR=Math.max(boxW,boxH)/2;
+  const bboxCx=(minx+maxx)/2, bboxCy=(miny+maxy)/2;
+  const boundary = boundaryPoints(pts, x0,y0,w,h,mm);
+  let circle = fitCircleKasa(boundary.length>30?boundary:pts);
+
+  // Kasa can explode on partial arcs. Constrain it to the visible granite bounding box.
+  const minR = Math.max(18, bboxR*0.75);
+  const maxR = Math.max(28, bboxR*1.22);
+  const centerJump = circle ? Math.hypot(circle.x-bboxCx,circle.y-bboxCy) : 9999;
+  if(!circle || !isFinite(circle.r) || circle.r<minR || circle.r>maxR || centerJump>bboxR*0.65){
+    circle={x:bboxCx,y:bboxCy,r:Math.max(22,bboxR*1.06)};
+  } else {
+    // Slightly expand to reach outer granite edge, but never to the huge search area.
+    circle.r = clamp(circle.r*1.04, minR, maxR);
+  }
+
+  const label=labelColor(seedX,seedY,circle.r);
+  const pinPt=pin||{x:W/2,y:H/2};
+  const centerDist=Math.hypot(circle.x-pinPt.x,circle.y-pinPt.y);
+  const edgePx=Math.max(0,centerDist-circle.r);
+  const cmPerPx=STONE_DIAMETER_CM/(2*circle.r);
+  const edgeCm=edgePx*cmPerPx;
   return {x:circle.x,y:circle.y,r:circle.r,seed:{x:seedX,y:seedY},label,edgePx,edgeCm,cmPerPx,confidence:scoreStone(circle,pts,boundary)};
 }
 function dilate(m,w,h){const out=new Uint8Array(m.length); for(let y=0;y<h;y++)for(let x=0;x<w;x++){let val=0; for(let dy=-1;dy<=1&&!val;dy++)for(let dx=-1;dx<=1;dx++){let xx=x+dx,yy=y+dy;if(xx>=0&&yy>=0&&xx<w&&yy<h&&m[yy*w+xx]){val=1;break}} out[y*w+x]=val;} return out;}
