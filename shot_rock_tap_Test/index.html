@@ -91,6 +91,7 @@
     <button id="modePin">Move Pin</button>
     <button id="modeSnap">Ring-Snap</button>
   </div>
+  <button id="snapFitTop" style="display:none;border-color:#9cc6ff;background:#16263a;color:#cfe6ff">Fit Ring → Pin (0)</button>
   <button id="modeChallenge" class="challenge">Challenge Mode</button>
   <button id="verifyScale">Verify Scale</button>
   <button id="undo">Undo</button>
@@ -215,12 +216,15 @@ canvas.addEventListener('pointerdown',e=>{
 });
 canvas.addEventListener('pointermove',e=>{
   if(!pointers.has(e.pointerId))return;
+  e.preventDefault();
   const prev=pointers.get(e.pointerId);
   pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
-  if(pointers.size===2 && pinchPrev){
+  if(pointers.size===2){
     const p=[...pointers.values()];
     const d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
     const cx=(p[0].x+p[1].x)/2, cy=(p[0].y+p[1].y)/2;
+    // defensive init: if pinch baseline missing, set it this frame and skip (no jump)
+    if(!pinchPrev){ pinchPrev={d,cx,cy}; draggingPin=false; panPrev=null; return; }
     const rect=wrapEl.getBoundingClientRect();
     const ox=cx-rect.left, oy=cy-rect.top;
     const factor=d/(pinchPrev.d||d);
@@ -248,7 +252,13 @@ canvas.addEventListener('pointermove',e=>{
       clampPan(); applyView();
     }
   }
+},{passive:false});
+/* Block Safari/iOS native page pinch (it ignores touch-action and causes bounce-back) */
+['gesturestart','gesturechange','gestureend'].forEach(ev=>{
+  canvas.addEventListener(ev,e=>e.preventDefault());
+  wrapEl.addEventListener(ev,e=>e.preventDefault());
 });
+document.addEventListener('touchmove',e=>{ if(e.touches&&e.touches.length>1) e.preventDefault(); },{passive:false});
 function endPointer(e){
   if(!pointers.has(e.pointerId))return;
   const wasSingle=pointers.size===1;
@@ -267,7 +277,7 @@ function handleTap(p){
   if(verifyMode){ doVerify(p); return; }
   if(mode==='stone'){ const st=detectStoneFromSeed(p.x,p.y); if(st){stones.push(st);redraw();} }
   else if(mode==='pin'){ pin={x:p.x,y:p.y,method:'manual',conf:1,sigmaPx:2}; redraw(); }
-  else if(mode==='snap'){ snapPts.push({x:p.x,y:p.y}); redraw(); }
+  else if(mode==='snap'){ snapPts.push({x:p.x,y:p.y}); updateSnapBtn(); redraw(); }
 }
 
 /* double-tap to zoom */
@@ -291,19 +301,26 @@ function setMode(m){
   document.getElementById('modeSnap').classList.toggle('active',m==='snap');
   if(m==='stone')setHint('Tap each stone\u2019s granite. The circle is capped to one stone width, so a touching neighbor can\u2019t pull it off.');
   if(m==='pin')setHint('Pinch to zoom in, then tap to drop the pin and drag to nudge it onto the exact center.');
-  if(m==='snap'){snapPts=[];setHint('Tap 3+ points spread along ONE ring, then press <b>Fit Ring \u2192 Pin</b>.');}
+  if(m==='snap'){snapPts=[];setHint('Tap <b>4+ points</b> spread along ONE ring, then press <b>Fit Ring \u2192 Pin</b>.');}
+  updateSnapBtn();
   redraw();
 }
 document.getElementById('modeStone').onclick=()=>setMode('stone');
 document.getElementById('modePin').onclick=()=>setMode('pin');
 document.getElementById('modeSnap').onclick=()=>setMode('snap');
+document.getElementById('snapFitTop').onclick=fitRingSnap;
+function updateSnapBtn(){
+  const b=document.getElementById('snapFitTop');
+  if(mode==='snap'){b.style.display='';b.textContent=`Fit Ring \u2192 Pin (${snapPts.length})`;b.disabled=snapPts.length<4;b.style.opacity=snapPts.length<4?'0.55':'1';}
+  else b.style.display='none';
+}
 document.getElementById('modeChallenge').onclick=()=>{challenge=!challenge;document.getElementById('modeChallenge').classList.toggle('active',challenge);redraw();};
 document.getElementById('verifyScale').onclick=()=>{
   verifyMode=!verifyMode;
   if(verifyMode){toast('Verify: tap a point on a known ring line.');setHint('<b>Verify Scale:</b> pinch in, tap a point sitting exactly on a painted ring, then pick which ring. The tool shows what it reads vs. the known distance.');}
   else setMode(mode);
 };
-document.getElementById('undo').onclick=()=>{if(mode==='snap')snapPts.pop();else stones.pop();redraw();};
+document.getElementById('undo').onclick=()=>{if(mode==='snap'){snapPts.pop();updateSnapBtn();}else stones.pop();redraw();};
 document.getElementById('clear').onclick=()=>{stones=[];redraw();};
 window.addEventListener('resize',()=>{if(img){fitView();}});
 
@@ -426,7 +443,7 @@ function nullVec3(m){const A=m.map(r=>r.slice()),n=3,piv=[];let row=0;
 
 /* ---- ring snap ---- */
 function fitRingSnap(){
-  if(snapPts.length<3){toast('Tap at least 3 ring points.');return;}
+  if(snapPts.length<4){toast('Tap at least 4 ring points.');return;}
   const c=fitCircleKasa(snapPts);if(!c){toast('Couldn\u2019t fit a ring.');return;}
   pin={x:c.x,y:c.y,method:'snap',conf:0.9,sigmaPx:3};
   ringFit={x:c.x,y:c.y,r:c.r,MA:c.r*2,ma:c.r*2,which:'snap'};
@@ -474,10 +491,40 @@ function detectStoneFromSeed(seedX,seedY){
   if(!circle||!isFinite(circle.r)||circle.r<minR*0.8||circle.r>maxR*1.3||dist(circle.x,circle.y,bboxCx,bboxCy)>bboxR*0.8){
     circle={x:bboxCx,y:bboxCy,r:clamp(bboxR*1.04,minR,maxR)};
   } else circle.r=clamp(circle.r,minR,maxR);
-  if(bpts.length>10){let s=0;for(const q of bpts)s+=Math.abs(dist(q.x,q.y,circle.x,circle.y)-circle.r);residual=(s/bpts.length)/circle.r;}
+
+  // BODY-LOCK: when ring scale is known, the true stone radius is known (rPred).
+  // The granite blob often hugs the handle/top and reads small, which shrinks the
+  // circle and throws off the edge. So: fix radius at the known stone size and
+  // refine the CENTER to the position whose fixed-radius disk best covers granite.
+  if(scaleCmPerPx){
+    const lockR=rPred;
+    let bcx=circle.x,bcy=circle.y,bestCover=-1;
+    const span=Math.round(lockR*0.55);
+    for(let oy=-span;oy<=span;oy+=2)for(let ox=-span;ox<=span;ox+=2){
+      const ccx=circle.x+ox, ccy=circle.y+oy;
+      let inside=0,gran=0;
+      for(let a=0;a<16;a++){const t=a/16*Math.PI*2;
+        for(let rr=lockR*0.45;rr<=lockR*0.98;rr+=lockR*0.18){
+          const px=ccx+Math.cos(t)*rr, py=ccy+Math.sin(t)*rr;inside++;
+          if(isGraniteAt(px,py))gran++;}}
+      const cover=gran/Math.max(1,inside);
+      if(cover>bestCover){bestCover=cover;bcx=ccx;bcy=ccy;}
+    }
+    circle={x:bcx,y:bcy,r:lockR};
+    // residual: how well the locked circle's rim sits on a granite->ice transition
+    let hits=0,tot=0;
+    for(let a=0;a<24;a++){const t=a/24*Math.PI*2;tot++;
+      const inP=isGraniteAt(circle.x+Math.cos(t)*lockR*0.85, circle.y+Math.sin(t)*lockR*0.85);
+      const outP=isGraniteAt(circle.x+Math.cos(t)*lockR*1.15, circle.y+Math.sin(t)*lockR*1.15);
+      if(inP&&!outP)hits++;}
+    residual=clamp(1-hits/tot,0.02,0.5)*0.18; // map edge agreement into residual scale
+  } else if(bpts.length>10){
+    let s=0;for(const q of bpts)s+=Math.abs(dist(q.x,q.y,circle.x,circle.y)-circle.r);residual=(s/bpts.length)/circle.r;
+  }
+
   const label=labelColor(circle.x,circle.y,circle.r);
   const conf=stoneConfidence(circle,residual,rPred);
-  return {x:circle.x,y:circle.y,r:circle.r,seed:{x:seedX,y:seedY},label,residual:residual==null?0.1:residual,conf};
+  return {x:circle.x,y:circle.y,r:circle.r,seed:{x:seedX,y:seedY},label,residual:residual==null?0.1:residual,conf,trusted:!!scaleCmPerPx&&conf>=55};
 }
 function stoneConfidence(circle,residual,rPred){
   let fitScore=residual==null?0.5:clamp(1-residual/0.18,0,1);
@@ -583,7 +630,7 @@ function redraw(){
 
   // snap pts
   if(mode==='snap'&&snapPts.length){ctx.save();ctx.fillStyle='#9cc6ff';for(const p of snapPts){ctx.beginPath();ctx.arc(p.x,p.y,5,0,Math.PI*2);ctx.fill();}
-    if(snapPts.length>=3){const c=fitCircleKasa(snapPts);if(c){ctx.strokeStyle='rgba(156,198,255,.7)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(c.x,c.y,c.r,0,Math.PI*2);ctx.stroke();}}ctx.restore();}
+    if(snapPts.length>=4){const c=fitCircleKasa(snapPts);if(c){ctx.strokeStyle='rgba(156,198,255,.7)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(c.x,c.y,c.r,0,Math.PI*2);ctx.stroke();}}ctx.restore();}
 
   // stones + measured edge lines
   M.rows.forEach(s=>{
@@ -619,32 +666,41 @@ let lastFlags={happy:false,error:false};
 function renderResults(M){
   if(!stones.length){
     let extra='';
-    if(mode==='snap')extra=`<div class="logrow"><button id="snapFit">Fit Ring \u2192 Pin</button><span class="small">${snapPts.length} point(s)</span></div>`;
+    if(mode==='snap')extra=`<div class="logrow"><span class="small">${snapPts.length} ring point(s) \u2014 use the <b>Fit Ring \u2192 Pin</b> button up top (needs 4+).</span></div>`;
     resultsEl.innerHTML=`<div class="small">No stones measured yet.</div>${extra}`;
-    if(mode==='snap'){const b=document.getElementById('snapFit');if(b)b.onclick=fitRingSnap;}
     return;
   }
   const pinTag=pin?`<span class="pinbadge ${pin.method}">pin: ${pin.method}</span>`:'<span class="pinbadge">no pin</span>';
   let html='';
   const call=M.call;
+  const distTrusted = !!scaleCmPerPx && M.scale.chosen && M.ranked.slice(0,2).every(s=>s.trusted);
   if(call&&!call.solo){
     if(call.confident){
-      html+=`<div class="verdict win"><span class="who">${call.winner.label}</span> is shot rock. ${pinTag}</div>
-        <div class="verdictsub">Ahead by ${call.gap.toFixed(1)} cm (${(call.gap/2.54).toFixed(1)} in) \u2014 clear of the \u00B1${call.combined.toFixed(1)} cm uncertainty on this photo.</div>`;
+      const sub = distTrusted
+        ? `Ahead by ${call.gap.toFixed(1)} cm (${(call.gap/2.54).toFixed(1)} in) \u2014 clear of the \u00B1${call.combined.toFixed(1)} cm uncertainty on this photo.`
+        : `Clear separation \u2014 the nearer rock leads by more than the photo\u2019s margin of error.`;
+      html+=`<div class="verdict win"><span class="who">${call.winner.label}</span> is shot rock. ${pinTag}</div><div class="verdictsub">${sub}</div>`;
     } else {
-      html+=`<div class="verdict tooclose">Too close to call \u2014 use the stick. ${pinTag}</div>
-        <div class="verdictsub">Gap is only ${call.gap.toFixed(1)} cm but the photo\u2019s uncertainty is \u00B1${call.combined.toFixed(1)} cm. Not safe to call from this image.</div>`;
+      const sub = distTrusted
+        ? `Gap is only ${call.gap.toFixed(1)} cm but the photo\u2019s uncertainty is \u00B1${call.combined.toFixed(1)} cm. Not safe to call from this image.`
+        : `The two are within this photo\u2019s margin of error. Not safe to call \u2014 measure with the stick.`;
+      html+=`<div class="verdict tooclose">Too close to call \u2014 use the stick. ${pinTag}</div><div class="verdictsub">${sub}</div>`;
     }
   } else if(call&&call.solo){
     html+=`<div class="verdict win"><span class="who">${call.winner.label}</span> measured. ${pinTag}</div><div class="verdictsub">Add the other rock to compare.</div>`;
   } else {
     html+=`<div class="verdict">Set the pin to get a call. ${pinTag}</div>`;
   }
+  if(!distTrusted && stones.length){
+    html+=`<div class="verdictsub" style="color:var(--muted)">Distances hidden: ${!scaleCmPerPx?'no verified ring scale yet':'fit confidence too low to trust exact numbers'}. The ranking and call still hold. Use <b>Verify Scale</b> on a ring to unlock distances.</div>`;
+  }
 
   html+='<table><thead><tr><th>Rank</th><th>Stone</th><th>Edge to pin</th><th>Fit conf.</th></tr></thead><tbody>';
   const list=M.ranked.length?M.ranked:M.rows;
   list.forEach((s,idx)=>{
-    const d=s.edgeCm!=null?`${s.edgeCm.toFixed(1)} cm <span class="small">(${(s.edgeCm/2.54).toFixed(1)} in)</span>`:'<span class="small">need pin</span>';
+    const d = (s.edgeCm!=null && distTrusted)
+      ? `${s.edgeCm.toFixed(1)} cm <span class="small">(${(s.edgeCm/2.54).toFixed(1)} in)</span>`
+      : (s.edgeCm!=null ? '<span class="small">hidden \u2014 verify scale</span>' : '<span class="small">need pin</span>');
     const cc=s.conf>=75?'#2fe06a':s.conf>=55?'#ffd23d':'#ff7d7d';
     html+=`<tr><td>${M.ranked.length?idx+1:'\u2013'}</td><td><span class="pill ${s.label}">${s.label}</span></td><td>${d}</td><td class="conf"><span class="confbar"><i style="width:${s.conf}%;background:${cc}"></i></span>${s.conf}%</td></tr>`;
   });
@@ -666,7 +722,7 @@ function renderResults(M){
   document.getElementById('saveRow').onclick=()=>saveRow(M);
   document.getElementById('dlCsv').onclick=downloadCsv;
   document.getElementById('dlPng').onclick=downloadPng;
-  if(mode==='snap'){const b=document.getElementById('snapFit');if(b)b.onclick=fitRingSnap;}
+  if(mode==='snap')updateSnapBtn();
 }
 
 function challengePanel(M){
