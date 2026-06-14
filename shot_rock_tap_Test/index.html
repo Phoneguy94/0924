@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="utf-8" />
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
 <title>Shot Rock Tap-Seed Prototype</title>
 <style>
   :root{--bg:#0c1116;--panel:#121923;--ink:#f2f6fb;--muted:#9fb0c2;--line:#283443;--green:#35e66d;--gold:#ffd84d;--red:#ff4d4d;--blue:#4da3ff;}
@@ -12,8 +12,10 @@
   .bar{display:flex;gap:8px;flex-wrap:wrap;padding:12px 16px;background:var(--panel);border-bottom:1px solid var(--line)}
   button,label.file{border:1px solid #3a4b61;background:#1a2532;color:var(--ink);padding:10px 12px;border-radius:10px;font-weight:650;font-size:14px}
   button.active{background:#173d25;border-color:#2dd66a}.danger{background:#3a1b1b;border-color:#7c3333}
-  input[type=file]{display:none}.wrap{padding:12px}.canvasWrap{width:100%;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#05080b;touch-action:none}
-  canvas{display:block;width:100%;height:auto;max-width:100%;touch-action:none}
+  input[type=file]{display:none}.wrap{padding:12px}.canvasWrap{width:100%;max-height:72vh;overflow:auto;border:1px solid var(--line);border-radius:12px;background:#05080b;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
+  canvas{display:block;width:auto;height:auto;max-width:none;touch-action:manipulation}
+  .zoomRow{display:flex;gap:8px;align-items:center;padding:0 16px 12px;background:var(--panel);border-bottom:1px solid var(--line)}
+  .zoomRow button{padding:8px 12px;font-size:13px}.zoomText{color:var(--muted);font-size:13px;min-width:72px}
   .info{padding:12px 16px;color:var(--muted);font-size:14px;line-height:1.4}.results{padding:0 16px 20px}
   table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:14px}
   th,td{padding:10px;border-bottom:1px solid var(--line);text-align:left}th{color:#cfe1f5;background:#17202b}tr:last-child td{border-bottom:0}
@@ -32,6 +34,7 @@
   <button id="undo">Undo</button>
   <button id="clear" class="danger">Clear Stones</button>
 </div>
+<div class="zoomRow"><button id="zoomOut">− Zoom</button><button id="zoomFit">Fit</button><button id="zoomIn">+ Zoom</button><span id="zoomText" class="zoomText">100%</span></div>
 <div class="info" id="status">Load a curling photo. Then tap each stone you want measured.</div>
 <div class="wrap"><div class="canvasWrap"><canvas id="cv"></canvas></div></div>
 <div class="results" id="results"></div>
@@ -42,6 +45,7 @@ const fileInput = document.getElementById('file');
 const statusEl = document.getElementById('status');
 const resultsEl = document.getElementById('results');
 let img = null, imgData = null, mode='stone', pin=null, pinAuto=null, stones=[];
+let viewZoom = 1, fitZoom = 1;
 const STONE_DIAMETER_CM = 29.2; // curling stone max diameter approx 11.5 in
 function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
 function rgbToHsv(r,g,b){r/=255;g/=255;b/=255;let max=Math.max(r,g,b),min=Math.min(r,g,b),d=max-min,h=0,s=max?d/max:0,v=max;if(d){switch(max){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break;}h/=6;}return [h,s,v];}
@@ -49,13 +53,32 @@ function getXY(evt){const rect=canvas.getBoundingClientRect();let e=evt.touches?
 fileInput.onchange = e => { const f=e.target.files[0]; if(!f)return; const url=URL.createObjectURL(f); const im=new Image(); im.onload=()=>{img=im; setupCanvas(); URL.revokeObjectURL(url)}; im.src=url; };
 document.getElementById('modeStone').onclick=()=>setMode('stone'); document.getElementById('modePin').onclick=()=>setMode('pin');
 document.getElementById('undo').onclick=()=>{stones.pop(); redraw();}; document.getElementById('clear').onclick=()=>{stones=[]; redraw();};
+document.getElementById('zoomOut').onclick=()=>setZoom(viewZoom/1.25);
+document.getElementById('zoomIn').onclick=()=>setZoom(viewZoom*1.25);
+document.getElementById('zoomFit').onclick=()=>setZoom(fitZoom);
+window.addEventListener('resize',()=>{ if(img) { computeFitZoom(); if(viewZoom<fitZoom) setZoom(fitZoom); else applyZoom(); } });
 function setMode(m){mode=m; document.getElementById('modeStone').classList.toggle('active',m==='stone'); document.getElementById('modePin').classList.toggle('active',m==='pin'); statusEl.textContent=m==='pin'?'Tap exact pin center to override.':'Tap each candidate stone.';}
 function setupCanvas(){
   const maxW = Math.min(1400, img.naturalWidth), scale=maxW/img.naturalWidth;
   canvas.width=Math.round(img.naturalWidth*scale); canvas.height=Math.round(img.naturalHeight*scale);
   ctx.drawImage(img,0,0,canvas.width,canvas.height);
   imgData=ctx.getImageData(0,0,canvas.width,canvas.height);
-  stones=[]; pinAuto=autoFindPin(); pin=pinAuto; redraw();
+  stones=[]; pinAuto=autoFindPin(); pin=pinAuto; computeFitZoom(); setZoom(fitZoom); redraw();
+}
+function computeFitZoom(){
+  const wrap=document.querySelector('.canvasWrap');
+  const available=Math.max(280, wrap.clientWidth-2);
+  fitZoom=Math.min(1, available/canvas.width);
+}
+function setZoom(z){
+  viewZoom=clamp(z, fitZoom, 4);
+  applyZoom();
+}
+function applyZoom(){
+  canvas.style.width=Math.round(canvas.width*viewZoom)+'px';
+  canvas.style.height=Math.round(canvas.height*viewZoom)+'px';
+  const zt=document.getElementById('zoomText');
+  if(zt) zt.textContent=Math.round(viewZoom*100)+'%';
 }
 canvas.addEventListener('click', evt=>{ if(!imgData)return; const p=getXY(evt); if(mode==='pin'){pin={x:p.x,y:p.y,manual:true}; redraw(); return;} const st=detectStoneFromSeed(p.x,p.y); if(st){stones.push(st); redraw();} });
 function autoFindPin(){
