@@ -3,12 +3,12 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Shot Rock · Measure V5</title>
+<title>Shot Rock · Measure V6</title>
 <style>
   :root{
     --bg:#0b1014;--panel:#121a23;--panel2:#17202b;--ink:#eef4fb;--muted:#9fb2c6;
     --line:#26333f;--green:#2fe06a;--gold:#ffd23d;--red:#ff4d4d;--blue:#4da3ff;
-    --warn:#ffb02e;--ok:#2fe06a;--btn:#1a2532;--btnline:#3a4b61;
+    --warn:#ffb02e;--ok:#2fe06a;--btn:#1a2532;--btnline:#3a4b61;--challenge:#b98bff;
   }
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0}
@@ -21,20 +21,20 @@
     padding:10px 13px;border-radius:10px;font-weight:650;font-size:14px;cursor:pointer;line-height:1}
   button:active{transform:translateY(1px)}
   button.active{background:#143a23;border-color:#2dd66a;color:#bdf6cf}
-  button.warnmode.active{background:#3a2a10;border-color:var(--warn);color:#ffd9a0}
+  button.challenge.active{background:#2c1f44;border-color:var(--challenge);color:#e3d2ff}
   .danger{background:#3a1b1b;border-color:#7c3333}
   input[type=file]{display:none}
-  .zoomRow{display:flex;gap:7px;align-items:center;padding:0 16px 10px;background:var(--panel);border-bottom:1px solid var(--line)}
-  .zoomRow button{padding:8px 12px;font-size:13px}
-  .zoomText{color:var(--muted);font-size:13px;min-width:64px;text-align:right}
   .info{padding:11px 16px;color:var(--muted);font-size:13.5px;line-height:1.4;border-bottom:1px solid var(--line);background:#0d141c}
   .info b{color:var(--ink)}
   .wrap{padding:10px}
-  .canvasWrap{width:100%;max-height:64vh;overflow:auto;border:1px solid var(--line);border-radius:12px;background:#05080b;-webkit-overflow-scrolling:touch;touch-action:pan-x pan-y}
-  canvas{display:block;touch-action:manipulation}
-  .results{padding:0 16px 24px}
-  .verdict{font-size:16px;margin:14px 2px 6px;font-weight:700}
-  .verdict .win{color:var(--gold)}
+  .canvasWrap{width:100%;max-height:66vh;overflow:hidden;border:1px solid var(--line);border-radius:12px;background:#05080b;position:relative;touch-action:none}
+  canvas{display:block;position:absolute;left:0;top:0;transform-origin:0 0;touch-action:none}
+  .zoomHint{position:absolute;right:10px;bottom:10px;background:rgba(10,16,22,.82);border:1px solid var(--line);border-radius:8px;padding:5px 9px;font-size:11.5px;color:var(--muted);pointer-events:none}
+  .results{padding:0 16px 28px}
+  .verdict{font-size:18px;margin:14px 2px 4px;font-weight:800;line-height:1.25}
+  .verdict.win .who{color:var(--gold)}
+  .verdict.tooclose{color:var(--warn)}
+  .verdictsub{font-size:12.5px;color:var(--muted);margin:0 2px 8px}
   table{width:100%;border-collapse:collapse;background:var(--panel);border:1px solid var(--line);border-radius:12px;overflow:hidden;font-size:14px;margin-top:6px}
   th,td{padding:9px 10px;border-bottom:1px solid var(--line);text-align:left}
   th{color:#cfe1f5;background:var(--panel2);font-size:12.5px;letter-spacing:.3px}
@@ -44,32 +44,44 @@
   .pill.Yellow{border-color:#7c6f2f;background:#33300f;color:#ffe98a}
   .pill.Stone{border-color:#3f5167;background:#1a2532;color:#bcd3ec}
   .small{font-size:12px;color:var(--muted)}
-  .conf{font-variant-numeric:tabular-nums}
-  .confbar{display:inline-block;height:6px;border-radius:3px;background:#2a3744;width:46px;vertical-align:middle;margin-right:7px;overflow:hidden}
+  .conf{font-variant-numeric:tabular-nums;white-space:nowrap}
+  .confbar{display:inline-block;height:6px;border-radius:3px;background:#2a3744;width:42px;vertical-align:middle;margin-right:7px;overflow:hidden}
   .confbar > i{display:block;height:100%;border-radius:3px}
   .logrow{display:flex;gap:7px;flex-wrap:wrap;align-items:center;margin-top:12px}
   .logrow .spacer{flex:1}
-  .flagbtn{font-size:13px;padding:9px 12px}
+  .glabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;width:100%;margin:2px 0 -2px}
   .flagbtn.happy.on{background:#143a23;border-color:var(--ok);color:#bdf6cf}
   .flagbtn.err.on{background:#3a2210;border-color:var(--warn);color:#ffd9a0}
-  .pinbadge{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-left:6px}
+  .pinbadge{display:inline-block;font-size:11.5px;padding:2px 8px;border-radius:999px;border:1px solid var(--line);color:var(--muted);margin-left:6px;vertical-align:middle}
   .pinbadge.auto{border-color:#2a6b46;color:#7ee3a6}
   .pinbadge.snap{border-color:#3a5c86;color:#9cc6ff}
   .pinbadge.manual{border-color:#7a5a2a;color:#ffce82}
   .hint{padding:9px 14px;margin:0 16px 12px;border:1px dashed #3a4b61;border-radius:10px;color:var(--muted);font-size:12.5px;line-height:1.4;background:#0e1620}
-  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#14202c;border:1px solid var(--btnline);color:var(--ink);padding:11px 16px;border-radius:11px;font-size:13.5px;z-index:30;box-shadow:0 8px 30px rgba(0,0,0,.5);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none}
+  .toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);background:#14202c;border:1px solid var(--btnline);color:var(--ink);padding:11px 16px;border-radius:11px;font-size:13.5px;z-index:30;box-shadow:0 8px 30px rgba(0,0,0,.5);opacity:0;transition:opacity .2s,transform .2s;pointer-events:none;max-width:88vw;text-align:center}
   .toast.show{opacity:1;transform:translateX(-50%) translateY(-4px)}
   .seg{display:flex;border:1px solid var(--btnline);border-radius:10px;overflow:hidden}
   .seg button{border:0;border-radius:0;border-right:1px solid var(--btnline)}
   .seg button:last-child{border-right:0}
-  .group{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
-  .glabel{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;width:100%;margin:2px 0 -2px}
+  /* Challenge panel */
+  .challengePanel{margin-top:14px;border:1px solid var(--challenge);border-radius:12px;background:#160f25;overflow:hidden}
+  .challengePanel h3{margin:0;padding:10px 14px;font-size:13px;letter-spacing:.4px;text-transform:uppercase;color:#e3d2ff;background:#1f1633;border-bottom:1px solid #3a2c54}
+  .steps{padding:12px 14px;font-size:13px;line-height:1.5}
+  .steps .step{margin-bottom:9px;padding-left:22px;position:relative}
+  .steps .step::before{content:attr(data-n);position:absolute;left:0;top:0;width:16px;height:16px;border-radius:50%;background:#2c1f44;border:1px solid var(--challenge);color:#e3d2ff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .steps b{color:var(--ink)}
+  .steps .ok{color:var(--ok)} .steps .warnt{color:var(--warn)}
+  .bandwrap{margin:10px 0 2px;padding:10px 12px;background:#120c1f;border:1px solid #3a2c54;border-radius:10px}
+  .bandbar{position:relative;height:26px;margin-top:8px}
+  .bandbar .track{position:absolute;left:0;right:0;top:11px;height:4px;background:#2a3744;border-radius:2px}
+  .bandbar .gap{position:absolute;top:7px;height:12px;border-radius:3px;background:rgba(120,220,150,.35);border:1px solid var(--ok)}
+  .bandbar .unc{position:absolute;top:9px;height:8px;border-radius:3px;background:rgba(255,176,46,.35);border:1px solid var(--warn)}
+  .bandbar .lbl{position:absolute;font-size:10px;color:var(--muted);top:-2px}
 </style>
 </head>
 <body>
 <header>
-  <h1>Shot Rock · Measure V5</h1>
-  <div class="sub">Load photo → pin sets from the rings → tap each stone. Closest edge to the pin wins.</div>
+  <h1>Shot Rock · Measure V6</h1>
+  <div class="sub">Pin sets from the rings → tap each stone → it calls the shot, or tells you it's too close. Pinch to zoom.</div>
 </header>
 
 <div class="bar">
@@ -77,79 +89,79 @@
   <div class="seg">
     <button id="modeStone" class="active">Tap Stones</button>
     <button id="modePin">Move Pin</button>
-    <button id="modeSnap">Ring-Snap Pin</button>
+    <button id="modeSnap">Ring-Snap</button>
   </div>
+  <button id="modeChallenge" class="challenge">Challenge Mode</button>
+  <button id="verifyScale">Verify Scale</button>
   <button id="undo">Undo</button>
-  <button id="clear" class="danger">Clear Stones</button>
-</div>
-
-<div class="zoomRow">
-  <button id="zoomOut">− Zoom</button>
-  <button id="zoomFit">Fit</button>
-  <button id="zoomIn">+ Zoom</button>
-  <span id="zoomText" class="zoomText">100%</span>
+  <button id="clear" class="danger">Clear</button>
 </div>
 
 <div class="info" id="status">Load a curling photo to begin.</div>
 <div class="hint" id="hint" style="display:none"></div>
 
-<div class="wrap"><div class="canvasWrap" id="canvasWrap"><canvas id="cv"></canvas></div></div>
+<div class="wrap"><div class="canvasWrap" id="canvasWrap"><canvas id="cv"></canvas><div class="zoomHint" id="zoomHint">pinch to zoom · drag to pan</div></div></div>
 
 <div class="results" id="results"></div>
-
 <div class="toast" id="toast"></div>
 
 <script>
 /* ============================================================
-   Shot Rock · Measure V5  — single file, pure JS, no libs
-   - Auto-pin from ring arcs (concentric-conic, ported from the
-     Python center engine; Kasa-style ellipse fit + 3x3 eigen).
-   - Manual toolkit: zoomed tap+drag pin, ring-snap (tap 3+ pts).
-   - Stone fit: tap-seeded, radius-capped to true stone size so
-     touching neighbors can't corrupt the circle.
-   - Distance = |pin - center| - radius  (nearest edge to pin).
-   - Real confidence = circle fit residual + scale agreement.
-   - Logging: CSV download + annotated PNG, with happy/error flags.
-   - Tilt correction: scaffolded (computeTilt) but OFF in v1.
+   Shot Rock · Measure V6 — single file, pure JS, no libs
+   Goal: call the closest rock with 100% confidence on every
+   call it MAKES, by declining ties to the stick. Plus an
+   inspectable Challenge Mode and a ring self-check.
+   Engine (pin-from-rings, eigensolver) validated in lab.
    ============================================================ */
 
-const canvas = document.getElementById('cv');
-const ctx = canvas.getContext('2d',{willReadFrequently:true});
-const fileInput = document.getElementById('file');
-const statusEl = document.getElementById('status');
-const hintEl = document.getElementById('hint');
-const resultsEl = document.getElementById('results');
+const canvas=document.getElementById('cv');
+const ctx=canvas.getContext('2d',{willReadFrequently:true});
+const fileInput=document.getElementById('file');
+const statusEl=document.getElementById('status');
+const hintEl=document.getElementById('hint');
+const resultsEl=document.getElementById('results');
+const wrapEl=document.getElementById('canvasWrap');
+const zoomHintEl=document.getElementById('zoomHint');
 
-let img=null, imgData=null, mode='stone';
-let pin=null;                 // {x,y,method:'auto'|'snap'|'manual', conf:0..1}
+let img=null,imgData=null,mode='stone';
+let pin=null;               // {x,y,method,conf,sigmaPx}
 let stones=[];
-let snapPts=[];               // ring-snap collection
-let viewZoom=1, fitZoom=1;
+let snapPts=[];
 let session=0;
-let ringFit=null;             // {x,y,r, ellipse?} best ring used for scale/pin
-let scaleCmPerPx=null;        // chosen scale
-let TILT_ON=false;            // v1: off
+let ringFit=null;           // {x,y,r,MA,ma,which}
+let scaleCmPerPx=null;
+let tiltFrac=0;             // from ring eccentricity
+let challenge=false;
+let verifyMode=false;
 
-const STONE_DIAMETER_CM=29.2; // ~11.5in regulation
-const RING_CM={ '4ft':121.92, '8ft':243.84, '12ft':365.76 }; // ring DIAMETERS in cm
+const STONE_DIAMETER_CM=29.2;
+const RING_CM={ '4ft':121.92,'8ft':243.84,'12ft':365.76 };
+const RING_EDGE_IN={ '4ft':24,'8ft':48,'12ft':72 }; // radius in inches = edge distance from pin
+const STRICT_K=1.5;         // gap must exceed K * combined uncertainty to call
 
-/* ---------- small utils ---------- */
+/* view transform (pinch/pan) */
+let view={scale:1,minScale:1,tx:0,ty:0};
+
+/* ---- utils ---- */
 function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
 function dist(ax,ay,bx,by){return Math.hypot(ax-bx,ay-by);}
 function rgbToHsv(r,g,b){r/=255;g/=255;b/=255;let mx=Math.max(r,g,b),mn=Math.min(r,g,b),d=mx-mn,h=0,s=mx?d/mx:0,v=mx;
   if(d){switch(mx){case r:h=(g-b)/d+(g<b?6:0);break;case g:h=(b-r)/d+2;break;case b:h=(r-g)/d+4;break;}h/=6;}return [h,s,v];}
-function toast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),1900);}
-function setHint(html){ if(!html){hintEl.style.display='none';return;} hintEl.style.display='block'; hintEl.innerHTML=html; }
+function toast(m){const t=document.getElementById('toast');t.textContent=m;t.classList.add('show');clearTimeout(t._t);t._t=setTimeout(()=>t.classList.remove('show'),2200);}
+function setHint(h){if(!h){hintEl.style.display='none';return;}hintEl.style.display='block';hintEl.innerHTML=h;}
 
-/* ---------- coordinate mapping (zoom-aware) ---------- */
-function getXY(evt){
+/* ---- image -> canvas pixel coords from a screen event, through view transform ---- */
+function evtToImg(e){
   const rect=canvas.getBoundingClientRect();
-  const e=evt.touches?evt.touches[0]:evt;
-  return { x:(e.clientX-rect.left)*(canvas.width/rect.width),
-           y:(e.clientY-rect.top)*(canvas.height/rect.height) };
+  // rect already reflects CSS transform; map back to canvas pixel space
+  const sx=(e.clientX-rect.left)/rect.width*canvas.width;
+  const sy=(e.clientY-rect.top)/rect.height*canvas.height;
+  return {x:sx,y:sy};
 }
 
-/* ---------- load + canvas ---------- */
+/* ============================================================
+   LOAD + VIEW
+   ============================================================ */
 fileInput.onchange=e=>{const f=e.target.files[0];if(!f)return;const url=URL.createObjectURL(f);
   const im=new Image();im.onload=()=>{img=im;session++;setupCanvas();URL.revokeObjectURL(url);};im.src=url;};
 
@@ -159,488 +171,393 @@ function setupCanvas(){
   canvas.height=Math.round(img.naturalHeight*scale);
   ctx.drawImage(img,0,0,canvas.width,canvas.height);
   imgData=ctx.getImageData(0,0,canvas.width,canvas.height);
-  stones=[];snapPts=[];pin=null;ringFit=null;scaleCmPerPx=null;
-  computeFitZoom();setZoom(fitZoom);
+  stones=[];snapPts=[];pin=null;ringFit=null;scaleCmPerPx=null;tiltFrac=0;verifyMode=false;
+  fitView();
   autoPin();
   redraw();
 }
 
-/* ---------- zoom ---------- */
-function computeFitZoom(){const wrap=document.getElementById('canvasWrap');const avail=Math.max(280,wrap.clientWidth-2);fitZoom=Math.min(1,avail/canvas.width);}
-function setZoom(z){viewZoom=clamp(z,fitZoom,6);applyZoom();}
-function applyZoom(){canvas.style.width=Math.round(canvas.width*viewZoom)+'px';canvas.style.height=Math.round(canvas.height*viewZoom)+'px';
-  const zt=document.getElementById('zoomText');if(zt)zt.textContent=Math.round(viewZoom*100)+'%';}
-document.getElementById('zoomOut').onclick=()=>setZoom(viewZoom/1.3);
-document.getElementById('zoomIn').onclick=()=>setZoom(viewZoom*1.3);
-document.getElementById('zoomFit').onclick=()=>setZoom(fitZoom);
-window.addEventListener('resize',()=>{if(img){computeFitZoom();setZoom(Math.max(viewZoom,fitZoom));}});
+function fitView(){
+  const cw=wrapEl.clientWidth, ch=Math.min(window.innerHeight*0.66, wrapEl.clientWidth*canvas.height/canvas.width);
+  wrapEl.style.height=ch+'px';
+  view.minScale=Math.min(cw/canvas.width, ch/canvas.height);
+  view.scale=view.minScale;
+  view.tx=(cw-canvas.width*view.scale)/2;
+  view.ty=(ch-canvas.height*view.scale)/2;
+  applyView();
+}
+function applyView(){
+  canvas.style.transform=`translate(${view.tx}px,${view.ty}px) scale(${view.scale})`;
+}
+function clampPan(){
+  const cw=wrapEl.clientWidth, ch=wrapEl.clientHeight;
+  const sw=canvas.width*view.scale, sh=canvas.height*view.scale;
+  if(sw<=cw) view.tx=(cw-sw)/2; else view.tx=clamp(view.tx,cw-sw,0);
+  if(sh<=ch) view.ty=(ch-sh)/2; else view.ty=clamp(view.ty,ch-sh,0);
+}
 
-/* ---------- mode switching ---------- */
+/* ---- pinch + pan + tap (pointer events) ---- */
+let pointers=new Map();
+let pinchPrev=null, panPrev=null, movedDist=0, downImg=null, draggingPin=false;
+canvas.addEventListener('pointerdown',e=>{
+  canvas.setPointerCapture(e.pointerId);
+  pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  movedDist=0;
+  if(pointers.size===1){
+    panPrev={x:e.clientX,y:e.clientY};
+    downImg=evtToImg(e);
+    if(mode==='pin'&&pin&&dist(downImg.x,downImg.y,pin.x,pin.y)<30/view.scale*1) draggingPin=true;
+  } else if(pointers.size===2){
+    const p=[...pointers.values()];
+    pinchPrev={d:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y),cx:(p[0].x+p[1].x)/2,cy:(p[0].y+p[1].y)/2};
+    panPrev=null; draggingPin=false;
+  }
+});
+canvas.addEventListener('pointermove',e=>{
+  if(!pointers.has(e.pointerId))return;
+  const prev=pointers.get(e.pointerId);
+  pointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  if(pointers.size===2 && pinchPrev){
+    const p=[...pointers.values()];
+    const d=Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);
+    const cx=(p[0].x+p[1].x)/2, cy=(p[0].y+p[1].y)/2;
+    const rect=wrapEl.getBoundingClientRect();
+    const ox=cx-rect.left, oy=cy-rect.top;
+    const factor=d/(pinchPrev.d||d);
+    const ns=clamp(view.scale*factor, view.minScale, view.minScale*12);
+    // zoom around pinch center
+    view.tx = ox - (ox-view.tx)*(ns/view.scale);
+    view.ty = oy - (oy-view.ty)*(ns/view.scale);
+    view.scale=ns;
+    // pan with center drift
+    view.tx += (cx-pinchPrev.cx); view.ty += (cy-pinchPrev.cy);
+    pinchPrev={d,cx,cy};
+    clampPan(); applyView();
+    return;
+  }
+  if(pointers.size===1){
+    const cur=evtToImg(e);
+    movedDist+=Math.hypot(e.clientX-prev.x,e.clientY-prev.y);
+    if(draggingPin){
+      pin={x:cur.x,y:cur.y,method:'manual',conf:1,sigmaPx:2};
+      redraw(); return;
+    }
+    if(panPrev){
+      view.tx+=e.clientX-panPrev.x; view.ty+=e.clientY-panPrev.y;
+      panPrev={x:e.clientX,y:e.clientY};
+      clampPan(); applyView();
+    }
+  }
+});
+function endPointer(e){
+  if(!pointers.has(e.pointerId))return;
+  const wasSingle=pointers.size===1;
+  pointers.delete(e.pointerId);
+  if(pointers.size<2) pinchPrev=null;
+  if(pointers.size===0){
+    if(wasSingle && movedDist<6 && downImg){ handleTap(downImg); }
+    draggingPin=false; panPrev=null; downImg=null;
+  }
+}
+canvas.addEventListener('pointerup',endPointer);
+canvas.addEventListener('pointercancel',endPointer);
+
+function handleTap(p){
+  if(!imgData)return;
+  if(verifyMode){ doVerify(p); return; }
+  if(mode==='stone'){ const st=detectStoneFromSeed(p.x,p.y); if(st){stones.push(st);redraw();} }
+  else if(mode==='pin'){ pin={x:p.x,y:p.y,method:'manual',conf:1,sigmaPx:2}; redraw(); }
+  else if(mode==='snap'){ snapPts.push({x:p.x,y:p.y}); redraw(); }
+}
+
+/* double-tap to zoom */
+let lastTapT=0;
+canvas.addEventListener('pointerup',e=>{
+  const t=Date.now();
+  if(t-lastTapT<280 && movedDist<6){
+    const rect=wrapEl.getBoundingClientRect();const ox=e.clientX-rect.left,oy=e.clientY-rect.top;
+    const ns = view.scale>view.minScale*2 ? view.minScale : view.minScale*4;
+    view.tx=ox-(ox-view.tx)*(ns/view.scale); view.ty=oy-(oy-view.ty)*(ns/view.scale); view.scale=ns;
+    clampPan();applyView();
+  }
+  lastTapT=t;
+});
+
+/* ---- modes ---- */
 function setMode(m){
-  mode=m;
+  mode=m; verifyMode=false;
   document.getElementById('modeStone').classList.toggle('active',m==='stone');
   document.getElementById('modePin').classList.toggle('active',m==='pin');
   document.getElementById('modeSnap').classList.toggle('active',m==='snap');
-  if(m==='stone'){statusEl.textContent='Tap each stone you want measured.';setHint('Tap anywhere on a stone\u2019s granite body. The fit is capped to one stone width, so a touching neighbor won\u2019t pull the circle off.');}
-  if(m==='pin'){statusEl.textContent='Tap to drop the pin, then drag to fine-tune.';setHint('Zoom WAY in first for a pixel-exact pin. Tap to place, then drag the crosshair to nudge it onto the exact center.');}
-  if(m==='snap'){snapPts=[];statusEl.textContent='Tap 3 or more points along ONE ring, then press Fit Ring.';setHint('Tap points spread along a single visible ring arc (the more spread out, the better). Press <b>Fit Ring \u2192 Pin</b> when you have at least 3.');renderResults();}
+  if(m==='stone')setHint('Tap each stone\u2019s granite. The circle is capped to one stone width, so a touching neighbor can\u2019t pull it off.');
+  if(m==='pin')setHint('Pinch to zoom in, then tap to drop the pin and drag to nudge it onto the exact center.');
+  if(m==='snap'){snapPts=[];setHint('Tap 3+ points spread along ONE ring, then press <b>Fit Ring \u2192 Pin</b>.');}
   redraw();
 }
 document.getElementById('modeStone').onclick=()=>setMode('stone');
 document.getElementById('modePin').onclick=()=>setMode('pin');
 document.getElementById('modeSnap').onclick=()=>setMode('snap');
-document.getElementById('undo').onclick=()=>{if(mode==='snap'){snapPts.pop();}else{stones.pop();}redraw();};
+document.getElementById('modeChallenge').onclick=()=>{challenge=!challenge;document.getElementById('modeChallenge').classList.toggle('active',challenge);redraw();};
+document.getElementById('verifyScale').onclick=()=>{
+  verifyMode=!verifyMode;
+  if(verifyMode){toast('Verify: tap a point on a known ring line.');setHint('<b>Verify Scale:</b> pinch in, tap a point sitting exactly on a painted ring, then pick which ring. The tool shows what it reads vs. the known distance.');}
+  else setMode(mode);
+};
+document.getElementById('undo').onclick=()=>{if(mode==='snap')snapPts.pop();else stones.pop();redraw();};
 document.getElementById('clear').onclick=()=>{stones=[];redraw();};
-
-/* ---------- pointer handling (tap + drag pin) ---------- */
-let dragging=false;
-canvas.addEventListener('pointerdown',evt=>{
-  if(!imgData)return;
-  const p=getXY(evt);
-  if(mode==='pin'){
-    if(pin && dist(p.x,p.y,pin.x,pin.y) < 28){ dragging=true; }
-    else { pin={x:p.x,y:p.y,method:'manual',conf:1}; }
-    redraw();
-  }
-});
-canvas.addEventListener('pointermove',evt=>{
-  if(!dragging||mode!=='pin')return;
-  evt.preventDefault();
-  const p=getXY(evt);
-  pin={x:p.x,y:p.y,method:'manual',conf:1};
-  redraw();
-},{passive:false});
-window.addEventListener('pointerup',()=>{dragging=false;});
-
-canvas.addEventListener('click',evt=>{
-  if(!imgData)return;
-  const p=getXY(evt);
-  if(mode==='stone'){
-    const st=detectStoneFromSeed(p.x,p.y);
-    if(st){stones.push(st);redraw();}
-  } else if(mode==='snap'){
-    snapPts.push({x:p.x,y:p.y});
-    redraw();
-  }
-  // pin handled in pointerdown
-});
+window.addEventListener('resize',()=>{if(img){fitView();}});
 
 /* ============================================================
-   AUTO-PIN from ring arcs
-   Strategy: find red + blue ring masks, fit ellipses, recover
-   projected center via eigenvector of inv(C2)*C1. If only one
-   ring is usable, fall back to that ring's center. If nothing
-   convincing, leave pin null and prompt manual.
+   AUTO-PIN from rings (eigensolver core — lab-validated)
    ============================================================ */
 function autoPin(){
   const res=solveCenter();
   ringFit=res.ring||null;
-  if(res.scaleCmPerPx) scaleCmPerPx=res.scaleCmPerPx;
+  if(res.scaleCmPerPx)scaleCmPerPx=res.scaleCmPerPx;
+  tiltFrac=res.tiltFrac||0;
   if(res.pin){
-    pin={x:res.pin.x,y:res.pin.y,method:res.method==='concentric'?'auto':'snap',conf:res.conf};
-    if(res.conf>=0.6){
-      statusEl.textContent='Pin set from the rings. Tap each stone to measure.';
-      setHint('Auto-pin looks solid. If it\u2019s even slightly off, switch to <b>Move Pin</b>, zoom in, and nudge it.');
-    } else {
-      statusEl.textContent='Pin estimated from one ring \u2014 check it.';
-      setHint('Only a partial ring was visible, so the pin is a best guess. <b>Zoom in and verify</b>; use <b>Move Pin</b> or <b>Ring-Snap Pin</b> to correct.');
-    }
+    pin={x:res.pin.x,y:res.pin.y,method:res.method==='concentric'?'auto':'snap',conf:res.conf,sigmaPx:res.sigmaPx};
+    if(res.conf>=0.6){statusEl.textContent='Pin set from the rings. Tap each stone.';setHint('Auto-pin looks solid. If it\u2019s even slightly off, use <b>Move Pin</b> (pinch in first).');}
+    else{statusEl.textContent='Pin estimated from one ring \u2014 verify it.';setHint('Only a partial ring was found. Pinch in and check the pin; use <b>Ring-Snap</b> or <b>Move Pin</b> to correct.');}
   } else {
-    statusEl.textContent='Couldn\u2019t find the pin automatically \u2014 set it manually.';
-    setHint('No clear ring arc found. Use <b>Ring-Snap Pin</b> (tap along a ring) for the most accurate manual pin, or <b>Move Pin</b> to place it by eye (zoom in first).');
+    statusEl.textContent='No pin found automatically \u2014 set it manually.';
+    setHint('No clear ring arc. Use <b>Ring-Snap</b> (tap along a ring) for the most accurate pin.');
   }
 }
-
 function solveCenter(){
   const W=canvas.width,H=canvas.height;
-  const er=biggestRingEllipse('red');
-  const eb=biggestRingEllipse('blue');
-  let ring=null,scale=null;
-
-  // scale from whichever ring we trust most (prefer red 4ft: closest to stones, least distortion)
-  function scaleFrom(e,which){
-    if(!e)return null;
-    const rpx=(e.MA+e.ma)/4; // mean semi-axis
-    const dpx=rpx*2;
-    return RING_CM[which]/dpx;
-  }
-
-  // Guard: blue must be convincingly larger than red, else it's a fragment
+  const er=biggestRingEllipse('red'),eb=biggestRingEllipse('blue');
+  function scaleFrom(e,which){if(!e)return null;const dpx=(e.MA+e.ma)/2;return RING_CM[which]/dpx;}
+  function eccTilt(e){if(!e)return 0;const ecc=1-Math.min(e.MA,e.ma)/Math.max(e.MA,e.ma);return Math.min(0.25,ecc*0.5);}
   let useBlue=eb;
-  if(er&&eb && Math.max(eb.MA,eb.ma) < Math.max(er.MA,er.ma)*1.15) useBlue=null;
-
+  if(er&&eb&&Math.max(eb.MA,eb.ma)<Math.max(er.MA,er.ma)*1.15)useBlue=null;
   if(er&&useBlue){
     const c=concentricCenter(er,useBlue,W,H);
-    if(c){
-      ring={x:er.xc,y:er.yc,r:(er.MA+er.ma)/4,which:'4ft'};
-      scale=scaleFrom(er,'4ft');
-      return {pin:{x:c.x,y:c.y},method:'concentric',conf:0.85,ring,scaleCmPerPx:scale};
-    }
+    if(c)return {pin:c,method:'concentric',conf:0.85,sigmaPx:Math.max(3,(er.MA+er.ma)/2*0.012),
+      ring:{x:er.xc,y:er.yc,r:(er.MA+er.ma)/4,MA:er.MA,ma:er.ma,which:'4ft'},
+      scaleCmPerPx:scaleFrom(er,'4ft'),tiltFrac:eccTilt(er)};
   }
-  // single-ring fallback: red preferred, else blue
-  if(er){
-    ring={x:er.xc,y:er.yc,r:(er.MA+er.ma)/4,which:'4ft'};
-    scale=scaleFrom(er,'4ft');
-    return {pin:{x:er.xc,y:er.yc},method:'ring',conf:0.5,ring,scaleCmPerPx:scale};
-  }
-  if(eb){
-    ring={x:eb.xc,y:eb.yc,r:(eb.MA+eb.ma)/4,which:'8ft'};
-    scale=scaleFrom(eb,'8ft');
-    return {pin:{x:eb.xc,y:eb.yc},method:'ring',conf:0.45,ring,scaleCmPerPx:scale};
-  }
-  return {pin:null,method:null,conf:0,ring:null,scaleCmPerPx:null};
+  if(er)return {pin:{x:er.xc,y:er.yc},method:'ring',conf:0.5,sigmaPx:Math.max(5,(er.MA+er.ma)/2*0.03),
+    ring:{x:er.xc,y:er.yc,r:(er.MA+er.ma)/4,MA:er.MA,ma:er.ma,which:'4ft'},
+    scaleCmPerPx:scaleFrom(er,'4ft'),tiltFrac:eccTilt(er)};
+  if(eb)return {pin:{x:eb.xc,y:eb.yc},method:'ring',conf:0.45,sigmaPx:Math.max(6,(eb.MA+eb.ma)/2*0.03),
+    ring:{x:eb.xc,y:eb.yc,r:(eb.MA+eb.ma)/4,MA:eb.MA,ma:eb.ma,which:'8ft'},
+    scaleCmPerPx:scaleFrom(eb,'8ft'),tiltFrac:eccTilt(eb)};
+  return {pin:null,conf:0};
 }
 
-/* ---- ring mask + ellipse fit (downsampled for speed) ---- */
 function biggestRingEllipse(which){
   const W=canvas.width,H=canvas.height,D=imgData.data;
-  const step=Math.max(1,Math.round(Math.min(W,H)/420)); // sample stride
-  const sw=Math.ceil(W/step), sh=Math.ceil(H/step);
-  const mask=new Uint8Array(sw*sh);
-  let count=0;
-  for(let y=0,sy=0;y<H;y+=step,sy++){
-    for(let x=0,sx=0;x<W;x+=step,sx++){
-      const i=(y*W+x)*4;const [h,s,v]=rgbToHsv(D[i],D[i+1],D[i+2]);
-      let hit=false;
-      if(which==='red'){ hit=((h<0.038||h>0.94)&&s>0.16&&v>0.35); }
-      else { hit=((h>0.53&&h<0.74)&&s>0.10&&v>0.32); }
-      if(hit){mask[sy*sw+sx]=1;count++;}
-    }
+  const step=Math.max(1,Math.round(Math.min(W,H)/420));
+  const sw=Math.ceil(W/step),sh=Math.ceil(H/step);
+  const mask=new Uint8Array(sw*sh);let count=0;
+  for(let y=0,sy=0;y<H;y+=step,sy++)for(let x=0,sx=0;x<W;x+=step,sx++){
+    const i=(y*W+x)*4;const [h,s,v]=rgbToHsv(D[i],D[i+1],D[i+2]);let hit=false;
+    if(which==='red')hit=((h<0.038||h>0.94)&&s>0.16&&v>0.35);
+    else hit=((h>0.53&&h<0.74)&&s>0.10&&v>0.32);
+    if(hit){mask[sy*sw+sx]=1;count++;}
   }
-  if(count< (sw*sh)*0.002) return null;
-  // largest connected component
+  if(count<sw*sh*0.002)return null;
   const comp=largestComponent(mask,sw,sh);
-  if(!comp||comp.length< (sw*sh)*0.0015) return null;
-  // ellipse fit (moments) on component points in full-res coords
+  if(!comp||comp.length<sw*sh*0.0015)return null;
   const pts=comp.map(idx=>({x:(idx%sw)*step,y:Math.floor(idx/sw)*step}));
-  const e=fitEllipseMoments(pts);
-  if(!e)return null;
-  // reject implausibly elongated (fragment/scratch)
-  if(Math.max(e.MA,e.ma)/(Math.min(e.MA,e.ma)+1e-6) > 4) return null;
+  const e=fitEllipseMoments(pts);if(!e)return null;
+  if(Math.max(e.MA,e.ma)/(Math.min(e.MA,e.ma)+1e-6)>4)return null;
   return e;
 }
-
-function largestComponent(m,w,h){
-  const seen=new Uint8Array(m.length);let best=null,bestLen=0;
-  for(let i=0;i<m.length;i++){
-    if(!m[i]||seen[i])continue;
-    const q=[i],pix=[];seen[i]=1;
-    for(let qi=0;qi<q.length;qi++){
-      const idx=q[qi];pix.push(idx);const x=idx%w,y=(idx/w)|0;
+function largestComponent(m,w,h){const seen=new Uint8Array(m.length);let best=null,bl=0;
+  for(let i=0;i<m.length;i++){if(!m[i]||seen[i])continue;const q=[i],pix=[];seen[i]=1;
+    for(let qi=0;qi<q.length;qi++){const idx=q[qi];pix.push(idx);const x=idx%w,y=(idx/w)|0;
       if(x+1<w){const n=idx+1;if(m[n]&&!seen[n]){seen[n]=1;q.push(n);}}
       if(x-1>=0){const n=idx-1;if(m[n]&&!seen[n]){seen[n]=1;q.push(n);}}
       if(y+1<h){const n=idx+w;if(m[n]&&!seen[n]){seen[n]=1;q.push(n);}}
-      if(y-1>=0){const n=idx-w;if(m[n]&&!seen[n]){seen[n]=1;q.push(n);}}
-    }
-    if(pix.length>bestLen){bestLen=pix.length;best=pix;}
-  }
-  return best;
-}
-
-/* second-moment ellipse: gives center, axes, angle */
+      if(y-1>=0){const n=idx-w;if(m[n]&&!seen[n]){seen[n]=1;q.push(n);}}}
+    if(pix.length>bl){bl=pix.length;best=pix;}}
+  return best;}
+/* second-moment ellipse: MA,ma are FULL axis lengths (diameters) */
 function fitEllipseMoments(pts){
-  const n=pts.length;if(n<8)return null;
-  let mx=0,my=0;for(const p of pts){mx+=p.x;my+=p.y;}mx/=n;my/=n;
-  let xx=0,yy=0,xy=0;
-  for(const p of pts){const dx=p.x-mx,dy=p.y-my;xx+=dx*dx;yy+=dy*dy;xy+=dx*dy;}
-  xx/=n;yy/=n;xy/=n;
-  const tr=xx+yy, det=xx*yy-xy*xy;
-  const disc=Math.sqrt(Math.max(0,tr*tr/4-det));
-  const l1=tr/2+disc, l2=tr/2-disc;
-  if(l1<=0||l2<=0)return null;
-  // axis lengths: for a filled disk, semiaxis = 2*sqrt(eigenvalue)
-  const MA=4*Math.sqrt(l1), ma=4*Math.sqrt(l2);
-  const ang=0.5*Math.atan2(2*xy,xx-yy)*180/Math.PI;
+  const n=pts.length;if(n<8)return null;let mx=0,my=0;for(const p of pts){mx+=p.x;my+=p.y;}mx/=n;my/=n;
+  let xx=0,yy=0,xy=0;for(const p of pts){const dx=p.x-mx,dy=p.y-my;xx+=dx*dx;yy+=dy*dy;xy+=dx*dy;}xx/=n;yy/=n;xy/=n;
+  const tr=xx+yy,det=xx*yy-xy*xy,disc=Math.sqrt(Math.max(0,tr*tr/4-det));
+  const l1=tr/2+disc,l2=tr/2-disc;if(l1<=0||l2<=0)return null;
+  const MA=4*Math.sqrt(l1),ma=4*Math.sqrt(l2),ang=0.5*Math.atan2(2*xy,xx-yy)*180/Math.PI;
   return {xc:mx,yc:my,MA,ma,ang};
 }
-
-/* ---- ellipse -> conic matrix ---- */
-function ellipseToConic(e){
-  const a=e.MA/2,b=e.ma/2,th=e.ang*Math.PI/180,ct=Math.cos(th),st=Math.sin(th);
-  const A=ct*ct/(a*a)+st*st/(b*b);
-  const B=2*ct*st*(1/(a*a)-1/(b*b));
-  const C=st*st/(a*a)+ct*ct/(b*b);
-  const D=-2*A*e.xc-B*e.yc;
-  const E=-B*e.xc-2*C*e.yc;
-  const F=A*e.xc*e.xc+B*e.xc*e.yc+C*e.yc*e.yc-1;
-  return [[A,B/2,D/2],[B/2,C,E/2],[D/2,E/2,F]];
-}
-
-/* ---- concentric center: eigenvector of inv(C2)*C1 nearest ring centers ---- */
+function ellipseToConic(e){const a=e.MA/2,b=e.ma/2,th=e.ang*Math.PI/180,ct=Math.cos(th),st=Math.sin(th);
+  const A=ct*ct/(a*a)+st*st/(b*b),B=2*ct*st*(1/(a*a)-1/(b*b)),C=st*st/(a*a)+ct*ct/(b*b);
+  const D=-2*A*e.xc-B*e.yc,E=-B*e.xc-2*C*e.yc,F=A*e.xc*e.xc+B*e.xc*e.yc+C*e.yc*e.yc-1;
+  return [[A,B/2,D/2],[B/2,C,E/2],[D/2,E/2,F]];}
 function concentricCenter(e1,e2,W,H){
-  const C1=ellipseToConic(e1),C2=ellipseToConic(e2);
-  const C2i=inv3(C2);if(!C2i)return null;
-  const M=mul3(C2i,C1);
-  const eig=eig3(M);if(!eig)return null;
-  const refx=(e1.xc+e2.xc)/2,refy=(e1.yc+e2.yc)/2;
-  const maxr=Math.max(e1.MA,e1.ma,e2.MA,e2.ma);
+  const C1=ellipseToConic(e1),C2=ellipseToConic(e2),C2i=inv3(C2);if(!C2i)return null;
+  const M=mul3(C2i,C1),eig=eig3(M);if(!eig)return null;
+  const refx=(e1.xc+e2.xc)/2,refy=(e1.yc+e2.yc)/2,maxr=Math.max(e1.MA,e1.ma,e2.MA,e2.ma);
   let best=null,bd=1e18;
-  for(const vec of eig.vectors){
-    if(Math.abs(vec[2])<1e-9)continue;
-    const px=vec[0]/vec[2],py=vec[1]/vec[2];
-    const d=Math.hypot(px-refx,py-refy);
-    const inb=(px>-0.2*W&&px<1.2*W&&py>-0.2*H&&py<1.2*H);
-    if(inb&&d<=maxr&&d<bd){bd=d;best={x:px,y:py};}
-  }
-  return best;
-}
-
-/* ---- 3x3 linear algebra (real) ---- */
-function inv3(m){
-  const a=m[0][0],b=m[0][1],c=m[0][2],d=m[1][0],e=m[1][1],f=m[1][2],g=m[2][0],h=m[2][1],i=m[2][2];
-  const A=e*i-f*h,B=-(d*i-f*g),C=d*h-e*g;
-  const det=a*A+b*B+c*C;if(Math.abs(det)<1e-12)return null;
-  const id=1/det;
-  return [[A*id,(c*h-b*i)*id,(b*f-c*e)*id],
-          [B*id,(a*i-c*g)*id,(c*d-a*f)*id],
-          [C*id,(b*g-a*h)*id,(a*e-b*d)*id]];
-}
+  for(const vec of eig.vectors){if(Math.abs(vec[2])<1e-9)continue;const px=vec[0]/vec[2],py=vec[1]/vec[2];
+    const d=Math.hypot(px-refx,py-refy);const inb=(px>-0.2*W&&px<1.2*W&&py>-0.2*H&&py<1.2*H);
+    if(inb&&d<=maxr&&d<bd){bd=d;best={x:px,y:py};}}
+  return best;}
+function inv3(m){const a=m[0][0],b=m[0][1],c=m[0][2],d=m[1][0],e=m[1][1],f=m[1][2],g=m[2][0],h=m[2][1],i=m[2][2];
+  const A=e*i-f*h,B=-(d*i-f*g),C=d*h-e*g,det=a*A+b*B+c*C;if(Math.abs(det)<1e-12)return null;const id=1/det;
+  return [[A*id,(c*h-b*i)*id,(b*f-c*e)*id],[B*id,(a*i-c*g)*id,(c*d-a*f)*id],[C*id,(b*g-a*h)*id,(a*e-b*d)*id]];}
 function mul3(A,B){const R=[[0,0,0],[0,0,0],[0,0,0]];for(let i=0;i<3;i++)for(let j=0;j<3;j++){let s=0;for(let k=0;k<3;k++)s+=A[i][k]*B[k][j];R[i][j]=s;}return R;}
-
-/* real eigen-decomposition of a general 3x3 via characteristic cubic.
-   returns real eigenvalues and (real-part) eigenvectors. */
 function eig3(M){
   const a=M[0][0],b=M[0][1],c=M[0][2],d=M[1][0],e=M[1][1],f=M[1][2],g=M[2][0],h=M[2][1],i=M[2][2];
-  // Monic characteristic polynomial l^3 + c2 l^2 + c1 l + c0:
-  //   c2 = -trace,  c1 = sum of principal 2x2 minors,  c0 = -det
   const trace=a+e+i;
-  const minorSum=(a*e+a*i+e*i - b*d - c*g - f*h);
+  const minorSum=(a*e+a*i+e*i-b*d-c*g-f*h);
   const det=a*(e*i-f*h)-b*(d*i-f*g)+c*(d*h-e*g);
-  const c2=-trace, c1=minorSum, c0=-det;
-  const roots=cubicRealRoots(c2,c1,c0);
-  if(!roots.length)return null;
-  const vectors=[];
-  for(const lam of roots){
-    const v=nullVec3([[a-lam,b,c],[d,e-lam,f],[g,h,i-lam]]);
-    if(v)vectors.push(v);
-  }
-  if(!vectors.length)return null;
-  return {values:roots,vectors};
+  const c2=-trace,c1=minorSum,c0=-det;
+  const roots=cubicRealRoots(c2,c1,c0);if(!roots.length)return null;
+  const vectors=[];for(const lam of roots){const v=nullVec3([[a-lam,b,c],[d,e-lam,f],[g,h,i-lam]]);if(v)vectors.push(v);}
+  if(!vectors.length)return null;return {values:roots,vectors};
 }
+function cubicRealRoots(c2,c1,c0){const a=c2,p=c1-a*a/3,q=2*a*a*a/27-a*c1/3+c0,disc=q*q/4+p*p*p/27,roots=[],shift=-a/3;
+  if(disc>1e-12){const s=Math.sqrt(disc),u=Math.cbrt(-q/2+s),v=Math.cbrt(-q/2-s);roots.push(u+v+shift);}
+  else if(disc<-1e-12){const rr=Math.sqrt(-p*p*p/27),phi=Math.acos(clamp(-q/2/rr,-1,1)),m=2*Math.cbrt(rr);
+    for(let k=0;k<3;k++)roots.push(m*Math.cos((phi+2*Math.PI*k)/3)+shift);}
+  else{const u=Math.cbrt(-q/2);roots.push(2*u+shift);roots.push(-u+shift);}
+  return roots;}
+function nullVec3(m){const A=m.map(r=>r.slice()),n=3,piv=[];let row=0;
+  for(let col=0;col<n&&row<n;col++){let mx=row;for(let r=row+1;r<n;r++)if(Math.abs(A[r][col])>Math.abs(A[mx][col]))mx=r;
+    if(Math.abs(A[mx][col])<1e-9)continue;[A[row],A[mx]]=[A[mx],A[row]];const dv=A[row][col];for(let cc=0;cc<n;cc++)A[row][cc]/=dv;
+    for(let r=0;r<n;r++)if(r!==row){const f=A[r][col];for(let cc=0;cc<n;cc++)A[r][cc]-=f*A[row][cc];}piv.push(col);row++;}
+  const free=[0,1,2].find(c=>!piv.includes(c));if(free===undefined)return null;
+  const v=[0,0,0];v[free]=1;for(let r=0;r<piv.length;r++)v[piv[r]]=-A[r][free];
+  const nm=Math.hypot(v[0],v[1],v[2])||1;return [v[0]/nm,v[1]/nm,v[2]/nm];}
 
-/* real roots of l^3 + c2 l^2 + c1 l + c0 */
-function cubicRealRoots(c2,c1,c0){
-  const a=c2,b=c1,c=c0;
-  const p=b-a*a/3;
-  const q=2*a*a*a/27 - a*b/3 + c;
-  const disc=q*q/4 + p*p*p/27;
-  const roots=[];
-  const shift=-a/3;
-  if(disc>1e-12){
-    const s=Math.sqrt(disc);
-    const u=Math.cbrt(-q/2+s), v=Math.cbrt(-q/2-s);
-    roots.push(u+v+shift);
-  } else if(disc< -1e-12){
-    const rr=Math.sqrt(-p*p*p/27);
-    const phi=Math.acos(clamp(-q/2/rr,-1,1));
-    const m=2*Math.cbrt(rr);
-    for(let k=0;k<3;k++) roots.push(m*Math.cos((phi+2*Math.PI*k)/3)+shift);
-  } else {
-    const u=Math.cbrt(-q/2);
-    roots.push(2*u+shift); roots.push(-u+shift);
-  }
-  return roots;
-}
-
-/* null-space vector of (near-)singular 3x3 (for eigenvector) */
-function nullVec3(m){
-  // Gaussian elimination with partial pivot, then back out free variable
-  const A=m.map(r=>r.slice());
-  const n=3;const piv=[];
-  let row=0;
-  for(let col=0;col<n&&row<n;col++){
-    let mx=row;for(let r=row+1;r<n;r++)if(Math.abs(A[r][col])>Math.abs(A[mx][col]))mx=r;
-    if(Math.abs(A[mx][col])<1e-9)continue;
-    [A[row],A[mx]]=[A[mx],A[row]];
-    const dv=A[row][col];for(let cc=0;cc<n;cc++)A[row][cc]/=dv;
-    for(let r=0;r<n;r++)if(r!==row){const f=A[r][col];for(let cc=0;cc<n;cc++)A[r][cc]-=f*A[row][cc];}
-    piv.push(col);row++;
-  }
-  // free column = one not pivoted
-  const allcols=[0,1,2];const free=allcols.find(c=>!piv.includes(c));
-  if(free===undefined){return null;}
-  const v=[0,0,0];v[free]=1;
-  // for each pivot row, solve pivot var = -A[row][free]
-  for(let r=0;r<piv.length;r++){const col=piv[r];v[col]=-A[r][free];}
-  const norm=Math.hypot(v[0],v[1],v[2])||1;
-  return [v[0]/norm,v[1]/norm,v[2]/norm];
-}
-
-/* ============================================================
-   RING-SNAP: fit a circle from user-tapped ring points
-   ============================================================ */
+/* ---- ring snap ---- */
 function fitRingSnap(){
   if(snapPts.length<3){toast('Tap at least 3 ring points.');return;}
-  const c=fitCircleKasa(snapPts);
-  if(!c){toast('Couldn\u2019t fit a ring from those points.');return;}
-  pin={x:c.x,y:c.y,method:'snap',conf:0.9};
-  ringFit={x:c.x,y:c.y,r:c.r,which:'snap'};
-  // ask which ring so we can set scale; default to 4ft (most common framing)
-  // Keep simple: infer nothing, let stone-scale handle measurement.
-  snapPts=[];
-  setMode('stone');
-  statusEl.textContent='Pin set from your ring points. Tap each stone.';
-  toast('Pin set from ring.');
-  redraw();
+  const c=fitCircleKasa(snapPts);if(!c){toast('Couldn\u2019t fit a ring.');return;}
+  pin={x:c.x,y:c.y,method:'snap',conf:0.9,sigmaPx:3};
+  ringFit={x:c.x,y:c.y,r:c.r,MA:c.r*2,ma:c.r*2,which:'snap'};
+  snapPts=[];setMode('stone');statusEl.textContent='Pin set from your ring points. Tap each stone.';toast('Pin set from ring.');redraw();
 }
 
 /* ============================================================
-   STONE DETECTION  (tap-seeded, radius-capped)
+   STONE DETECTION — body-lock, radius-capped
    ============================================================ */
-function isGraniteAt(x,y){
-  const W=canvas.width,H=canvas.height,D=imgData.data;
-  x|=0;y|=0;if(x<0||y<0||x>=W||y>=H)return false;
-  const i=(y*W+x)*4,r=D[i],g=D[i+1],b=D[i+2];const [h,s,v]=rgbToHsv(r,g,b);
-  const sum=r+g+b;
-  const grayish=Math.abs(r-g)<58&&Math.abs(g-b)<68;
-  const dark=v<0.56&&s<0.45&&sum<450&&grayish;
-  // also accept saturated handle plastic so a handle tap still anchors the body search
-  const plastic=s>0.45&&v>0.30&&((h<0.10||h>0.92)||(h>0.10&&h<0.20));
-  return dark||plastic;
-}
-
-function expectedStoneRadiusPx(){
-  // best: from scale (rings).  fallback: fraction of image.
-  if(scaleCmPerPx) return (STONE_DIAMETER_CM/2)/scaleCmPerPx;
-  return Math.min(canvas.width,canvas.height)*0.085;
-}
+function isGraniteAt(x,y){const W=canvas.width,H=canvas.height,D=imgData.data;x|=0;y|=0;if(x<0||y<0||x>=W||y>=H)return false;
+  const i=(y*W+x)*4,r=D[i],g=D[i+1],b=D[i+2];const [h,s,v]=rgbToHsv(r,g,b);const sum=r+g+b;
+  const grayish=Math.abs(r-g)<58&&Math.abs(g-b)<68;const dark=v<0.56&&s<0.45&&sum<450&&grayish;
+  const plastic=s>0.45&&v>0.30&&((h<0.10||h>0.92)||(h>0.10&&h<0.20));return dark||plastic;}
+function expectedStoneRadiusPx(){if(scaleCmPerPx)return (STONE_DIAMETER_CM/2)/scaleCmPerPx;return Math.min(canvas.width,canvas.height)*0.085;}
 
 function detectStoneFromSeed(seedX,seedY){
   const W=canvas.width,H=canvas.height;
   const rPred=clamp(expectedStoneRadiusPx(),22,Math.min(W,H)*0.22);
-  const searchR=rPred*1.7; // cap: a touching neighbor can't pull the fit past this
+  const searchR=rPred*1.7;
   const x0=clamp((seedX-searchR)|0,0,W-1),x1=clamp(Math.ceil(seedX+searchR),0,W-1);
   const y0=clamp((seedY-searchR)|0,0,H-1),y1=clamp(Math.ceil(seedY+searchR),0,H-1);
-  const w=x1-x0+1,h=y1-y0+1;
-  const m=new Uint8Array(w*h);
-  for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){
-    const gx=x0+xx,gy=y0+yy;
-    if(dist(gx,gy,seedX,seedY)<=searchR && isGraniteAt(gx,gy)) m[yy*w+xx]=1;
-  }
+  const w=x1-x0+1,h=y1-y0+1,m=new Uint8Array(w*h);
+  for(let yy=0;yy<h;yy++)for(let xx=0;xx<w;xx++){const gx=x0+xx,gy=y0+yy;if(dist(gx,gy,seedX,seedY)<=searchR&&isGraniteAt(gx,gy))m[yy*w+xx]=1;}
   let mm=m;mm=dilate(mm,w,h);mm=dilate(mm,w,h);mm=erode(mm,w,h);
-  const comps=connectedComponents(mm,w,h);
-  const sx=seedX-x0,sy=seedY-y0;
+  const comps=connectedComponents(mm,w,h);const sx=seedX-x0,sy=seedY-y0;
   let best=null,bestScore=-1;
-  for(const comp of comps){
-    if(comp.length<50)continue;
+  for(const comp of comps){if(comp.length<50)continue;
     let minx=1e9,miny=1e9,maxx=-1,maxy=-1,sumx=0,sumy=0;
     for(const idx of comp){const lx=idx%w,ly=(idx/w)|0;minx=Math.min(minx,lx);maxx=Math.max(maxx,lx);miny=Math.min(miny,ly);maxy=Math.max(maxy,ly);sumx+=lx;sumy+=ly;}
-    const area=comp.length,cx=sumx/area,cy=sumy/area;
-    const d=dist(cx,cy,sx,sy);
+    const area=comp.length,cx=sumx/area,cy=sumy/area,d=dist(cx,cy,sx,sy);
     const bw=maxx-minx+1,bh=maxy-miny+1,boxMax=Math.max(bw,bh),aspect=Math.min(bw,bh)/Math.max(1,boxMax);
-    const nearScore=1-Math.min(1,d/searchR);
-    const sizeScore=Math.min(1,area/(Math.PI*rPred*rPred*0.55));
-    const aspectScore=clamp((aspect-0.30)/0.55,0,1);
+    const nearScore=1-Math.min(1,d/searchR),sizeScore=Math.min(1,area/(Math.PI*rPred*rPred*0.55)),aspectScore=clamp((aspect-0.30)/0.55,0,1);
     const score=0.42*nearScore+0.30*sizeScore+0.28*aspectScore;
     if(score>bestScore){bestScore=score;best={comp,minx,miny,maxx,maxy,cx,cy,area};}
   }
-  if(!best){toast('No stone body found \u2014 zoom in and tap the granite.');return null;}
-
-  // boundary points in full-res
-  const set=new Set(best.comp);
-  const pts=[],bpts=[];
-  for(const idx of best.comp){
-    const lx=idx%w,ly=(idx/w)|0;const px=x0+lx,py=y0+ly;pts.push({x:px,y:py});
-    let edge=false;
-    if(lx+1>=w||!set.has(idx+1))edge=true;
-    else if(lx-1<0||!set.has(idx-1))edge=true;
-    else if(ly+1>=h||!set.has(idx+w))edge=true;
-    else if(ly-1<0||!set.has(idx-w))edge=true;
-    if(edge)bpts.push({x:px,y:py});
-  }
-  const bboxCx=x0+(best.minx+best.maxx)/2, bboxCy=y0+(best.miny+best.maxy)/2;
+  if(!best){toast('No stone body found \u2014 pinch in and tap the granite.');return null;}
+  const set=new Set(best.comp);const pts=[],bpts=[];
+  for(const idx of best.comp){const lx=idx%w,ly=(idx/w)|0;const px=x0+lx,py=y0+ly;pts.push({x:px,y:py});
+    let edge=false;if(lx+1>=w||!set.has(idx+1))edge=true;else if(lx-1<0||!set.has(idx-1))edge=true;else if(ly+1>=h||!set.has(idx+w))edge=true;else if(ly-1<0||!set.has(idx-w))edge=true;
+    if(edge)bpts.push({x:px,y:py});}
+  const bboxCx=x0+(best.minx+best.maxx)/2,bboxCy=y0+(best.miny+best.maxy)/2;
   const bboxR=Math.max(best.maxx-best.minx,best.maxy-best.miny)/2;
-
   let circle=fitCircleKasa(bpts.length>24?bpts:pts);
-  // radius cap to true stone size (this is what defeats touching stones)
-  const minR=Math.max(16,rPred*0.78), maxR=rPred*1.18;
-  let residual=null;
+  const minR=Math.max(16,rPred*0.78),maxR=rPred*1.18;let residual=null;
   if(!circle||!isFinite(circle.r)||circle.r<minR*0.8||circle.r>maxR*1.3||dist(circle.x,circle.y,bboxCx,bboxCy)>bboxR*0.8){
     circle={x:bboxCx,y:bboxCy,r:clamp(bboxR*1.04,minR,maxR)};
-  } else {
-    circle.r=clamp(circle.r,minR,maxR);
-  }
-  // fit residual = mean |dist(boundary,center)-r| / r   (real confidence input)
-  if(bpts.length>10){
-    let s=0;for(const q of bpts)s+=Math.abs(dist(q.x,q.y,circle.x,circle.y)-circle.r);
-    residual=(s/bpts.length)/circle.r;
-  }
-
+  } else circle.r=clamp(circle.r,minR,maxR);
+  if(bpts.length>10){let s=0;for(const q of bpts)s+=Math.abs(dist(q.x,q.y,circle.x,circle.y)-circle.r);residual=(s/bpts.length)/circle.r;}
   const label=labelColor(circle.x,circle.y,circle.r);
   const conf=stoneConfidence(circle,residual,rPred);
-  return {x:circle.x,y:circle.y,r:circle.r,seed:{x:seedX,y:seedY},label,residual,conf};
+  return {x:circle.x,y:circle.y,r:circle.r,seed:{x:seedX,y:seedY},label,residual:residual==null?0.1:residual,conf};
 }
-
-/* real confidence: fit residual + size agreement with ring-predicted radius */
 function stoneConfidence(circle,residual,rPred){
-  let fitScore = residual==null?0.5 : clamp(1-residual/0.18,0,1); // tight circle => high
-  let sizeScore = clamp(1-Math.abs(circle.r-rPred)/(rPred*0.6),0,1);
-  // if we have no ring scale, size agreement is meaningless -> lean on fit only
-  if(!scaleCmPerPx) sizeScore=0.6;
+  let fitScore=residual==null?0.5:clamp(1-residual/0.18,0,1);
+  let sizeScore=clamp(1-Math.abs(circle.r-rPred)/(rPred*0.6),0,1);
+  if(!scaleCmPerPx)sizeScore=0.6;
   return Math.round(100*(0.65*fitScore+0.35*sizeScore));
 }
-
-/* morphology + components */
 function dilate(m,w,h){const o=new Uint8Array(m.length);for(let y=0;y<h;y++)for(let x=0;x<w;x++){let v=0;for(let dy=-1;dy<=1&&!v;dy++)for(let dx=-1;dx<=1;dx++){const xx=x+dx,yy=y+dy;if(xx>=0&&yy>=0&&xx<w&&yy<h&&m[yy*w+xx]){v=1;break;}}o[y*w+x]=v;}return o;}
 function erode(m,w,h){const o=new Uint8Array(m.length);for(let y=0;y<h;y++)for(let x=0;x<w;x++){let v=1;for(let dy=-1;dy<=1&&v;dy++)for(let dx=-1;dx<=1;dx++){const xx=x+dx,yy=y+dy;if(xx<0||yy<0||xx>=w||yy>=h||!m[yy*w+xx]){v=0;break;}}o[y*w+x]=v;}return o;}
 function connectedComponents(m,w,h){const seen=new Uint8Array(m.length),comps=[];for(let i=0;i<m.length;i++){if(!m[i]||seen[i])continue;const q=[i],pix=[];seen[i]=1;for(let qi=0;qi<q.length;qi++){const idx=q[qi];pix.push(idx);const x=idx%w,y=(idx/w)|0;if(x+1<w){const n=idx+1;if(m[n]&&!seen[n]){seen[n]=1;q.push(n);}}if(x-1>=0){const n=idx-1;if(m[n]&&!seen[n]){seen[n]=1;q.push(n);}}if(y+1<h){const n=idx+w;if(m[n]&&!seen[n]){seen[n]=1;q.push(n);}}if(y-1>=0){const n=idx-w;if(m[n]&&!seen[n]){seen[n]=1;q.push(n);}}}comps.push(pix);}return comps;}
-
-function fitCircleKasa(points){
-  let Sx=0,Sy=0,Sxx=0,Syy=0,Sxy=0,Sz=0,Sxz=0,Syz=0,n=points.length;
+function fitCircleKasa(points){let Sx=0,Sy=0,Sxx=0,Syy=0,Sxy=0,Sz=0,Sxz=0,Syz=0,n=points.length;
   for(const p of points){const x=p.x,y=p.y,z=x*x+y*y;Sx+=x;Sy+=y;Sxx+=x*x;Syy+=y*y;Sxy+=x*y;Sz+=z;Sxz+=x*z;Syz+=y*z;}
-  const M=[[Sxx,Sxy,Sx],[Sxy,Syy,Sy],[Sx,Sy,n]],B=[-Sxz,-Syz,-Sz];
-  const sol=solve3(M,B);if(!sol)return null;
-  const cx=-sol[0]/2,cy=-sol[1]/2,rr=cx*cx+cy*cy-sol[2];if(rr<=0)return null;
-  return {x:cx,y:cy,r:Math.sqrt(rr)};
-}
+  const M=[[Sxx,Sxy,Sx],[Sxy,Syy,Sy],[Sx,Sy,n]],B=[-Sxz,-Syz,-Sz],sol=solve3(M,B);if(!sol)return null;
+  const cx=-sol[0]/2,cy=-sol[1]/2,rr=cx*cx+cy*cy-sol[2];if(rr<=0)return null;return {x:cx,y:cy,r:Math.sqrt(rr)};}
 function solve3(M,b){const a=M.map((r,i)=>[...r,b[i]]);for(let i=0;i<3;i++){let mx=i;for(let r=i+1;r<3;r++)if(Math.abs(a[r][i])>Math.abs(a[mx][i]))mx=r;if(Math.abs(a[mx][i])<1e-9)return null;[a[i],a[mx]]=[a[mx],a[i]];const dv=a[i][i];for(let c=i;c<4;c++)a[i][c]/=dv;for(let r=0;r<3;r++)if(r!==i){const f=a[r][i];for(let c=i;c<4;c++)a[r][c]-=f*a[i][c];}}return [a[0][3],a[1][3],a[2][3]];}
+function labelColor(cx,cy,r){const W=canvas.width,H=canvas.height,D=imgData.data;let red=0,yel=0;const R=Math.max(8,r*0.55);
+  for(let y=Math.max(0,(cy-R)|0);y<Math.min(H,Math.ceil(cy+R));y+=2)for(let x=Math.max(0,(cx-R)|0);x<Math.min(W,Math.ceil(cx+R));x+=2){if(dist(x,y,cx,cy)>R)continue;const i=(y*W+x)*4;const [h,s,v]=rgbToHsv(D[i],D[i+1],D[i+2]);if(s>0.34&&v>0.24){if(h<0.07||h>0.93)red++;if(h>0.10&&h<0.20)yel++;}}
+  if(red>yel*1.2&&red>5)return 'Red';if(yel>red*1.2&&yel>5)return 'Yellow';return 'Stone';}
 
-function labelColor(cx,cy,r){
-  const W=canvas.width,H=canvas.height,D=imgData.data;let red=0,yel=0,total=0;const R=Math.max(8,r*0.55);
-  for(let y=Math.max(0,(cy-R)|0);y<Math.min(H,Math.ceil(cy+R));y+=2)for(let x=Math.max(0,(cx-R)|0);x<Math.min(W,Math.ceil(cx+R));x+=2){
-    if(dist(x,y,cx,cy)>R)continue;const i=(y*W+x)*4;const [h,s,v]=rgbToHsv(D[i],D[i+1],D[i+2]);
-    if(s>0.34&&v>0.24){total++;if(h<0.07||h>0.93)red++;if(h>0.10&&h<0.20)yel++;}
+/* ============================================================
+   MEASUREMENT + CALL LOGIC
+   ============================================================ */
+function chooseScale(){
+  let ringScale=scaleCmPerPx||null,stoneScale=null;
+  if(stones.length){const rs=stones.map(s=>s.r).sort((a,b)=>a-b);const medR=rs[Math.floor(rs.length/2)];stoneScale=(STONE_DIAMETER_CM/2)/medR;}
+  let chosen=ringScale||stoneScale,agreement=null;
+  if(ringScale&&stoneScale)agreement=1-Math.min(1,Math.abs(ringScale-stoneScale)/((ringScale+stoneScale)/2));
+  return {chosen,ringScale,stoneScale,agreement};
+}
+function nearestEdge(s){ // returns {edgePx, edgeCm, pt}
+  if(!pin)return {edgePx:null,edgeCm:null,pt:null};
+  const dx=pin.x-s.x,dy=pin.y-s.y,L=Math.hypot(dx,dy)||1;
+  const pt={x:s.x+dx/L*s.r,y:s.y+dy/L*s.r};
+  const edgePx=Math.max(0,L-s.r);
+  return {edgePx,pt};
+}
+function stoneBandCm(s,edgeCm,cmPerPx){
+  const pinCm=(pin?.sigmaPx||5)*cmPerPx;
+  const fitCm=(s.residual||0.08)*s.r*cmPerPx;
+  const tiltCm=tiltFrac*(edgeCm||0);
+  return Math.hypot(pinCm,fitCm,tiltCm,0.4); // 0.4cm floor (pixel/tap noise)
+}
+function computeAll(){
+  const sc=chooseScale(),cmPerPx=sc.chosen;
+  const rows=stones.map(s=>{
+    const ne=nearestEdge(s);
+    let edgeCm=ne.edgePx!=null&&cmPerPx?ne.edgePx*cmPerPx:null;
+    let bandCm=edgeCm!=null?stoneBandCm(s,edgeCm,cmPerPx):null;
+    return {...s,edgePx:ne.edgePx,edgePt:ne.pt,edgeCm,bandCm};
+  });
+  const ranked=rows.filter(r=>r.edgeCm!=null).sort((a,b)=>a.edgeCm-b.edgeCm);
+  let call=null;
+  if(ranked.length>=2){
+    const a=ranked[0],b=ranked[1];
+    const gap=b.edgeCm-a.edgeCm,combined=Math.hypot(a.bandCm,b.bandCm);
+    call={winner:a,gap,combined,confident:gap>STRICT_K*combined};
+  } else if(ranked.length===1){
+    call={winner:ranked[0],gap:null,combined:ranked[0].bandCm,confident:true,solo:true};
   }
-  if(red>yel*1.2&&red>5)return 'Red';if(yel>red*1.2&&yel>5)return 'Yellow';return 'Stone';
+  return {rows,ranked,call,scale:sc,cmPerPx};
 }
 
 /* ============================================================
-   SCALE + DISTANCE
+   VERIFY SCALE (self-check against a known ring)
    ============================================================ */
-function chooseScale(){
-  // prefer ring scale; cross-check against median stone radius if available
-  let ringScale=scaleCmPerPx||null;
-  let stoneScale=null;
-  if(stones.length){
-    const rs=stones.map(s=>s.r).sort((a,b)=>a-b);
-    const medR=rs[Math.floor(rs.length/2)];
-    stoneScale=(STONE_DIAMETER_CM/2)/medR;
-  }
-  let chosen=ringScale||stoneScale;
-  let agreement=null;
-  if(ringScale&&stoneScale){
-    agreement=1-Math.min(1,Math.abs(ringScale-stoneScale)/((ringScale+stoneScale)/2));
-  }
-  return {chosen,ringScale,stoneScale,agreement};
+function doVerify(p){
+  if(!pin){toast('Set the pin first, then verify.');verifyMode=false;return;}
+  const sc=chooseScale();if(!sc.chosen){toast('No scale yet \u2014 measure a stone or fit a ring first.');return;}
+  const measPx=dist(p.x,p.y,pin.x,pin.y);
+  const measCm=measPx*sc.chosen, measIn=measCm/2.54;
+  // pick nearest known ring edge in inches
+  let bestRing='8ft',bestErr=1e9;
+  for(const k of Object.keys(RING_EDGE_IN)){const err=Math.abs(measIn-RING_EDGE_IN[k]);if(err<bestErr){bestErr=err;bestRing=k;}}
+  const known=RING_EDGE_IN[bestRing];
+  const pct=Math.max(0,100-Math.abs(measIn-known)/known*100);
+  verifyMode=false;
+  setHint(`<b>Scale check:</b> that point reads <b>${measIn.toFixed(1)} in</b>. Nearest known line is the <b>${bestRing}</b> ring edge at <b>${known} in</b>. Tool is reading <b>${pct.toFixed(1)}%</b> true on this photo.`);
+  toast(`Reads ${measIn.toFixed(1)}in vs ${known}in known \u2014 ${pct.toFixed(0)}% true.`);
+  redraw();
 }
-
-function computeMeasurements(){
-  const sc=chooseScale();
-  const cmPerPx=sc.chosen;
-  const out=stones.map(s=>{
-    let edgeCm=null;
-    if(pin&&cmPerPx){
-      const centerPx=dist(s.x,s.y,pin.x,pin.y);
-      const edgePx=Math.max(0,centerPx-s.r);
-      edgeCm=edgePx*cmPerPx;
-    }
-    return {...s,edgeCm};
-  });
-  return {rows:out,scale:sc,cmPerPx};
-}
-
-/* tilt scaffold (OFF in v1) */
-function computeTilt(){ /* future: from ring ellipse axis ratio = cos(viewAngle) */ return null; }
 
 /* ============================================================
    DRAW
@@ -648,171 +565,170 @@ function computeTilt(){ /* future: from ring ellipse axis ratio = cos(viewAngle)
 function redraw(){
   if(!imgData)return;
   ctx.putImageData(imgData,0,0);
+  const M=computeAll();
 
-  // ring overlay (faint) if we have one
+  // ring overlay (always faint; bold in challenge)
   if(ringFit){
-    ctx.save();ctx.strokeStyle='rgba(90,170,255,.35)';ctx.lineWidth=2;ctx.setLineDash([7,6]);
-    ctx.beginPath();ctx.arc(ringFit.x,ringFit.y,ringFit.r,0,Math.PI*2);ctx.stroke();ctx.restore();
-  }
-
-  // snap points
-  if(mode==='snap'&&snapPts.length){
-    ctx.save();ctx.fillStyle='#9cc6ff';for(const p of snapPts){ctx.beginPath();ctx.arc(p.x,p.y,5,0,Math.PI*2);ctx.fill();}
-    if(snapPts.length>=3){const c=fitCircleKasa(snapPts);if(c){ctx.strokeStyle='rgba(156,198,255,.7)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(c.x,c.y,c.r,0,Math.PI*2);ctx.stroke();}}
+    ctx.save();
+    ctx.strokeStyle=challenge?'rgba(185,139,255,.9)':'rgba(90,170,255,.35)';
+    ctx.lineWidth=challenge?3:2;ctx.setLineDash(challenge?[]:[7,6]);
+    ctx.beginPath();
+    if(ringFit.MA&&ringFit.ma&&ringFit.which!=='snap'){
+      ctx.ellipse(ringFit.x,ringFit.y,ringFit.MA/2,ringFit.ma/2,(ringFit.ang||0)*Math.PI/180,0,Math.PI*2);
+    } else ctx.arc(ringFit.x,ringFit.y,ringFit.r,0,Math.PI*2);
+    ctx.stroke();
+    if(challenge){ctx.fillStyle='rgba(185,139,255,.95)';ctx.font='bold 15px system-ui';ctx.fillText('ring used for pin + scale',ringFit.x-ringFit.r+4,ringFit.y-ringFit.r-6);}
     ctx.restore();
   }
 
-  const meas=computeMeasurements();
-  const sorted=[...meas.rows].filter(s=>s.edgeCm!=null).sort((a,b)=>a.edgeCm-b.edgeCm);
+  // snap pts
+  if(mode==='snap'&&snapPts.length){ctx.save();ctx.fillStyle='#9cc6ff';for(const p of snapPts){ctx.beginPath();ctx.arc(p.x,p.y,5,0,Math.PI*2);ctx.fill();}
+    if(snapPts.length>=3){const c=fitCircleKasa(snapPts);if(c){ctx.strokeStyle='rgba(156,198,255,.7)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(c.x,c.y,c.r,0,Math.PI*2);ctx.stroke();}}ctx.restore();}
 
-  // pin lines to stones
-  if(pin){
-    stones.forEach(s=>{ctx.save();ctx.strokeStyle='rgba(255,255,255,.8)';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(pin.x,pin.y);ctx.lineTo(s.x,s.y);ctx.stroke();ctx.restore();});
-  }
-
-  // stones
-  stones.forEach(s=>{
-    ctx.save();ctx.lineWidth=4;
-    ctx.strokeStyle=s.label==='Red'?'#ff4040':s.label==='Yellow'?'#ffe14a':'#50a7ff';
-    ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.stroke();
-    ctx.fillStyle=ctx.strokeStyle;ctx.beginPath();ctx.arc(s.x,s.y,4,0,Math.PI*2);ctx.fill();
-    const rank=sorted.indexOf(meas.rows.find(m=>m===s)||s);
-    const rk=sorted.findIndex(m=>m.seed===s.seed);
-    const tag=(rk>=0?('#'+(rk+1)+' '):'')+s.label;
+  // stones + measured edge lines
+  M.rows.forEach(s=>{
+    const col=s.label==='Red'?'#ff4040':s.label==='Yellow'?'#ffe14a':'#50a7ff';
+    ctx.save();ctx.lineWidth=4;ctx.strokeStyle=col;ctx.beginPath();ctx.arc(s.x,s.y,s.r,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle=col;ctx.beginPath();ctx.arc(s.x,s.y,4,0,Math.PI*2);ctx.fill();
+    // measured line: pin -> nearest edge point (not center)
+    if(pin&&s.edgePt){
+      ctx.strokeStyle=challenge?'rgba(255,255,255,.95)':'rgba(255,255,255,.8)';
+      ctx.lineWidth=challenge?3:2;ctx.beginPath();ctx.moveTo(pin.x,pin.y);ctx.lineTo(s.edgePt.x,s.edgePt.y);ctx.stroke();
+      // mark the actual edge point being measured
+      ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(s.edgePt.x,s.edgePt.y,challenge?5:3,0,Math.PI*2);ctx.fill();
+    }
+    const rk=M.ranked.findIndex(r=>r.seed===s.seed);
+    const tag=(rk>=0?('#'+(rk+1)+' '):'')+s.label+(challenge&&s.edgeCm!=null?`  ${(s.edgeCm/2.54).toFixed(1)}in`:'');
     ctx.font='bold 17px system-ui';ctx.lineWidth=4;ctx.strokeStyle='#000';ctx.fillStyle='#fff';
     ctx.strokeText(tag,s.x+s.r+6,s.y);ctx.fillText(tag,s.x+s.r+6,s.y);
     ctx.restore();
   });
 
-  // pin crosshair on top
-  if(pin){
-    ctx.save();
-    ctx.strokeStyle=pin.method==='manual'?'#00ff7b':pin.method==='snap'?'#9cc6ff':'#2fe06a';
-    ctx.lineWidth=3;const s=15;
-    ctx.beginPath();ctx.moveTo(pin.x-s,pin.y);ctx.lineTo(pin.x+s,pin.y);ctx.moveTo(pin.x,pin.y-s);ctx.lineTo(pin.x,pin.y+s);ctx.stroke();
-    ctx.beginPath();ctx.arc(pin.x,pin.y,4,0,Math.PI*2);ctx.fillStyle=ctx.strokeStyle;ctx.fill();
-    ctx.restore();
-  }
+  // pin crosshair
+  if(pin){ctx.save();ctx.strokeStyle=pin.method==='manual'?'#00ff7b':pin.method==='snap'?'#9cc6ff':'#2fe06a';
+    ctx.lineWidth=3;const s=16;ctx.beginPath();ctx.moveTo(pin.x-s,pin.y);ctx.lineTo(pin.x+s,pin.y);ctx.moveTo(pin.x,pin.y-s);ctx.lineTo(pin.x,pin.y+s);ctx.stroke();
+    ctx.beginPath();ctx.arc(pin.x,pin.y,4,0,Math.PI*2);ctx.fillStyle=ctx.strokeStyle;ctx.fill();ctx.restore();}
 
-  renderResults(meas,sorted);
+  renderResults(M);
 }
 
 /* ============================================================
-   RESULTS + LOG
+   RESULTS UI
    ============================================================ */
 let lastFlags={happy:false,error:false};
-function renderResults(meas,sorted){
+function renderResults(M){
   if(!stones.length){
     let extra='';
-    if(mode==='snap'){extra=`<div class="logrow"><button id="snapFit">Fit Ring \u2192 Pin</button><span class="small">${snapPts.length} point(s) tapped</span></div>`;}
+    if(mode==='snap')extra=`<div class="logrow"><button id="snapFit">Fit Ring \u2192 Pin</button><span class="small">${snapPts.length} point(s)</span></div>`;
     resultsEl.innerHTML=`<div class="small">No stones measured yet.</div>${extra}`;
     if(mode==='snap'){const b=document.getElementById('snapFit');if(b)b.onclick=fitRingSnap;}
     return;
   }
-  if(!meas)meas=computeMeasurements();
-  if(!sorted)sorted=[...meas.rows].filter(s=>s.edgeCm!=null).sort((a,b)=>a.edgeCm-b.edgeCm);
-
   const pinTag=pin?`<span class="pinbadge ${pin.method}">pin: ${pin.method}</span>`:'<span class="pinbadge">no pin</span>';
   let html='';
-
-  if(sorted.length){
-    const win=sorted[0];
-    const margin=sorted.length>1?(sorted[1].edgeCm-sorted[0].edgeCm):null;
-    html+=`<div class="verdict"><span class="win">${win.label}</span> is shot rock${margin!=null?` by ${margin.toFixed(1)} cm (${(margin*10).toFixed(0)} mm)`:''}. ${pinTag}</div>`;
+  const call=M.call;
+  if(call&&!call.solo){
+    if(call.confident){
+      html+=`<div class="verdict win"><span class="who">${call.winner.label}</span> is shot rock. ${pinTag}</div>
+        <div class="verdictsub">Ahead by ${call.gap.toFixed(1)} cm (${(call.gap/2.54).toFixed(1)} in) \u2014 clear of the \u00B1${call.combined.toFixed(1)} cm uncertainty on this photo.</div>`;
+    } else {
+      html+=`<div class="verdict tooclose">Too close to call \u2014 use the stick. ${pinTag}</div>
+        <div class="verdictsub">Gap is only ${call.gap.toFixed(1)} cm but the photo\u2019s uncertainty is \u00B1${call.combined.toFixed(1)} cm. Not safe to call from this image.</div>`;
+    }
+  } else if(call&&call.solo){
+    html+=`<div class="verdict win"><span class="who">${call.winner.label}</span> measured. ${pinTag}</div><div class="verdictsub">Add the other rock to compare.</div>`;
   } else {
-    html+=`<div class="verdict">Set the pin to get distances. ${pinTag}</div>`;
+    html+=`<div class="verdict">Set the pin to get a call. ${pinTag}</div>`;
   }
 
-  html+='<table><thead><tr><th>Rank</th><th>Stone</th><th>Distance to pin</th><th>Confidence</th></tr></thead><tbody>';
-  const ranked = sorted.length?sorted:meas.rows;
-  ranked.forEach((s,idx)=>{
-    const distStr = s.edgeCm!=null ? `${s.edgeCm.toFixed(1)} cm <span class="small">(${(s.edgeCm/2.54).toFixed(2)} in)</span>` : '<span class="small">need pin/scale</span>';
+  html+='<table><thead><tr><th>Rank</th><th>Stone</th><th>Edge to pin</th><th>Fit conf.</th></tr></thead><tbody>';
+  const list=M.ranked.length?M.ranked:M.rows;
+  list.forEach((s,idx)=>{
+    const d=s.edgeCm!=null?`${s.edgeCm.toFixed(1)} cm <span class="small">(${(s.edgeCm/2.54).toFixed(1)} in)</span>`:'<span class="small">need pin</span>';
     const cc=s.conf>=75?'#2fe06a':s.conf>=55?'#ffd23d':'#ff7d7d';
-    html+=`<tr><td>${sorted.length?idx+1:'\u2013'}</td>
-      <td><span class="pill ${s.label}">${s.label}</span></td>
-      <td>${distStr}</td>
-      <td class="conf"><span class="confbar"><i style="width:${s.conf}%;background:${cc}"></i></span>${s.conf}%</td></tr>`;
+    html+=`<tr><td>${M.ranked.length?idx+1:'\u2013'}</td><td><span class="pill ${s.label}">${s.label}</span></td><td>${d}</td><td class="conf"><span class="confbar"><i style="width:${s.conf}%;background:${cc}"></i></span>${s.conf}%</td></tr>`;
   });
   html+='</tbody></table>';
 
-  // scale agreement note (real diagnostic)
-  if(meas.scale.agreement!=null){
-    const ag=Math.round(meas.scale.agreement*100);
-    const msg = ag>=85?'ring & stone scale agree \u2014 measurement is trustworthy'
-      : ag>=70?'mild scale disagreement \u2014 likely slight camera tilt'
-      : 'scale sources disagree \u2014 shot is tilted; treat distances as approximate';
-    html+=`<p class="small" style="margin-top:8px">Scale check: ${ag}% \u2014 ${msg}.</p>`;
-  } else if(!meas.cmPerPx){
-    html+=`<p class="small" style="margin-top:8px">No scale yet: need a ring (auto/snap) or at least one measured stone to set real-world distance.</p>`;
-  } else if(!scaleCmPerPx){
-    html+=`<p class="small" style="margin-top:8px">Scale from stone size (no ring scale). Distances are good if stones are regulation and shot is near-overhead.</p>`;
-  }
+  // Challenge Mode panel
+  if(challenge){ html+=challengePanel(M); }
 
   // flags + export
-  html+=`<div class="logrow">
-      <span class="glabel">Was this measurement right?</span>
-      <button id="flagHappy" class="flagbtn happy ${lastFlags.happy?'on':''}">\u{1F44D} Looks right</button>
-      <button id="flagErr" class="flagbtn err ${lastFlags.error?'on':''}">\u26A0\uFE0F Flag error</button>
-      <span class="spacer"></span>
-      <button id="saveRow">Save to log</button>
-      <button id="dlCsv">Download CSV</button>
-      <button id="dlPng">Save image</button>
-    </div>`;
+  html+=`<div class="logrow"><span class="glabel">Was this call right?</span>
+    <button id="flagHappy" class="flagbtn happy ${lastFlags.happy?'on':''}">\u{1F44D} Right</button>
+    <button id="flagErr" class="flagbtn err ${lastFlags.error?'on':''}">\u26A0\uFE0F Wrong</button>
+    <span class="spacer"></span>
+    <button id="saveRow">Save to log</button><button id="dlCsv">CSV</button><button id="dlPng">Image</button></div>`;
 
   resultsEl.innerHTML=html;
-
-  document.getElementById('flagHappy').onclick=()=>{lastFlags={happy:true,error:false};renderResults();};
-  document.getElementById('flagErr').onclick=()=>{lastFlags={happy:false,error:true};renderResults();};
-  document.getElementById('saveRow').onclick=()=>saveRow(ranked,meas);
+  document.getElementById('flagHappy').onclick=()=>{lastFlags={happy:true,error:false};redraw();};
+  document.getElementById('flagErr').onclick=()=>{lastFlags={happy:false,error:true};redraw();};
+  document.getElementById('saveRow').onclick=()=>saveRow(M);
   document.getElementById('dlCsv').onclick=downloadCsv;
   document.getElementById('dlPng').onclick=downloadPng;
   if(mode==='snap'){const b=document.getElementById('snapFit');if(b)b.onclick=fitRingSnap;}
 }
 
-/* in-memory log */
-const LOG=[];
-const LOG_HEADER=['session','timestamp',
-  'stone1_color','stone1_dist_cm','stone2_color','stone2_dist_cm',
-  'stone3_color','stone3_dist_cm','stone4_color','stone4_dist_cm',
-  'winner_color','margin_cm','pin_method','avg_confidence','error_flag','happy_flag'];
-
-function saveRow(ranked,meas){
-  const slot=[null,null,null,null];
-  ranked.slice(0,4).forEach((s,i)=>slot[i]={color:s.label,d:s.edgeCm});
-  const win=ranked[0];
-  const margin=ranked.length>1&&ranked[0].edgeCm!=null&&ranked[1].edgeCm!=null?(ranked[1].edgeCm-ranked[0].edgeCm):'';
-  const avgConf=Math.round(ranked.reduce((a,s)=>a+s.conf,0)/ranked.length);
-  const row=[session,new Date().toISOString(),
-    slot[0]?.color||'',slot[0]?.d!=null?slot[0].d.toFixed(1):'',
-    slot[1]?.color||'',slot[1]?.d!=null?slot[1].d.toFixed(1):'',
-    slot[2]?.color||'',slot[2]?.d!=null?slot[2].d.toFixed(1):'',
-    slot[3]?.color||'',slot[3]?.d!=null?slot[3].d.toFixed(1):'',
-    win?.label||'',margin===''?'':(+margin).toFixed(1),
-    pin?.method||'none',avgConf,
-    lastFlags.error?'yes':'no',lastFlags.happy?'yes':'no'];
-  LOG.push(row);
-  toast(`Saved row ${LOG.length} to log.`);
+function challengePanel(M){
+  const sc=M.scale,call=M.call;
+  let scaleLine = sc.agreement!=null
+    ? `Scale cross-check: ring vs stone agree <b class="${sc.agreement>=0.85?'ok':'warnt'}">${Math.round(sc.agreement*100)}%</b>.`
+    : (scaleCmPerPx?`Scale from the <b>${ringFit?.which||'ring'}</b>.`:`Scale from stone size (no ring scale).`);
+  let tiltLine = tiltFrac<0.03?`Rings read round \u2014 <b class="ok">low tilt</b>, tight uncertainty.`
+    : tiltFrac<0.12?`Mild tilt detected from ring shape \u2014 uncertainty widened a little.`
+    : `<b class="warnt">Strong tilt</b> from ring shape \u2014 uncertainty widened; shoot more overhead for a tighter call.`;
+  let steps=`<div class="steps">
+    <div class="step" data-n="1"><b>Pin.</b> ${pin?`Set by <b>${pin.method}</b>. The drawn ring above should sit on the painted ring \u2014 if it does, the pin is trustworthy.`:'No pin set.'}</div>
+    <div class="step" data-n="2"><b>Scale.</b> ${scaleLine} ${tiltLine}</div>
+    <div class="step" data-n="3"><b>Each rock.</b> The white dot on every stone is the exact point measured \u2014 the granite edge nearest the pin, one radius in from the fitted center. The line runs pin \u2192 that point.</div>`;
+  if(call&&!call.solo){
+    steps+=`<div class="step" data-n="4"><b>The call.</b> ${call.winner.label} edge ${M.ranked[0].edgeCm.toFixed(1)} cm vs ${M.ranked[1].label} ${M.ranked[1].edgeCm.toFixed(1)} cm. Gap <b>${call.gap.toFixed(1)} cm</b>. Photo uncertainty <b>\u00B1${call.combined.toFixed(1)} cm</b>. Rule: call only if gap &gt; ${STRICT_K}\u00D7 uncertainty (${(STRICT_K*call.combined).toFixed(1)} cm). ${call.confident?`<b class="ok">${call.gap.toFixed(1)} &gt; ${(STRICT_K*call.combined).toFixed(1)} \u2192 confident call.</b>`:`<b class="warnt">${call.gap.toFixed(1)} &lt; ${(STRICT_K*call.combined).toFixed(1)} \u2192 too close, use the stick.</b>`}</div>`;
+  }
+  steps+='</div>';
+  // visual band bar
+  let band='';
+  if(call&&!call.solo){
+    const maxv=Math.max(call.gap,STRICT_K*call.combined)*1.25;
+    const gapW=call.gap/maxv*100, uncW=STRICT_K*call.combined/maxv*100;
+    band=`<div class="bandwrap"><div class="small">Gap vs. required margin (to scale)</div>
+      <div class="bandbar"><div class="track"></div>
+        <div class="gap" style="left:0;width:${gapW}%"></div>
+        <div class="unc" style="left:0;width:${uncW}%"></div>
+        <div class="lbl" style="left:${Math.min(gapW,92)}%">gap ${call.gap.toFixed(1)}</div>
+        <div class="lbl" style="left:${Math.min(uncW,92)}%;top:20px">need ${(STRICT_K*call.combined).toFixed(1)}</div>
+      </div></div>`;
+  }
+  return `<div class="challengePanel"><h3>\u2696\uFE0F Challenge Mode \u2014 show your work</h3>${steps}${band}
+    <div style="padding:0 14px 12px"><button id="verifyInline" style="border-color:var(--challenge)">Verify scale on a ring \u2192</button></div></div>`;
 }
 
-function downloadCsv(){
-  if(!LOG.length){toast('Log is empty \u2014 press \u201CSave to log\u201D first.');return;}
+/* ---- logging ---- */
+const LOG=[];
+const LOG_HEADER=['session','timestamp','call','confident','margin_cm','uncertainty_cm',
+  'stone1_color','stone1_edge_cm','stone2_color','stone2_edge_cm','stone3_color','stone3_edge_cm','stone4_color','stone4_edge_cm',
+  'pin_method','tilt_frac','user_right','user_wrong'];
+function saveRow(M){
+  const r=M.ranked.slice(0,4);const slot=[null,null,null,null];r.forEach((s,i)=>slot[i]={c:s.label,d:s.edgeCm});
+  const call=M.call;
+  const row=[session,new Date().toISOString(),
+    call?(call.solo?call.winner.label:(call.confident?call.winner.label:'TOO CLOSE')):'',
+    call&&!call.solo?(call.confident?'yes':'no'):'',
+    call&&call.gap!=null?call.gap.toFixed(1):'', call&&call.combined!=null?call.combined.toFixed(1):'',
+    slot[0]?.c||'',slot[0]?.d!=null?slot[0].d.toFixed(1):'',slot[1]?.c||'',slot[1]?.d!=null?slot[1].d.toFixed(1):'',
+    slot[2]?.c||'',slot[2]?.d!=null?slot[2].d.toFixed(1):'',slot[3]?.c||'',slot[3]?.d!=null?slot[3].d.toFixed(1):'',
+    pin?.method||'none',tiltFrac.toFixed(3),lastFlags.happy?'yes':'no',lastFlags.error?'yes':'no'];
+  LOG.push(row);toast(`Saved row ${LOG.length}.`);
+}
+function downloadCsv(){if(!LOG.length){toast('Log empty \u2014 press Save to log first.');return;}
   const esc=v=>{const s=String(v);return /[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s;};
   const lines=[LOG_HEADER.join(',')].concat(LOG.map(r=>r.map(esc).join(',')));
-  const blob=new Blob([lines.join('\n')],{type:'text/csv'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download=`shotrock_log_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;
-  a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);
-  toast('CSV downloaded.');
-}
+  const blob=new Blob([lines.join('\n')],{type:'text/csv'});const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=`shotrock_log_${new Date().toISOString().slice(0,19).replace(/[:T]/g,'-')}.csv`;a.click();
+  setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('CSV downloaded.');}
+function downloadPng(){const wasCh=challenge;redraw();canvas.toBlob(blob=>{const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`shotrock_s${session}_${Date.now()}.png`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Image saved.');},'image/png');}
 
-function downloadPng(){
-  redraw();
-  canvas.toBlob(blob=>{
-    const a=document.createElement('a');a.href=URL.createObjectURL(blob);
-    a.download=`shotrock_shot_s${session}_${Date.now()}.png`;a.click();
-    setTimeout(()=>URL.revokeObjectURL(a.href),1000);toast('Image saved.');
-  },'image/png');
-}
+/* delegate inline verify button (created in challenge panel) */
+resultsEl.addEventListener('click',e=>{if(e.target&&e.target.id==='verifyInline'){verifyMode=true;toast('Verify: pinch in, tap a point on a known ring line.');setHint('<b>Verify Scale:</b> tap a point sitting exactly on a painted ring line. The tool reports what it reads vs. the known distance.');}});
 
 setMode('stone');
 </script>
