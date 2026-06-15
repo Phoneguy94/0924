@@ -159,10 +159,18 @@ async function fetchPeople(){
       new Date(b.createdTime) - new Date(a.createdTime));
     const out = [];
     for(const rec of recs){
+      const f = rec.fields || {};
+      // grab every attachment-array whose field name starts with "AIKiosk"
+      // (catches AIKioskv3, AIKioskv3 copy, copy copy, ... regardless of spacing),
+      // sorted by name so the base field comes first, then the copies in order
+      const keys = Object.keys(f)
+        .filter(k =>
+          (/^AIKiosk/i.test(k) || IMG_FIELDS.includes(k))
+          && Array.isArray(f[k]) && f[k].length)
+        .sort();
       const urls = [];
-      for(const f of IMG_FIELDS){
-        const att = rec.fields[f];
-        if(Array.isArray(att)){ for(const a of att) urls.push(attUrl(a)); }
+      for(const k of keys){
+        for(const a of f[k]) urls.push(attUrl(a));
       }
       if(urls.length) out.push(urls);
     }
