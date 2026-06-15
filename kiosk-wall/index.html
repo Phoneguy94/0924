@@ -68,13 +68,7 @@
   .card .plate .pill{ font-family:"Georgia",serif; font-weight:700; font-style:italic; color:var(--ink); font-size:2vh; letter-spacing:.02em; }
   .card .plate .stitch{ flex:0 0 auto; width:1.4vh; height:1.4vh; border-radius:50%; background:var(--leather); box-shadow:0 0 0 .35vh rgba(200,83,27,.18); }
 
-  .spotlight{
-    position:absolute; top:50%; left:50%;
-    width:90vw; height:80vh; border-radius:50%;
-    transform:translate(-50%,-50%);
-    background:radial-gradient(ellipse, rgba(232,184,75,.16), transparent 64%);
-    z-index:0; pointer-events:none;
-  }
+  .spotlight{ display:none; }
 
   footer{ flex:0 0 auto; display:flex; align-items:center; justify-content:center; gap:1.4vw; padding:1.4vh 2vw 2.6vh; position:relative; z-index:2; }
   .dots{ display:flex; gap:.8vh; flex-wrap:wrap; max-width:60vw; justify-content:center; }
@@ -127,6 +121,32 @@ const IMG_FIELDS = [
   "fldJ4mNylPdtD8u14"
 ];
 
+/* Caption shown under each card, mapped to its source field.
+   Keyed by both the field NAME (what the REST API returns) and the
+   field ID, so whichever the API uses, the caption resolves.        */
+const CAPTIONS = {
+  // by field name
+  "AIKioskv3":                     "Now Batting",
+  "AIKioskv3 copy copy":           "Drone Show Activated",
+  "AIKioskv3 copy copy copy":      "DJ Set In-Progress",
+  "AIKioskv3 copy copy copy copy": "Showtime",
+  // also map the single-"copy" spelling just in case
+  "AIKioskv3 copy":                "Drone Show Activated",
+  // by field ID (fallback if API returns IDs)
+  "fldvQvP6xGTCpB71A":             "Now Batting",
+  "fld6ejAJTGpRuztwp":             "Drone Show Activated",
+  "fld7W7JS6XPIZLoMp":             "DJ Set In-Progress",
+  "fldJ4mNylPdtD8u14":             "Showtime"
+};
+
+/* Final fallback by row position (after sort): col 1..4. */
+const CAPTIONS_BY_POS = [
+  "Now Batting",
+  "Drone Show Activated",
+  "DJ Set In-Progress",
+  "Showtime"
+];
+
 const ROTATE_MS  = 15000;             // page to the next person every 15s
 const REFRESH_MS = 60000;             // re-check Airtable for new people every 60s
 
@@ -168,11 +188,12 @@ async function fetchPeople(){
           (/^AIKiosk/i.test(k) || IMG_FIELDS.includes(k))
           && Array.isArray(f[k]) && f[k].length)
         .sort();
-      const urls = [];
-      for(const k of keys){
-        for(const a of f[k]) urls.push(attUrl(a));
-      }
-      if(urls.length) out.push(urls);
+      const imgs = [];
+      keys.forEach((k,idx)=>{
+        const cap = CAPTIONS[k] || CAPTIONS_BY_POS[idx] || "Now Batting";
+        for(const a of f[k]) imgs.push({ url: attUrl(a), caption: cap });
+      });
+      if(imgs.length) out.push(imgs);
     }
     return out;
   }catch(e){ console.error(e); return null; }
@@ -187,12 +208,12 @@ function render(){
   const imgs = people[cur] || [];
   rowEl.classList.remove("show");
   setTimeout(()=>{
-    rowEl.innerHTML = imgs.map((url,i)=>
+    rowEl.innerHTML = imgs.map((img,i)=>
       `<div class="card">
-         <img class="photo" src="${url}" alt="Bobblehead ${i+1}" loading="eager">
+         <img class="photo" src="${img.url}" alt="${img.caption}" loading="eager">
          <div class="plate">
            <span class="stitch"></span>
-           <span class="pill">Now Batting</span>
+           <span class="pill">${img.caption}</span>
            <span class="stitch"></span>
          </div>
        </div>`
@@ -251,7 +272,7 @@ function changed(next){
   if(next.length !== people.length) return true;
   for(let i=0;i<next.length;i++){
     if(next[i].length !== people[i].length) return true;
-    for(let j=0;j<next[i].length;j++){ if(next[i][j] !== people[i][j]) return true; }
+    for(let j=0;j<next[i].length;j++){ if(next[i][j].url !== people[i][j].url) return true; }
   }
   return false;
 }
