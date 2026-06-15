@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webex Ballpark — On Deck</title>
+<style>
+  /* ---------- KIOSK DISPLAY GRID ----------
+     One PERSON on screen at a time.
+     Their themed bobbleheads (up to 4) sit side-by-side across a row.
+     Pages to the next person every ROTATE_MS.
+     Reads live from Airtable; new people appear on their own.
+  --------------------------------------------- */
+
+  :root{
+    --ink:#0B1A2B; --ink2:#0F2540; --turf:#1f6b3a;
+    --chalk:#F4F1E8; --leather:#C8531B; --gold:#E8B84B;
+    --line:rgba(244,241,232,.14);
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;overflow:hidden;}
+  body{
+    background:
+      linear-gradient(rgba(8,18,32,.74), rgba(6,15,26,.82)),
+      url("Kiosk_background.png") center center / cover no-repeat,
+      #0B1A2B;
+    font-family:"Inter","Segoe UI",system-ui,sans-serif;
+    color:var(--chalk); height:100vh;
+    display:flex; flex-direction:column;
+    user-select:none; -webkit-user-select:none;
+  }
+  body::before{
+    content:""; position:fixed; inset:0;
+    background:
+      radial-gradient(60% 40% at 12% 0%, rgba(232,184,75,.10), transparent 60%),
+      radial-gradient(60% 40% at 88% 0%, rgba(232,184,75,.10), transparent 60%);
+    pointer-events:none;
+  }
+  header{ flex:0 0 auto; text-align:center; padding:3.2vh 2vw 1vh; position:relative; z-index:2; }
+  .eyebrow{ font-size:1.5vh; letter-spacing:.42em; text-transform:uppercase; color:var(--gold); font-weight:600; margin-bottom:.6vh; }
+  h1{ font-family:"Georgia","Times New Roman",serif; font-weight:800; font-style:italic; font-size:5vh; line-height:1; letter-spacing:-.01em; text-shadow:0 2px 0 rgba(0,0,0,.35); }
+  h1 .accent{ color:var(--leather); }
+
+  .stage{
+    flex:1 1 auto; position:relative;
+    display:flex; align-items:center; justify-content:center;
+    overflow:hidden; padding:0 3vw;
+  }
+  .row{
+    display:flex; gap:2vw; align-items:center; justify-content:center;
+    width:100%; height:100%;
+    opacity:0; transform:translateY(2vh) scale(.985);
+    transition:opacity .6s ease, transform .6s cubic-bezier(.22,.61,.36,1);
+  }
+  .row.show{ opacity:1; transform:none; }
+
+  .card{
+    height:74vh; aspect-ratio:864 / 1320;
+    border-radius:14px; background:var(--chalk);
+    padding:1.1vh 1.1vh 0; box-shadow:0 24px 48px rgba(0,0,0,.5);
+    overflow:hidden; flex:0 0 auto;
+  }
+  .card .photo{
+    width:100%; aspect-ratio:864 / 1184; border-radius:8px;
+    object-fit:cover; display:block; background:#0c1722; border:1px solid rgba(0,0,0,.12);
+  }
+  .card .plate{ height:5.5vh; display:flex; align-items:center; justify-content:center; gap:.6vw; }
+  .card .plate .pill{ font-family:"Georgia",serif; font-weight:700; font-style:italic; color:var(--ink); font-size:2vh; letter-spacing:.02em; }
+  .card .plate .stitch{ flex:0 0 auto; width:1.4vh; height:1.4vh; border-radius:50%; background:var(--leather); box-shadow:0 0 0 .35vh rgba(200,83,27,.18); }
+
+  .spotlight{
+    position:absolute; top:50%; left:50%;
+    width:90vw; height:80vh; border-radius:50%;
+    transform:translate(-50%,-50%);
+    background:radial-gradient(ellipse, rgba(232,184,75,.16), transparent 64%);
+    z-index:0; pointer-events:none;
+  }
+
+  footer{ flex:0 0 auto; display:flex; align-items:center; justify-content:center; gap:1.4vw; padding:1.4vh 2vw 2.6vh; position:relative; z-index:2; }
+  .dots{ display:flex; gap:.8vh; flex-wrap:wrap; max-width:60vw; justify-content:center; }
+  .dots i{ width:1.1vh; height:1.1vh; border-radius:50%; background:var(--line); display:block; transition:background .4s,transform .4s; }
+  .dots i.on{ background:var(--gold); transform:scale(1.35); }
+  .brand{ font-size:1.4vh; letter-spacing:.3em; text-transform:uppercase; color:rgba(244,241,232,.4); font-weight:600; }
+
+  .msg{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:1.2vh; text-align:center; z-index:60; font-size:2.2vh; color:rgba(244,241,232,.7); padding:0 8vw; }
+  .msg .big{ font-family:"Georgia",serif; font-style:italic; font-size:3.4vh; color:var(--chalk); }
+  .hidden{ display:none !important; }
+
+  @media (prefers-reduced-motion: reduce){ .row{ transition:opacity .3s ease; transform:none; } }
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="eyebrow">Webex Ballpark · Live Roster</div>
+  </header>
+
+  <div class="stage">
+    <div class="spotlight"></div>
+    <div class="row" id="row"></div>
+    <div class="msg" id="loading"><div class="big">Warming up the bullpen…</div><div>Loading today’s lineup</div></div>
+    <div class="msg hidden" id="empty"><div class="big">No players on deck yet</div><div>Step up to the kiosk to join the roster</div></div>
+  </div>
+
+  <footer>
+    <div class="dots" id="dots"></div>
+    <div class="brand">Powered by Webex</div>
+  </footer>
+
+<script>
+/* ============================================================
+   CONFIG — the only things you ever need to touch
+   ============================================================ */
+const BASE_ID   = "appSxuH0GH10rxd5y";
+const TABLE_ID  = "tblI7llQH93Xkin3O";
+
+/* The four image fields, in the order they appear across the row.
+   Referenced by FIELD ID so the "copy copy copy" names don't matter.
+     fldvQvP6xGTCpB71A = AIKioskv3
+     fld6ejAJTGpRuztwp = AIKioskv3 copy
+     fld7W7JS6XPIZLoMp = AIKioskv3 copy copy
+     fldJ4mNylPdtD8u14 = AIKioskv3 copy copy copy                */
+const IMG_FIELDS = [
+  "fldvQvP6xGTCpB71A",
+  "fld6ejAJTGpRuztwp",
+  "fld7W7JS6XPIZLoMp",
+  "fldJ4mNylPdtD8u14"
+];
+
+const ROTATE_MS  = 15000;             // page to the next person every 15s
+const REFRESH_MS = 60000;             // re-check Airtable for new people every 60s
+
+/* >>> PASTE YOUR READ-ONLY AIRTABLE TOKEN BETWEEN THE QUOTES <<< */
+const AIRTABLE_TOKEN = "patYsJQ4hhojOhYuk.a0839f88a7ae231ce3bf1db6816c451efd8cc6dc7a313a99d4216dc1e557336e";
+/* ============================================================ */
+
+const rowEl   = document.getElementById("row");
+const dotsBox = document.getElementById("dots");
+const loadingEl = document.getElementById("loading");
+const emptyEl   = document.getElementById("empty");
+
+let people = [];     // each entry = array of image URLs for one person, newest person first
+let cur = 0;
+let rotateTimer = null;
+
+const API = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}`
+          + `?sort%5B0%5D%5Bfield%5D=createdDate&sort%5B0%5D%5Bdirection%5D=desc`
+          + `&pageSize=50`;
+
+function attUrl(a){
+  return (a.thumbnails && a.thumbnails.large && a.thumbnails.large.url) || a.url;
+}
+
+async function fetchPeople(){
+  try{
+    const res = await fetch(API, { headers:{ Authorization:`Bearer ${AIRTABLE_TOKEN}` }});
+    if(!res.ok){ console.error("Airtable error", res.status); return null; }
+    const data = await res.json();
+    const out = [];
+    for(const rec of (data.records||[])){
+      const urls = [];
+      for(const f of IMG_FIELDS){
+        const att = rec.fields[f];
+        if(Array.isArray(att)){ for(const a of att) urls.push(attUrl(a)); }
+      }
+      if(urls.length) out.push(urls);
+    }
+    return out;
+  }catch(e){ console.error(e); return null; }
+}
+
+function buildDots(){
+  dotsBox.innerHTML = "";
+  people.forEach(()=>dotsBox.appendChild(document.createElement("i")));
+}
+
+function render(){
+  const imgs = people[cur] || [];
+  rowEl.classList.remove("show");
+  setTimeout(()=>{
+    rowEl.innerHTML = imgs.map((url,i)=>
+      `<div class="card">
+         <img class="photo" src="${url}" alt="Bobblehead ${i+1}" loading="eager">
+         <div class="plate">
+           <span class="stitch"></span>
+           <span class="pill">Now Batting</span>
+           <span class="stitch"></span>
+         </div>
+       </div>`
+    ).join("");
+    void rowEl.offsetWidth;
+    rowEl.classList.add("show");
+  }, 280);
+  [...dotsBox.children].forEach((dot,i)=>dot.classList.toggle("on", i===cur));
+}
+
+function advance(){
+  if(people.length<=1) return;
+  cur = (cur + 1) % people.length;
+  render();
+}
+
+function go(dir){
+  if(people.length<=1) return;
+  const n = people.length;
+  cur = (cur + dir + n) % n;
+  render();
+  startRotation();
+}
+
+function startRotation(){
+  clearInterval(rotateTimer);
+  if(people.length>1){ rotateTimer = setInterval(advance, ROTATE_MS); }
+}
+
+document.addEventListener("keydown", (e)=>{
+  if(e.key === "ArrowRight"){ go(1); e.preventDefault(); }
+  else if(e.key === "ArrowLeft"){ go(-1); e.preventDefault(); }
+});
+
+(function(){
+  const stage = document.querySelector(".stage");
+  if(!stage) return;
+  let x0 = null, y0 = null;
+  const THRESH = 40;
+  stage.addEventListener("touchstart", (e)=>{ const t=e.changedTouches[0]; x0=t.clientX; y0=t.clientY; }, {passive:true});
+  stage.addEventListener("touchend", (e)=>{
+    if(x0 === null) return;
+    const t = e.changedTouches[0];
+    const dx = t.clientX - x0, dy = t.clientY - y0;
+    if(Math.abs(dx) > THRESH && Math.abs(dx) > Math.abs(dy)){ go(dx < 0 ? 1 : -1); }
+    x0 = y0 = null;
+  }, {passive:true});
+})();
+
+function showStage(){
+  loadingEl.classList.add("hidden");
+  emptyEl.classList.toggle("hidden", people.length>0);
+}
+
+function changed(next){
+  if(next.length !== people.length) return true;
+  for(let i=0;i<next.length;i++){
+    if(next[i].length !== people[i].length) return true;
+    for(let j=0;j<next[i].length;j++){ if(next[i][j] !== people[i][j]) return true; }
+  }
+  return false;
+}
+
+async function load(initial){
+  const next = await fetchPeople();
+  if(next===null){
+    if(initial){
+      loadingEl.innerHTML = '<div class="big">Can\u2019t reach Airtable</div><div>Check the token and network, then refresh</div>';
+    }
+    return;
+  }
+  if(changed(next)){
+    const wasEmpty = people.length===0;
+    people = next;
+    buildDots();
+    if(wasEmpty || cur >= people.length) cur = 0;
+    render();
+    startRotation();
+  }
+  showStage();
+}
+
+load(true);
+setInterval(()=>load(false), REFRESH_MS);
+</script>
+</body>
+</html>
