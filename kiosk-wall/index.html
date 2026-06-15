@@ -163,7 +163,7 @@ let people = [];     // each entry = array of image URLs for one person, newest 
 let cur = 0;
 let rotateTimer = null;
 
-const API = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}?pageSize=50`;
+const API = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}?pageSize=100`;
 
 function attUrl(a){
   return (a.thumbnails && a.thumbnails.large && a.thumbnails.large.url) || a.url;
@@ -171,11 +171,20 @@ function attUrl(a){
 
 async function fetchPeople(){
   try{
-    const res = await fetch(API, { headers:{ Authorization:`Bearer ${AIRTABLE_TOKEN}` }});
-    if(!res.ok){ console.error("Airtable error", res.status); return null; }
-    const data = await res.json();
+    // page through ALL records (Airtable returns up to 100/page + an offset token)
+    let records = [];
+    let offset = null;
+    do {
+      const url = API + (offset ? `&offset=${encodeURIComponent(offset)}` : "");
+      const res = await fetch(url, { headers:{ Authorization:`Bearer ${AIRTABLE_TOKEN}` }});
+      if(!res.ok){ console.error("Airtable error", res.status); return null; }
+      const data = await res.json();
+      records = records.concat(data.records || []);
+      offset = data.offset || null;
+    } while(offset);
+
     // newest first — sort by Airtable's built-in createdTime (always present)
-    const recs = (data.records||[]).slice().sort((a,b)=>
+    const recs = records.sort((a,b)=>
       new Date(b.createdTime) - new Date(a.createdTime));
     const out = [];
     for(const rec of recs){
