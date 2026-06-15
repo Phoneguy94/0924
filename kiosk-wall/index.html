@@ -3,11 +3,11 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Webex Ballpark — On Deck</title>
+<title>WebexOne Austin 2026 — Live</title>
 <style>
   /* ---------- KIOSK DISPLAY GRID ----------
      One PERSON on screen at a time.
-     Their themed bobbleheads (up to 4) sit side-by-side across a row.
+     Their themed bobbleheads (3 WebexOne cards) sit side-by-side across a row.
      Pages to the next person every ROTATE_MS.
      Reads live from Airtable; new people appear on their own.
   --------------------------------------------- */
@@ -47,7 +47,7 @@
     overflow:hidden; padding:0 3vw;
   }
   .row{
-    display:flex; gap:2vw; align-items:center; justify-content:center;
+    display:flex; gap:2.5vw; align-items:center; justify-content:center;
     width:100%; height:100%;
     opacity:0; transform:translateY(2vh) scale(.985);
     transition:opacity .6s ease, transform .6s cubic-bezier(.22,.61,.36,1);
@@ -56,9 +56,10 @@
 
   .card{
     height:74vh; aspect-ratio:864 / 1320;
+    max-width:30vw;
     border-radius:14px; background:var(--chalk);
     padding:1.1vh 1.1vh 0; box-shadow:0 24px 48px rgba(0,0,0,.5);
-    overflow:hidden; flex:0 0 auto;
+    overflow:hidden; flex:0 1 auto;
   }
   .card .photo{
     width:100%; aspect-ratio:864 / 1184; border-radius:8px;
@@ -86,14 +87,14 @@
 <body>
 
   <header>
-    <div class="eyebrow">Webex Ballpark · Live Roster</div>
+    <div class="eyebrow">WebexOne Austin 2026 · Live</div>
   </header>
 
   <div class="stage">
     <div class="spotlight"></div>
     <div class="row" id="row"></div>
-    <div class="msg" id="loading"><div class="big">Warming up the bullpen…</div><div>Loading today’s lineup</div></div>
-    <div class="msg hidden" id="empty"><div class="big">No players on deck yet</div><div>Step up to the kiosk to join the roster</div></div>
+    <div class="msg" id="loading"><div class="big">Loading…</div><div>Fetching the latest</div></div>
+    <div class="msg hidden" id="empty"><div class="big">No entries yet</div><div>Step up to the kiosk to get started</div></div>
   </div>
 
   <footer>
@@ -108,40 +109,13 @@
 const BASE_ID   = "appSxuH0GH10rxd5y";
 const TABLE_ID  = "tblI7llQH93Xkin3O";
 
-/* The four image fields, in the order they appear across the row.
-   Referenced by FIELD ID so the "copy copy copy" names don't matter.
-     fldvQvP6xGTCpB71A = AIKioskv3
-     fld6ejAJTGpRuztwp = AIKioskv3 copy
-     fld7W7JS6XPIZLoMp = AIKioskv3 copy copy
-     fldJ4mNylPdtD8u14 = AIKioskv3 copy copy copy                */
-const IMG_FIELDS = [
-  "fldvQvP6xGTCpB71A",
-  "fld6ejAJTGpRuztwp",
-  "fld7W7JS6XPIZLoMp",
-  "fldJ4mNylPdtD8u14"
-];
+/* WebexOne wall = the THREE "copy" image fields only.
+   The base AIKioskv3 (baseball / "Now Batting") is intentionally DROPPED.
+   We collect every AIKiosk* attachment field, sort by name (so the base
+   field is first), then drop that first one — leaving the 3 copies in order. */
 
-/* Caption shown under each card, mapped to its source field.
-   Keyed by both the field NAME (what the REST API returns) and the
-   field ID, so whichever the API uses, the caption resolves.        */
-const CAPTIONS = {
-  // by field name
-  "AIKioskv3":                     "Now Batting",
-  "AIKioskv3 copy copy":           "Drone Show Activated",
-  "AIKioskv3 copy copy copy":      "DJ Set In-Progress",
-  "AIKioskv3 copy copy copy copy": "Showtime",
-  // also map the single-"copy" spelling just in case
-  "AIKioskv3 copy":                "Drone Show Activated",
-  // by field ID (fallback if API returns IDs)
-  "fldvQvP6xGTCpB71A":             "Now Batting",
-  "fld6ejAJTGpRuztwp":             "Drone Show Activated",
-  "fld7W7JS6XPIZLoMp":             "DJ Set In-Progress",
-  "fldJ4mNylPdtD8u14":             "Showtime"
-};
-
-/* Final fallback by row position (after sort): col 1..4. */
+/* Caption shown under each of the 3 cards, in row order. */
 const CAPTIONS_BY_POS = [
-  "Now Batting",
   "Drone Show Activated",
   "DJ Set In-Progress",
   "Showtime"
@@ -159,7 +133,7 @@ const dotsBox = document.getElementById("dots");
 const loadingEl = document.getElementById("loading");
 const emptyEl   = document.getElementById("empty");
 
-let people = [];     // each entry = array of image URLs for one person, newest person first
+let people = [];     // each entry = array of {url,caption} for one person, newest person first
 let cur = 0;
 let rotateTimer = null;
 
@@ -189,17 +163,17 @@ async function fetchPeople(){
     const out = [];
     for(const rec of recs){
       const f = rec.fields || {};
-      // grab every attachment-array whose field name starts with "AIKiosk"
-      // (catches AIKioskv3, AIKioskv3 copy, copy copy, ... regardless of spacing),
-      // sorted by name so the base field comes first, then the copies in order
+      // every AIKiosk* attachment field, sorted by name:
+      //   [0] = AIKioskv3 (baseball)  -> dropped
+      //   [1..] = the copies          -> kept, captioned by position
       const keys = Object.keys(f)
-        .filter(k =>
-          (/^AIKiosk/i.test(k) || IMG_FIELDS.includes(k))
-          && Array.isArray(f[k]) && f[k].length)
+        .filter(k => /^AIKiosk/i.test(k) && Array.isArray(f[k]) && f[k].length)
         .sort();
+      // drop the base baseball field
+      const copyKeys = keys.slice(1);
       const imgs = [];
-      keys.forEach((k,idx)=>{
-        const cap = CAPTIONS[k] || CAPTIONS_BY_POS[idx] || "Now Batting";
+      copyKeys.forEach((k,idx)=>{
+        const cap = CAPTIONS_BY_POS[idx] || "";
         for(const a of f[k]) imgs.push({ url: attUrl(a), caption: cap });
       });
       if(imgs.length) out.push(imgs);
