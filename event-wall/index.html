@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Event Wall — Balanced Hero Mode</title>
+<title>Event Wall — Balanced Hero + WebexOne QR</title>
 <style>
   :root{
     --ink:#0B1A2B; --chalk:#F4F1E8; --gold:#E8B84B;
@@ -53,7 +53,7 @@
   .entry .qr .cap{ font-family:"Georgia",serif; font-style:italic; color:var(--ink); font-size:1.6vh; text-align:center; line-height:1.2; }
   .entry .qr.empty{ display:none; }
 
-  /* WebexOne target layout: three premium cards together, no QR beside it */
+  /* WebexOne target layout: three premium cards together. QR floats separately, only when focused. */
   .entry.webex{ gap:2.1vw; }
   .entry.webex .card{
     height:56vh; aspect-ratio:660 / 950; padding:1.15vh 1.15vh 2.3vh;
@@ -67,6 +67,40 @@
   }
   .entry.webex .caption::before,.entry.webex .caption::after{ content:"●"; color:#D45A13; font-family:system-ui,sans-serif; font-style:normal; font-size:1.5vh; margin:0 .7vh; }
   .entry.webex .qr{ display:none; }
+
+  /* WebexOne-only floating QR. Does not affect MLB/NBA layout. */
+  .webex-floating-qr{
+    position:absolute;
+    right:1.5vw;
+    bottom:3.8vh;
+    width:11.5vh;
+    background:var(--chalk);
+    border-radius:10px;
+    padding:.7vh;
+    box-shadow:0 14px 30px rgba(0,0,0,.45);
+    display:none;
+    flex-direction:column;
+    align-items:center;
+    gap:.35vh;
+    z-index:55;
+    pointer-events:none;
+  }
+  .webex-floating-qr.show{ display:flex; }
+  .webex-floating-qr img{
+    width:100%;
+    aspect-ratio:1/1;
+    object-fit:contain;
+    background:#fff;
+    border-radius:6px;
+  }
+  .webex-floating-qr .cap{
+    color:var(--ink);
+    font-family:"Georgia","Times New Roman",serif;
+    font-style:italic;
+    font-size:1.05vh;
+    line-height:1;
+    white-space:nowrap;
+  }
 
   .entry.focus{ z-index:10; }
   .entry.side{ filter:grayscale(.85) brightness(.58); z-index:5; }
@@ -100,6 +134,7 @@
     <div class="nav prev hidden" id="prev">‹</div>
     <div class="track" id="track"></div>
     <div class="nav next hidden" id="next">›</div>
+    <div class="webex-floating-qr" id="webexFloatQr"></div>
     <div class="msg" id="loading"><div class="big">Loading…</div><div>Fetching the latest demo images</div></div>
     <div class="msg hidden" id="empty"><div class="big">No entries yet</div><div>No populated image fields found for this event</div></div>
   </div>
@@ -161,6 +196,7 @@ const loadingEl = document.getElementById("loading");
 const emptyEl = document.getElementById("empty");
 const prevBtn = document.getElementById("prev");
 const nextBtn = document.getElementById("next");
+const webexFloatQr = document.getElementById("webexFloatQr");
 const controls = document.getElementById("controls");
 const eventSel = document.getElementById("eventSelect");
 const rotToggle = document.getElementById("rotateToggle");
@@ -263,6 +299,17 @@ function webexEntryHTML(p){
 }
 function entryHTML(p){ return p.layout === "webex" ? webexEntryHTML(p) : singleEntryHTML(p); }
 
+function updateWebexFloatingQr(){
+  const p = people[cur];
+  if(p && p.layout === "webex" && p.qr){
+    webexFloatQr.innerHTML = `<img src="${esc(p.qr)}" alt="QR"><div class="cap">Scan to claim</div>`;
+    webexFloatQr.classList.add("show");
+  } else {
+    webexFloatQr.classList.remove("show");
+    webexFloatQr.innerHTML = "";
+  }
+}
+
 function layout(){
   const nodes = [...trackEl.children];
   const n = people.length;
@@ -288,6 +335,7 @@ function layout(){
     node.style.opacity = ad>2 ? 0 : 1;
   });
   [...dotsBox.children].forEach((dot,i)=>dot.classList.toggle("on", i===cur));
+  updateWebexFloatingQr();
 }
 function renderAll(){
   trackEl.innerHTML = people.map(p=>`<div class="entry ${p.layout === "webex" ? "webex" : "single"}">${entryHTML(p)}</div>`).join("");
@@ -311,6 +359,7 @@ nextBtn.addEventListener("click",()=>go(1));
 function showStage(){
   loadingEl.classList.add("hidden");
   emptyEl.classList.toggle("hidden", people.length>0);
+  if(!people.length) updateWebexFloatingQr();
   const many = people.length>1;
   prevBtn.classList.toggle("hidden", !many);
   nextBtn.classList.toggle("hidden", !many);
