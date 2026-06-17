@@ -47,18 +47,18 @@
     position:absolute; left:50%; top:50%;
     transform-origin:center center;
     transition:transform .5s cubic-bezier(.22,.61,.36,1), opacity .5s ease, filter .5s ease;
-    display:flex; align-items:center; gap:1.6vw; will-change:transform,opacity;
+    display:flex; align-items:center; gap:1.2vw; will-change:transform,opacity;
   }
-  .entry .card{ height:64vh; aspect-ratio:864 / 1320; border-radius:14px; background:var(--chalk); padding:1.1vh 1.1vh 0; box-shadow:0 24px 48px rgba(0,0,0,.55); overflow:hidden; }
-  .entry .card .photo{ width:100%; aspect-ratio:864 / 1184; border-radius:8px; object-fit:cover; display:block; background:#0c1722; border:1px solid rgba(0,0,0,.12); }
-  .entry .card .plate{ height:5.5vh; display:flex; align-items:center; justify-content:center; gap:.6vw; }
-  .entry .card .plate .pill{ font-family:"Georgia",serif; font-weight:700; font-style:italic; color:var(--ink); font-size:2vh; }
-  .entry .card .plate .stitch{ width:1.4vh; height:1.4vh; border-radius:50%; background:var(--accent); box-shadow:0 0 0 .35vh color-mix(in srgb, var(--accent) 25%, transparent); }
+  /* one card (MLB / NBA) */
+  .entry .card{ height:64vh; aspect-ratio:864 / 1320; border-radius:14px; background:var(--chalk); padding:1.1vh 1.1vh 1.1vh; box-shadow:0 24px 48px rgba(0,0,0,.55); overflow:hidden; }
+  .entry .card .photo{ width:100%; height:100%; border-radius:8px; object-fit:cover; display:block; background:#0c1722; border:1px solid rgba(0,0,0,.12); }
+  /* multi (WebexOne) = several smaller cards side by side */
+  .entry.multi .card{ height:52vh; }
 
-  .entry .qr{ width:20vh; background:var(--chalk); border-radius:14px; padding:1.4vh; box-shadow:0 24px 48px rgba(0,0,0,.55); display:flex; flex-direction:column; align-items:center; gap:1vh; opacity:0; transition:opacity .5s ease; }
+  .entry .qr{ width:18vh; background:var(--chalk); border-radius:14px; padding:1.4vh; box-shadow:0 24px 48px rgba(0,0,0,.55); display:flex; flex-direction:column; align-items:center; gap:1vh; opacity:0; transition:opacity .5s ease; }
   .entry.focus .qr{ opacity:1; }
   .entry .qr img{ width:100%; aspect-ratio:1/1; object-fit:contain; background:#fff; border-radius:8px; }
-  .entry .qr .cap{ font-family:"Georgia",serif; font-style:italic; color:var(--ink); font-size:1.7vh; text-align:center; line-height:1.2; }
+  .entry .qr .cap{ font-family:"Georgia",serif; font-style:italic; color:var(--ink); font-size:1.6vh; text-align:center; line-height:1.2; }
   .entry .qr.empty{ display:none; }
 
   .entry.focus{ z-index:10; }
@@ -113,41 +113,58 @@
 const BASE_ID  = "appSxuH0GH10rxd5y";
 const TABLE_ID = "tblI7llQH93Xkin3O";
 
-/* Field IDs (from your live schema) */
 const EVENT_FIELD = "fldQHpUL1ZnjJwLDl";   // event name (single line text)
 const QR_FIELD    = "fld2Ehe0YS7e6W6jm";   // QR image URL (formula)
-const NAME_FIELD  = "fld5oYkgDHX4S5iJL";   // person's name (optional caption)
 
-/* Image source: production single column FIRST, then fall back to the
-   existing sampling columns so today's records still display.
-   When production writes to AI_Generated_Image, that wins automatically. */
-const IMAGE_FIELDS = [
-  "AI_Generated_Image",
-  "fldl4QgvCGZQET99P",
-  "fldiyVtXQyZuVrCcV",
-  "fld6cDEEBBDdPB90t",
-  "fldfFLcS9dIInUNJv",
-  "fldNUDluAAMv5ssbZ"
-];
-
-/* Per-event look. KEY is matched (case-insensitive "contains") against the
-   Event field value, so "Baseball" matches "Baseball Game - Pittsburgh Pirates".
-   Add an event by adding a line. bg:"" => themed color only. */
-const EVENTS = {
-  "Baseball":  { label:"Pirates",          accent:"#FDB827", bg:"Kiosk_background.png" },
-  "WebexOne":  { label:"WebexOne Austin",  accent:"#00BCEB", bg:"" },
-  "NBA":       { label:"NBA",              accent:"#C8102E", bg:"" },
-  "NHL":       { label:"NHL",              accent:"#041E42", bg:"" },
-  "Golf":      { label:"Golf",             accent:"#0B6623", bg:"" },
-  "USA":       { label:"Team USA",         accent:"#0A3161", bg:"" }
+/* ---- FIELD-ID MAP (correct any single ID here if a column is wrong) ----
+   These are the multipleAttachments fields, identified from your live data.
+   AIKioskv3 (MLB) = the most-used field (7 images on the sample record).     */
+const F = {
+  AIKioskv3:                 "fldl4QgvCGZQET99P",  // MLB  (newest image, 1 shown)
+  AIKioskv3_copy_copy:       "fldiyVtXQyZuVrCcV",  // WebexOne #1
+  AIKioskv3_copy_copy_copy:  "fldNUDluAAMv5ssbZ",  // WebexOne #2
+  AIKioskv3_copy_x6:         "fldfFLcS9dIInUNJv",  // WebexOne #3
+  NBA_Card:                  "fld6cDEEBBDdPB90t"   // NBA
 };
-const DEFAULT_ACCENT = "#2E86DE";
+
+/* ---- EVENTS ----
+   key       : matched (case-insensitive "contains") against the Event field value.
+   fields    : which attachment field(s) feed this event's cards.
+   perRecord : "newest" => 1 most-recent image from the first field;
+               "all"    => every image across the listed fields (in order).
+*/
+const EVENTS = {
+  "Baseball": {
+    label:"MLB", accent:"#FDB827", bg:"Kiosk_background.png",
+    fields:[F.AIKioskv3], perRecord:"newest"
+  },
+  "MLB": {
+    label:"MLB", accent:"#FDB827", bg:"Kiosk_background.png",
+    fields:[F.AIKioskv3], perRecord:"newest"
+  },
+  "WebexOne": {
+    label:"WebexOne Austin", accent:"#00BCEB", bg:"",
+    fields:[F.AIKioskv3_copy_copy, F.AIKioskv3_copy_copy_copy, F.AIKioskv3_copy_x6], perRecord:"all"
+  },
+  "NBA": {
+    label:"NBA", accent:"#C8102E", bg:"",
+    fields:[F.NBA_Card], perRecord:"newest"
+  },
+  "Golf": {
+    label:"Golf", accent:"#0B6623", bg:"",
+    fields:[F.AIKioskv3], perRecord:"newest"
+  },
+  "NHL": {
+    label:"NHL", accent:"#041E42", bg:"",
+    fields:[F.AIKioskv3], perRecord:"newest"
+  }
+};
+const DEFAULT_EVENT = { label:"Event", accent:"#2E86DE", bg:"", fields:Object.values(F), perRecord:"newest" };
 
 const ROTATE_MS    = 10000;
 const REFRESH_MS   = 60000;
 const MASTER_EVENT_MS = 20000;
 
-/* >>> READ-ONLY AIRTABLE TOKEN <<< */
 const AIRTABLE_TOKEN = "patYsJQ4hhojOhYuk.a0839f88a7ae231ce3bf1db6816c451efd8cc6dc7a313a99d4216dc1e557336e";
 /* ============================================================ */
 
@@ -168,7 +185,7 @@ const rotToggle = document.getElementById("rotateToggle");
 const titleEl   = document.getElementById("title");
 const eyebrowEl = document.getElementById("eyebrow");
 
-let people = [];
+let people = [];   // [{imgs:[url,...], qr}]
 let cur = 0;
 let rotateTimer = null, masterTimer = null, masterRotateOn = false;
 
@@ -176,31 +193,29 @@ const API = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}?pageSize=100&ret
 
 function attUrl(a){ return (a && a.thumbnails && a.thumbnails.large && a.thumbnails.large.url) || (a && a.url) || ""; }
 
-function firstImage(f){
-  for(const k of IMAGE_FIELDS){
-    const v = f[k];
-    if(Array.isArray(v) && v.length) return attUrl(v[0]);
-  }
-  return "";
-}
-
-function cfgForEvent(eventValue){
-  if(!eventValue) return { label:"Event", accent:DEFAULT_ACCENT, bg:"" };
+/* config resolver: find the EVENTS entry whose key is contained in the value */
+function cfgForValue(eventValue){
+  if(!eventValue) return DEFAULT_EVENT;
   const lower = eventValue.toLowerCase();
   for(const key of Object.keys(EVENTS)){
     if(lower.includes(key.toLowerCase())) return EVENTS[key];
   }
-  return { label:eventValue, accent:DEFAULT_ACCENT, bg:"" };
+  return DEFAULT_EVENT;
+}
+/* config resolver for a master-dropdown KEY (exact key) */
+function cfgForKey(key){
+  if(key === "ALL") return { label:"All Events", accent:"#2E86DE", bg:"" };
+  return EVENTS[key] || DEFAULT_EVENT;
 }
 
-function applyTheme(eventKeyOrValue){
-  let c;
-  if(eventKeyOrValue === "ALL"){ c = { label:"All Events", accent:DEFAULT_ACCENT, bg:"" }; }
-  else { c = cfgForEvent(eventKeyOrValue) || { label:eventKeyOrValue, accent:DEFAULT_ACCENT, bg:"" }; }
+function applyTheme(keyOrValue){
+  const c = (keyOrValue === "ALL")
+    ? { label:"All Events", accent:"#2E86DE", bg:"" }
+    : (EVENTS[keyOrValue] || cfgForValue(keyOrValue));
   document.documentElement.style.setProperty("--accent", c.accent);
   document.body.style.setProperty("--bg-img", c.bg ? `url("${c.bg}")` : "none");
   eyebrowEl.textContent = (c.label || "Live") + " · Live";
-  titleEl.innerHTML = (eventKeyOrValue === "ALL")
+  titleEl.innerHTML = (keyOrValue === "ALL")
     ? `All <span class="accent">Events</span>`
     : `${c.label} <span class="accent">Wall</span>`;
 }
@@ -209,6 +224,26 @@ function matchesEvent(eventValue){
   if(currentEvent === "ALL") return true;
   if(!eventValue) return false;
   return eventValue.toLowerCase().includes(currentEvent.toLowerCase());
+}
+
+/* pull the images for one record per its event's rule.
+   "newest" = last attachment in the first non-empty configured field.
+   "all"    = first attachment of each configured field, in listed order. */
+function imagesFor(f, eventValue){
+  const cfg = (currentEvent === "ALL") ? cfgForValue(eventValue) : (EVENTS[currentEvent] || cfgForValue(eventValue));
+  const out = [];
+  if(cfg.perRecord === "all"){
+    for(const fid of cfg.fields){
+      const v = f[fid];
+      if(Array.isArray(v) && v.length) out.push(attUrl(v[0]));
+    }
+  } else {
+    for(const fid of cfg.fields){
+      const v = f[fid];
+      if(Array.isArray(v) && v.length){ out.push(attUrl(v[v.length-1])); break; }
+    }
+  }
+  return out;
 }
 
 async function fetchPeople(){
@@ -230,29 +265,20 @@ async function fetchPeople(){
       const f = rec.fields || {};
       const eventValue = (typeof f[EVENT_FIELD] === "string") ? f[EVENT_FIELD] : "";
       if(!matchesEvent(eventValue)) continue;
-      const img = firstImage(f);
-      if(!img) continue;
-      out.push({
-        img,
-        qr:   (typeof f[QR_FIELD]   === "string" ? f[QR_FIELD]   : ""),
-        name: (typeof f[NAME_FIELD] === "string" ? f[NAME_FIELD] : ""),
-        event: eventValue
-      });
+      const imgs = imagesFor(f, eventValue);
+      if(!imgs.length) continue;
+      out.push({ imgs, qr: (typeof f[QR_FIELD] === "string" ? f[QR_FIELD] : "") });
     }
     return out;
   }catch(e){ console.error(e); return null; }
 }
 
 function entryHTML(p){
+  const cards = p.imgs.map(u=>`<div class="card"><img class="photo" src="${u}" alt="" loading="eager"></div>`).join("");
   const qr = p.qr
     ? `<div class="qr"><img src="${p.qr}" alt="QR"><div class="cap">Scan to get yours</div></div>`
     : `<div class="qr empty"></div>`;
-  return `
-    <div class="card">
-      <img class="photo" src="${p.img}" alt="${p.name||''}" loading="eager">
-      <div class="plate"><span class="stitch"></span><span class="pill">${p.name||""}</span><span class="stitch"></span></div>
-    </div>
-    ${qr}`;
+  return cards + qr;
 }
 
 function layout(){
@@ -266,8 +292,8 @@ function layout(){
     if(d===0) node.classList.add("focus");
     else if(ad===1) node.classList.add("side");
     else node.classList.add("far");
-    const x = d * 22;
-    const scale = d===0 ? 1 : (ad===1 ? .8 : .66);
+    const x = d * 24;
+    const scale = d===0 ? 1 : (ad===1 ? .78 : .62);
     node.style.transform = `translate(-50%,-50%) translateX(${x}vw) scale(${scale})`;
     node.style.opacity = ad>2 ? 0 : 1;
   });
@@ -275,7 +301,10 @@ function layout(){
 }
 
 function renderAll(){
-  trackEl.innerHTML = people.map(p=>`<div class="entry">${entryHTML(p)}</div>`).join("");
+  trackEl.innerHTML = people.map(p=>{
+    const multi = p.imgs.length>1 ? " multi" : "";
+    return `<div class="entry${multi}">${entryHTML(p)}</div>`;
+  }).join("");
   [...trackEl.children].forEach((node,i)=>{
     node.addEventListener("click", ()=>{ if(i!==cur){ cur=i; layout(); restartRotation(); }});
   });
@@ -327,8 +356,9 @@ async function load(initial){
 
 function setupMaster(){
   controls.classList.remove("hidden");
+  const keys = Object.keys(EVENTS).filter((k,i,a)=> a.findIndex(x=>EVENTS[x].label===EVENTS[k].label)===i); // dedupe by label
   const opts = [`<option value="ALL">All Events</option>`]
-    .concat(Object.keys(EVENTS).map(k=>`<option value="${k}">${EVENTS[k].label}</option>`));
+    .concat(keys.map(k=>`<option value="${k}">${EVENTS[k].label}</option>`));
   eventSel.innerHTML = opts.join("");
   eventSel.value = "ALL";
   eventSel.addEventListener("change",()=>{
@@ -342,7 +372,7 @@ function setupMaster(){
     rotToggle.textContent = `Auto-rotate: ${masterRotateOn?"on":"off"}`;
     clearInterval(masterTimer);
     if(masterRotateOn){
-      const order = ["ALL", ...Object.keys(EVENTS)];
+      const order = ["ALL", ...keys];
       masterTimer = setInterval(()=>{
         let i = order.indexOf(currentEvent);
         currentEvent = order[(i+1)%order.length];
