@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Event Wall — HUGE Mode</title>
+<title>Event Wall — Balanced Hero Mode</title>
 <style>
   :root{
     --ink:#0B1A2B; --chalk:#F4F1E8; --gold:#E8B84B;
@@ -27,9 +27,9 @@
       radial-gradient(60% 40% at 12% 0%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 60%),
       radial-gradient(60% 40% at 88% 0%, color-mix(in srgb, var(--accent) 20%, transparent), transparent 60%);
   }
-  header{ flex:0 0 auto; text-align:center; padding:1.2vh 2vw .4vh; position:relative; z-index:3; }
+  header{ flex:0 0 auto; text-align:center; padding:2.1vh 2vw .8vh; position:relative; z-index:3; }
   .eyebrow{ font-size:1.45vh; letter-spacing:.42em; text-transform:uppercase; color:var(--gold); font-weight:700; margin-bottom:.55vh; }
-  h1{ font-family:"Georgia","Times New Roman",serif; font-weight:800; font-style:italic; font-size:3.5vh; line-height:1; text-shadow:0 2px 0 rgba(0,0,0,.35); }
+  h1{ font-family:"Georgia","Times New Roman",serif; font-weight:800; font-style:italic; font-size:4vh; line-height:1; text-shadow:0 2px 0 rgba(0,0,0,.35); }
   h1 .accent{ color:var(--accent); }
   .controls{ display:flex; gap:1vw; align-items:center; justify-content:center; margin-top:1vh; }
   .controls.hidden{ display:none; }
@@ -45,19 +45,18 @@
     transition:transform .5s cubic-bezier(.22,.61,.36,1), opacity .5s ease, filter .5s ease;
     display:flex; align-items:center; gap:1.2vw; will-change:transform,opacity;
   }
-  .entry .card{ height:78vh; aspect-ratio:864 / 1320; border-radius:14px; background:var(--chalk); padding:1.1vh; box-shadow:0 24px 48px rgba(0,0,0,.55); overflow:hidden; }
+  .entry .card{ height:68vh; aspect-ratio:864 / 1320; border-radius:14px; background:var(--chalk); padding:1.1vh; box-shadow:0 24px 48px rgba(0,0,0,.55); overflow:hidden; }
   .entry .card .photo{ width:100%; height:100%; border-radius:8px; object-fit:cover; display:block; background:#0c1722; border:1px solid rgba(0,0,0,.12); }
   .entry .qr{ width:28vh; background:var(--chalk); border-radius:14px; padding:1.8vh; box-shadow:0 24px 48px rgba(0,0,0,.55); display:flex; flex-direction:column; align-items:center; gap:1.2vh; opacity:0; transition:opacity .5s ease; }
-  .entry.focus .qr{ opacity:1; }
+  .entry.focus .qr{ opacity:1; width:30vh; }
   .entry .qr img{ width:100%; aspect-ratio:1/1; object-fit:contain; background:#fff; border-radius:8px; }
   .entry .qr .cap{ font-family:"Georgia",serif; font-style:italic; color:var(--ink); font-size:1.6vh; text-align:center; line-height:1.2; }
   .entry .qr.empty{ display:none; }
-  .entry.focus .qr{ width:40vh; }
 
   /* WebexOne target layout: three premium cards together, no QR beside it */
-  .entry.webex{ gap:3.2vw; }
+  .entry.webex{ gap:2.1vw; }
   .entry.webex .card{
-    height:82vh; aspect-ratio:660 / 950; padding:1.15vh 1.15vh 2.3vh;
+    height:56vh; aspect-ratio:660 / 950; padding:1.15vh 1.15vh 2.3vh;
     border-radius:14px; display:flex; flex-direction:column; background:var(--chalk);
   }
   .entry.webex .card .photo{ height:auto; flex:1 1 auto; min-height:0; border-radius:8px; }
@@ -76,7 +75,7 @@
   .nav:hover{ background:rgba(0,0,0,.6); }
   .nav.prev{ left:2.5vw; } .nav.next{ right:2.5vw; }
   .nav.hidden{ display:none; }
-  footer{ flex:0 0 auto; display:flex; align-items:center; justify-content:center; gap:1.4vw; padding:.5vh 2vw 1vh; position:relative; z-index:3; }
+  footer{ flex:0 0 auto; display:flex; align-items:center; justify-content:center; gap:1.4vw; padding:1.1vh 2vw 2vh; position:relative; z-index:3; }
   .dots{ display:flex; gap:.7vh; flex-wrap:wrap; max-width:60vw; justify-content:center; }
   .dots i{ width:1.1vh; height:1.1vh; border-radius:50%; background:var(--line); display:block; transition:background .4s,transform .4s; }
   .dots i.on{ background:var(--accent); transform:scale(1.4); }
@@ -112,7 +111,7 @@
 
 <script>
 /* ============================================================
-   HUGE MODE: field-driven routing. The Event field is ignored.
+   DEMO MODE: field-driven routing. The Event field is ignored.
    If a specific image field is populated, that record belongs to
    that event wall. Production event-name filtering comes later.
    ============================================================ */
@@ -275,8 +274,16 @@ function layout(){
     if(d===0) node.classList.add("focus");
     else if(ad===1) node.classList.add("side");
     else node.classList.add("far");
-    const x = d * 34;
-    const scale = d===0 ? 1.65 : (ad===1 ? .50 : .30);
+    const isWebex = node.classList.contains("webex");
+
+    // BALANCED HERO MODE:
+    // Single MLB/NBA cards get a bigger live card + readable QR, but stay on-screen.
+    // WebexOne is already three cards wide, so it uses a smaller center scale.
+    const x = isWebex ? d * 31 : d * 27;
+    const scale = isWebex
+      ? (d===0 ? .98 : (ad===1 ? .50 : .32))
+      : (d===0 ? 1.12 : (ad===1 ? .58 : .38));
+
     node.style.transform = `translate(-50%,-50%) translateX(${x}vw) scale(${scale})`;
     node.style.opacity = ad>2 ? 0 : 1;
   });
