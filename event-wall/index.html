@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Event Wall — Live</title>
+<style>
+  :root{
+    --ink:#0B1A2B; --chalk:#F4F1E8; --gold:#E8B84B;
+    --line:rgba(244,241,232,.14);
+    --accent:#2E86DE;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;overflow:hidden;}
+  body{
+    background:
+      linear-gradient(rgba(8,18,32,.74), rgba(6,15,26,.82)),
+      var(--bg-img, none) center center / cover no-repeat,
+      #0B1A2B;
+    font-family:"Inter","Segoe UI",system-ui,sans-serif;
+    color:var(--chalk); height:100vh;
+    display:flex; flex-direction:column;
+    user-select:none; -webkit-user-select:none;
+  }
+  body::before{
+    content:""; position:fixed; inset:0; pointer-events:none;
+    background:
+      radial-gradient(60% 40% at 12% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%),
+      radial-gradient(60% 40% at 88% 0%, color-mix(in srgb, var(--accent) 22%, transparent), transparent 60%);
+  }
+
+  header{ flex:0 0 auto; text-align:center; padding:2.4vh 2vw 1vh; position:relative; z-index:3; }
+  .eyebrow{ font-size:1.5vh; letter-spacing:.42em; text-transform:uppercase; color:var(--gold); font-weight:600; margin-bottom:.5vh; }
+  h1{ font-family:"Georgia","Times New Roman",serif; font-weight:800; font-style:italic; font-size:4.2vh; line-height:1; text-shadow:0 2px 0 rgba(0,0,0,.35); }
+  h1 .accent{ color:var(--accent); }
+
+  .controls{ display:flex; gap:1vw; align-items:center; justify-content:center; margin-top:1vh; }
+  .controls.hidden{ display:none; }
+  .controls select{ font:inherit; font-size:1.7vh; padding:.6vh 1vw; border-radius:9px; background:rgba(255,255,255,.08); color:var(--chalk); border:1px solid var(--line); cursor:pointer; }
+  .controls select option{ color:#111; }
+  .controls .toggle{ font-size:1.5vh; padding:.6vh 1vw; border-radius:9px; background:rgba(255,255,255,.06); border:1px solid var(--line); color:var(--chalk); cursor:pointer; }
+  .controls .toggle.on{ background:color-mix(in srgb, var(--accent) 30%, transparent); border-color:var(--accent); }
+
+  .stage{ flex:1 1 auto; position:relative; overflow:hidden; display:flex; align-items:center; justify-content:center; }
+  .track{ position:absolute; inset:0; }
+  .entry{
+    position:absolute; left:50%; top:50%;
+    transform-origin:center center;
+    transition:transform .5s cubic-bezier(.22,.61,.36,1), opacity .5s ease, filter .5s ease;
+    display:flex; align-items:center; gap:1.6vw; will-change:transform,opacity;
+  }
+  .entry .card{ height:64vh; aspect-ratio:864 / 1320; border-radius:14px; background:var(--chalk); padding:1.1vh 1.1vh 0; box-shadow:0 24px 48px rgba(0,0,0,.55); overflow:hidden; }
+  .entry .card .photo{ width:100%; aspect-ratio:864 / 1184; border-radius:8px; object-fit:cover; display:block; background:#0c1722; border:1px solid rgba(0,0,0,.12); }
+  .entry .card .plate{ height:5.5vh; display:flex; align-items:center; justify-content:center; gap:.6vw; }
+  .entry .card .plate .pill{ font-family:"Georgia",serif; font-weight:700; font-style:italic; color:var(--ink); font-size:2vh; }
+  .entry .card .plate .stitch{ width:1.4vh; height:1.4vh; border-radius:50%; background:var(--accent); box-shadow:0 0 0 .35vh color-mix(in srgb, var(--accent) 25%, transparent); }
+
+  .entry .qr{ width:20vh; background:var(--chalk); border-radius:14px; padding:1.4vh; box-shadow:0 24px 48px rgba(0,0,0,.55); display:flex; flex-direction:column; align-items:center; gap:1vh; opacity:0; transition:opacity .5s ease; }
+  .entry.focus .qr{ opacity:1; }
+  .entry .qr img{ width:100%; aspect-ratio:1/1; object-fit:contain; background:#fff; border-radius:8px; }
+  .entry .qr .cap{ font-family:"Georgia",serif; font-style:italic; color:var(--ink); font-size:1.7vh; text-align:center; line-height:1.2; }
+  .entry .qr.empty{ display:none; }
+
+  .entry.focus{ z-index:10; }
+  .entry.side{ filter:grayscale(.85) brightness(.6); z-index:5; }
+  .entry.far{ filter:grayscale(1) brightness(.45); z-index:2; }
+
+  .nav{ position:absolute; top:50%; transform:translateY(-50%); z-index:20; width:6vh; height:6vh; border-radius:50%; display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,.35); border:1px solid var(--line); color:var(--chalk); font-size:3vh; cursor:pointer; backdrop-filter:blur(4px); }
+  .nav:hover{ background:rgba(0,0,0,.6); }
+  .nav.prev{ left:2.5vw; } .nav.next{ right:2.5vw; }
+  .nav.hidden{ display:none; }
+
+  footer{ flex:0 0 auto; display:flex; align-items:center; justify-content:center; gap:1.4vw; padding:1.1vh 2vw 2vh; position:relative; z-index:3; }
+  .dots{ display:flex; gap:.7vh; flex-wrap:wrap; max-width:60vw; justify-content:center; }
+  .dots i{ width:1.1vh; height:1.1vh; border-radius:50%; background:var(--line); display:block; transition:background .4s,transform .4s; }
+  .dots i.on{ background:var(--accent); transform:scale(1.4); }
+  .brand{ font-size:1.4vh; letter-spacing:.3em; text-transform:uppercase; color:rgba(244,241,232,.4); font-weight:600; }
+
+  .msg{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:1.2vh; text-align:center; z-index:60; font-size:2.2vh; color:rgba(244,241,232,.7); padding:0 8vw; }
+  .msg .big{ font-family:"Georgia",serif; font-style:italic; font-size:3.4vh; color:var(--chalk); }
+  .hidden{ display:none !important; }
+  @media (prefers-reduced-motion: reduce){ .entry{ transition:opacity .3s ease; } }
+</style>
+</head>
+<body>
+
+  <header>
+    <div class="eyebrow" id="eyebrow">Live</div>
+    <h1 id="title">Event <span class="accent">Wall</span></h1>
+    <div class="controls hidden" id="controls">
+      <select id="eventSelect"></select>
+      <button class="toggle" id="rotateToggle">Auto-rotate: off</button>
+    </div>
+  </header>
+
+  <div class="stage" id="stage">
+    <div class="nav prev hidden" id="prev">‹</div>
+    <div class="track" id="track"></div>
+    <div class="nav next hidden" id="next">›</div>
+    <div class="msg" id="loading"><div class="big">Loading…</div><div>Fetching the latest</div></div>
+    <div class="msg hidden" id="empty"><div class="big">No entries yet</div><div>Step up to the kiosk to get started</div></div>
+  </div>
+
+  <footer>
+    <div class="dots" id="dots"></div>
+    <div class="brand">Powered by Webex</div>
+  </footer>
+
+<script>
+/* ============================================================
+   CONFIG
+   ============================================================ */
+const BASE_ID  = "appSxuH0GH10rxd5y";
+const TABLE_ID = "tblI7llQH93Xkin3O";
+
+/* Field IDs (from your live schema) */
+const EVENT_FIELD = "fldQHpUL1ZnjJwLDl";   // event name (single line text)
+const QR_FIELD    = "fld2Ehe0YS7e6W6jm";   // QR image URL (formula)
+const NAME_FIELD  = "fld5oYkgDHX4S5iJL";   // person's name (optional caption)
+
+/* Image source: production single column FIRST, then fall back to the
+   existing sampling columns so today's records still display.
+   When production writes to AI_Generated_Image, that wins automatically. */
+const IMAGE_FIELDS = [
+  "AI_Generated_Image",
+  "fldl4QgvCGZQET99P",
+  "fldiyVtXQyZuVrCcV",
+  "fld6cDEEBBDdPB90t",
+  "fldfFLcS9dIInUNJv",
+  "fldNUDluAAMv5ssbZ"
+];
+
+/* Per-event look. KEY is matched (case-insensitive "contains") against the
+   Event field value, so "Baseball" matches "Baseball Game - Pittsburgh Pirates".
+   Add an event by adding a line. bg:"" => themed color only. */
+const EVENTS = {
+  "Baseball":  { label:"Pirates",          accent:"#FDB827", bg:"Kiosk_background.png" },
+  "WebexOne":  { label:"WebexOne Austin",  accent:"#00BCEB", bg:"" },
+  "NBA":       { label:"NBA",              accent:"#C8102E", bg:"" },
+  "NHL":       { label:"NHL",              accent:"#041E42", bg:"" },
+  "Golf":      { label:"Golf",             accent:"#0B6623", bg:"" },
+  "USA":       { label:"Team USA",         accent:"#0A3161", bg:"" }
+};
+const DEFAULT_ACCENT = "#2E86DE";
+
+const ROTATE_MS    = 10000;
+const REFRESH_MS   = 60000;
+const MASTER_EVENT_MS = 20000;
+
+/* >>> READ-ONLY AIRTABLE TOKEN <<< */
+const AIRTABLE_TOKEN = "patYsJQ4hhojOhYuk.a0839f88a7ae231ce3bf1db6816c451efd8cc6dc7a313a99d4216dc1e557336e";
+/* ============================================================ */
+
+const params   = new URLSearchParams(location.search);
+const urlEvent = params.get("event");
+const isMaster = !urlEvent || urlEvent.toUpperCase() === "ALL";
+let currentEvent = isMaster ? "ALL" : urlEvent;
+
+const trackEl   = document.getElementById("track");
+const dotsBox   = document.getElementById("dots");
+const loadingEl = document.getElementById("loading");
+const emptyEl   = document.getElementById("empty");
+const prevBtn   = document.getElementById("prev");
+const nextBtn   = document.getElementById("next");
+const controls  = document.getElementById("controls");
+const eventSel  = document.getElementById("eventSelect");
+const rotToggle = document.getElementById("rotateToggle");
+const titleEl   = document.getElementById("title");
+const eyebrowEl = document.getElementById("eyebrow");
+
+let people = [];
+let cur = 0;
+let rotateTimer = null, masterTimer = null, masterRotateOn = false;
+
+const API = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}?pageSize=100&returnFieldsByFieldId=true`;
+
+function attUrl(a){ return (a && a.thumbnails && a.thumbnails.large && a.thumbnails.large.url) || (a && a.url) || ""; }
+
+function firstImage(f){
+  for(const k of IMAGE_FIELDS){
+    const v = f[k];
+    if(Array.isArray(v) && v.length) return attUrl(v[0]);
+  }
+  return "";
+}
+
+function cfgForEvent(eventValue){
+  if(!eventValue) return { label:"Event", accent:DEFAULT_ACCENT, bg:"" };
+  const lower = eventValue.toLowerCase();
+  for(const key of Object.keys(EVENTS)){
+    if(lower.includes(key.toLowerCase())) return EVENTS[key];
+  }
+  return { label:eventValue, accent:DEFAULT_ACCENT, bg:"" };
+}
+
+function applyTheme(eventKeyOrValue){
+  let c;
+  if(eventKeyOrValue === "ALL"){ c = { label:"All Events", accent:DEFAULT_ACCENT, bg:"" }; }
+  else { c = cfgForEvent(eventKeyOrValue) || { label:eventKeyOrValue, accent:DEFAULT_ACCENT, bg:"" }; }
+  document.documentElement.style.setProperty("--accent", c.accent);
+  document.body.style.setProperty("--bg-img", c.bg ? `url("${c.bg}")` : "none");
+  eyebrowEl.textContent = (c.label || "Live") + " · Live";
+  titleEl.innerHTML = (eventKeyOrValue === "ALL")
+    ? `All <span class="accent">Events</span>`
+    : `${c.label} <span class="accent">Wall</span>`;
+}
+
+function matchesEvent(eventValue){
+  if(currentEvent === "ALL") return true;
+  if(!eventValue) return false;
+  return eventValue.toLowerCase().includes(currentEvent.toLowerCase());
+}
+
+async function fetchPeople(){
+  try{
+    let records = [], offset = null;
+    do{
+      const url = API + (offset ? `&offset=${encodeURIComponent(offset)}` : "");
+      const res = await fetch(url, { headers:{ Authorization:`Bearer ${AIRTABLE_TOKEN}` }});
+      if(!res.ok){ console.error("Airtable error", res.status); return null; }
+      const data = await res.json();
+      records = records.concat(data.records || []);
+      offset = data.offset || null;
+    } while(offset);
+
+    records.sort((a,b)=> new Date(b.createdTime) - new Date(a.createdTime));
+
+    const out = [];
+    for(const rec of records){
+      const f = rec.fields || {};
+      const eventValue = (typeof f[EVENT_FIELD] === "string") ? f[EVENT_FIELD] : "";
+      if(!matchesEvent(eventValue)) continue;
+      const img = firstImage(f);
+      if(!img) continue;
+      out.push({
+        img,
+        qr:   (typeof f[QR_FIELD]   === "string" ? f[QR_FIELD]   : ""),
+        name: (typeof f[NAME_FIELD] === "string" ? f[NAME_FIELD] : ""),
+        event: eventValue
+      });
+    }
+    return out;
+  }catch(e){ console.error(e); return null; }
+}
+
+function entryHTML(p){
+  const qr = p.qr
+    ? `<div class="qr"><img src="${p.qr}" alt="QR"><div class="cap">Scan to get yours</div></div>`
+    : `<div class="qr empty"></div>`;
+  return `
+    <div class="card">
+      <img class="photo" src="${p.img}" alt="${p.name||''}" loading="eager">
+      <div class="plate"><span class="stitch"></span><span class="pill">${p.name||""}</span><span class="stitch"></span></div>
+    </div>
+    ${qr}`;
+}
+
+function layout(){
+  const nodes = [...trackEl.children];
+  const n = people.length;
+  nodes.forEach((node,i)=>{
+    let d = i - cur;
+    if(n > 2){ if(d > n/2) d -= n; if(d < -n/2) d += n; }
+    const ad = Math.abs(d);
+    node.classList.remove("focus","side","far");
+    if(d===0) node.classList.add("focus");
+    else if(ad===1) node.classList.add("side");
+    else node.classList.add("far");
+    const x = d * 22;
+    const scale = d===0 ? 1 : (ad===1 ? .8 : .66);
+    node.style.transform = `translate(-50%,-50%) translateX(${x}vw) scale(${scale})`;
+    node.style.opacity = ad>2 ? 0 : 1;
+  });
+  [...dotsBox.children].forEach((dot,i)=>dot.classList.toggle("on", i===cur));
+}
+
+function renderAll(){
+  trackEl.innerHTML = people.map(p=>`<div class="entry">${entryHTML(p)}</div>`).join("");
+  [...trackEl.children].forEach((node,i)=>{
+    node.addEventListener("click", ()=>{ if(i!==cur){ cur=i; layout(); restartRotation(); }});
+  });
+  layout();
+}
+
+function buildDots(){ dotsBox.innerHTML=""; people.forEach(()=>dotsBox.appendChild(document.createElement("i"))); }
+
+function advance(){ if(people.length<=1) return; cur=(cur+1)%people.length; layout(); }
+function go(dir){ if(people.length<=1) return; const n=people.length; cur=(cur+dir+n)%n; layout(); restartRotation(); }
+function restartRotation(){ clearInterval(rotateTimer); if(people.length>1) rotateTimer=setInterval(advance, ROTATE_MS); }
+
+document.addEventListener("keydown",(e)=>{
+  if(e.key==="ArrowRight"){ go(1); e.preventDefault(); }
+  else if(e.key==="ArrowLeft"){ go(-1); e.preventDefault(); }
+});
+(function(){
+  const stage=document.getElementById("stage"); let x0=null,y0=null; const T=40;
+  stage.addEventListener("touchstart",(e)=>{const t=e.changedTouches[0];x0=t.clientX;y0=t.clientY;},{passive:true});
+  stage.addEventListener("touchend",(e)=>{
+    if(x0===null)return; const t=e.changedTouches[0]; const dx=t.clientX-x0, dy=t.clientY-y0;
+    if(Math.abs(dx)>T && Math.abs(dx)>Math.abs(dy)) go(dx<0?1:-1); x0=y0=null;
+  },{passive:true});
+})();
+prevBtn.addEventListener("click",()=>go(-1));
+nextBtn.addEventListener("click",()=>go(1));
+
+function showStage(){
+  loadingEl.classList.add("hidden");
+  emptyEl.classList.toggle("hidden", people.length>0);
+  const many = people.length>1;
+  prevBtn.classList.toggle("hidden", !many);
+  nextBtn.classList.toggle("hidden", !many);
+}
+
+async function load(initial){
+  const next = await fetchPeople();
+  if(next===null){
+    if(initial) loadingEl.innerHTML='<div class="big">Can\u2019t reach Airtable</div><div>Check the token and network, then refresh</div>';
+    return;
+  }
+  people = next;
+  if(cur >= people.length) cur = 0;
+  buildDots();
+  renderAll();
+  restartRotation();
+  showStage();
+}
+
+function setupMaster(){
+  controls.classList.remove("hidden");
+  const opts = [`<option value="ALL">All Events</option>`]
+    .concat(Object.keys(EVENTS).map(k=>`<option value="${k}">${EVENTS[k].label}</option>`));
+  eventSel.innerHTML = opts.join("");
+  eventSel.value = "ALL";
+  eventSel.addEventListener("change",()=>{
+    currentEvent = eventSel.value;
+    applyTheme(currentEvent);
+    cur=0; loadingEl.classList.remove("hidden"); load(false);
+  });
+  rotToggle.addEventListener("click",()=>{
+    masterRotateOn = !masterRotateOn;
+    rotToggle.classList.toggle("on", masterRotateOn);
+    rotToggle.textContent = `Auto-rotate: ${masterRotateOn?"on":"off"}`;
+    clearInterval(masterTimer);
+    if(masterRotateOn){
+      const order = ["ALL", ...Object.keys(EVENTS)];
+      masterTimer = setInterval(()=>{
+        let i = order.indexOf(currentEvent);
+        currentEvent = order[(i+1)%order.length];
+        eventSel.value = currentEvent;
+        applyTheme(currentEvent);
+        cur=0; load(false);
+      }, MASTER_EVENT_MS);
+    }
+  });
+}
+
+applyTheme(currentEvent);
+if(isMaster) setupMaster();
+load(true);
+setInterval(()=>load(false), REFRESH_MS);
+</script>
+</body>
+</html>
