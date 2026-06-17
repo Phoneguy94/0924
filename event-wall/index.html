@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Event Wall — Balanced Hero + WebexOne QR</title>
+<title>Event Wall — Field Driven Events</title>
 <style>
   :root{
     --ink:#0B1A2B; --chalk:#F4F1E8; --gold:#E8B84B;
@@ -68,7 +68,7 @@
   .entry.webex .caption::before,.entry.webex .caption::after{ content:"●"; color:#D45A13; font-family:system-ui,sans-serif; font-style:normal; font-size:1.5vh; margin:0 .7vh; }
   .entry.webex .qr{ display:none; }
 
-  /* WebexOne-only floating QR. Does not affect MLB/NBA layout. */
+  /* WebexOne-only floating QR. Does not affect MLB/NBA/FLGISA layout. */
   .webex-floating-qr{
     position:absolute;
     right:1.5vw;
@@ -146,9 +146,17 @@
 
 <script>
 /* ============================================================
-   DEMO MODE: field-driven routing. The Event field is ignored.
-   If a specific image field is populated, that record belongs to
-   that event wall. Production event-name filtering comes later.
+   DEMO MODE: field-driven routing.
+   The Event field / EventName is ignored.
+
+   If a specific image attachment field is populated, that record
+   belongs to that event wall.
+
+   Examples:
+   - MLB image in MLB column       -> MLB wall
+   - NBA image in NBA_Card column  -> NBA wall
+   - FLGISA image in FLGISA column -> FLGISA wall
+   - WebexOne images in Webex cols -> WebexOne wall
    ============================================================ */
 const BASE_ID  = "appSxuH0GH10rxd5y";
 const TABLE_ID = "tblI7llQH93Xkin3O";
@@ -159,17 +167,24 @@ const F = {
   WebexOne_1: "fld7W7JS6XPIZLoMp",
   WebexOne_2: "fld6ejAJTGpRuztwp",
   WebexOne_3: "fldJ4mNylPdtD8u14",
-  NBA_Card:   "fldUDkaG8rZwL4Dk4"
+  NBA_Card:   "fldUDkaG8rZwL4Dk4",
+
+  // FLGISA / Florida Man attachment field
+  FLGISA:     "fldgormjiaZzb2amU"
 };
 
 const EVENTS = {
   MLB: {
-    label:"MLB", accent:"#FDB827", bg:"Kiosk_background.png", type:"single",
+    label:"MLB", accent:"#2E86DE", bg:"Kiosk_background.png", type:"single",
     fields:[F.MLB]
   },
   NBA: {
     label:"NBA", accent:"#C8102E", bg:"", type:"single",
     fields:[F.NBA_Card]
+  },
+  FLGISA: {
+    label:"FLGISA Florida Man", accent:"#2ECC71", bg:"", type:"single",
+    fields:[F.FLGISA]
   },
   WebexOne: {
     label:"WebexOne Austin 2026", accent:"#FFD400", bg:"", type:"webex3",
@@ -211,6 +226,7 @@ const API = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}?pageSize=100&ret
 function normalizeEvent(value){
   const v = String(value || "").toLowerCase();
   if(!v || v === "all") return "ALL";
+  if(v.includes("flgisa") || v.includes("florida") || v.includes("gisa")) return "FLGISA";
   if(v.includes("webex")) return "WebexOne";
   if(v.includes("nba") || v.includes("basketball") || v.includes("magic")) return "NBA";
   if(v.includes("mlb") || v.includes("baseball") || v.includes("pirates") || v.includes("pittsburgh")) return "MLB";
@@ -324,7 +340,7 @@ function layout(){
     const isWebex = node.classList.contains("webex");
 
     // BALANCED HERO MODE:
-    // Single MLB/NBA cards get a bigger live card + readable QR, but stay on-screen.
+    // Single MLB/NBA/FLGISA cards get a bigger live card + readable QR, but stay on-screen.
     // WebexOne is already three cards wide, so it uses a smaller center scale.
     const x = isWebex ? d * 31 : d * 27;
     const scale = isWebex
