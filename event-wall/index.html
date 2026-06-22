@@ -117,6 +117,208 @@
   .msg{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center; flex-direction:column; gap:1.2vh; text-align:center; z-index:60; font-size:2.2vh; color:rgba(244,241,232,.7); padding:0 8vw; }
   .msg .big{ font-family:"Georgia",serif; font-style:italic; font-size:3.4vh; color:var(--chalk); }
   .hidden{ display:none !important; }
+
+
+  /* ============================================================
+     MOBILE FIX ONLY
+     These rules apply only on narrow/touch screens. Desktop/tablet
+     landscape keeps the original computer layout above.
+     ============================================================ */
+  @media (max-width: 700px), (max-height: 520px) and (orientation: landscape){
+    html,body{
+      width:100%;
+      min-height:100%;
+      overflow:hidden;
+      position:fixed;
+      inset:0;
+      overscroll-behavior:none;
+      -webkit-text-size-adjust:100%;
+    }
+    body{
+      height:100svh;
+      min-height:100svh;
+    }
+    header{
+      padding:1.25svh 4vw .55svh;
+    }
+    .eyebrow{
+      font-size:1.15svh;
+      letter-spacing:.26em;
+      margin-bottom:.35svh;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    h1{
+      font-size:2.65svh;
+      line-height:1.05;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:94vw;
+      margin:0 auto;
+    }
+    .controls{
+      gap:2vw;
+      margin-top:.7svh;
+    }
+    .controls select,
+    .controls .toggle{
+      font-size:1.25svh;
+      padding:.55svh 2vw;
+      max-width:46vw;
+    }
+    .stage{
+      min-height:0;
+      width:100vw;
+      overflow:hidden;
+      align-items:center;
+      justify-content:center;
+    }
+    .track{
+      inset:0;
+      overflow:hidden;
+    }
+    .entry{
+      gap:0;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      max-width:100vw;
+      max-height:100%;
+    }
+    .entry .card{
+      height:auto;
+      width:min(74vw, 39svh);
+      max-height:58svh;
+      aspect-ratio:864 / 1320;
+      padding:.75svh;
+      border-radius:12px;
+      box-shadow:0 14px 28px rgba(0,0,0,.48);
+    }
+    .entry .card .photo{
+      border-radius:8px;
+    }
+
+    /* Mobile single-card QR:
+       Keep the card centered and place a small QR at the bottom-right of the image/card area.
+       WebexOne still uses the separate floating QR below. */
+    .entry.single{
+      position:absolute;
+    }
+    .entry.single .qr{
+      position:absolute;
+      right:calc(50% - min(74vw, 39svh) / 2 + .7svh);
+      bottom:calc(50% - 58svh / 2 + .8svh);
+      width:min(24vw, 9.5svh);
+      padding:.45svh;
+      border-radius:8px;
+      gap:.25svh;
+      margin-top:0;
+      opacity:0;
+      z-index:25;
+      box-shadow:0 10px 22px rgba(0,0,0,.48);
+    }
+    .entry.single.focus .qr{
+      width:min(24vw, 9.5svh);
+      opacity:1;
+    }
+    .entry.single .qr .cap{
+      font-size:.75svh;
+      line-height:1;
+      white-space:nowrap;
+    }
+
+    .entry .qr .cap{
+      font-size:1.1svh;
+      line-height:1.05;
+      white-space:nowrap;
+    }
+    .entry.side,
+    .entry.far{
+      pointer-events:none;
+    }
+    .entry.webex{
+      gap:1svh;
+      width:100vw;
+      max-height:100%;
+    }
+    .entry.webex .card{
+      width:min(78vw, 42svh);
+      height:auto;
+      max-height:26svh;
+      aspect-ratio:660 / 950;
+      padding:.7svh .7svh 1.25svh;
+      border-radius:11px;
+    }
+    .entry.webex .caption{
+      font-size:1.35svh;
+      padding:.6svh .25svh 0;
+      max-width:100%;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .entry.webex .caption::before,
+    .entry.webex .caption::after{
+      font-size:1svh;
+      margin:0 .35svh;
+    }
+    .webex-floating-qr{
+      right:3vw;
+      bottom:6.5svh;
+      width:min(26vw, 10.5svh);
+      padding:.55svh;
+      border-radius:8px;
+    }
+    .webex-floating-qr .cap{
+      font-size:.9svh;
+    }
+    .nav{
+      width:4.8svh;
+      height:4.8svh;
+      font-size:2.8svh;
+      background:rgba(0,0,0,.28);
+    }
+    .nav.prev{ left:2.2vw; }
+    .nav.next{ right:2.2vw; }
+    footer{
+      padding:.55svh 3vw 1.1svh;
+      gap:2.2vw;
+    }
+    .dots{
+      max-width:64vw;
+      gap:.55svh;
+    }
+    .dots i{
+      width:.85svh;
+      height:.85svh;
+    }
+    .brand{
+      font-size:1.05svh;
+      letter-spacing:.18em;
+      white-space:nowrap;
+    }
+    .msg{
+      font-size:1.65svh;
+      padding:0 9vw;
+    }
+    .msg .big{
+      font-size:2.7svh;
+    }
+  }
+
+  @media (max-width: 380px){
+    .entry .card{ width:min(70vw, 36svh); max-height:54svh; }
+    .entry.single .qr,
+    .entry.single.focus .qr{
+      right:calc(50% - min(70vw, 36svh) / 2 + .65svh);
+      bottom:calc(50% - 54svh / 2 + .75svh);
+      width:min(22vw, 8.5svh);
+    }
+    .entry.webex .card{ width:min(74vw, 38svh); max-height:24.5svh; }
+    h1{ font-size:2.45svh; }
+  }
+
   @media (prefers-reduced-motion: reduce){ .entry{ transition:opacity .3s ease; } }
 </style>
 </head>
@@ -194,7 +396,13 @@ const EVENTS = {
 };
 
 const ROTATE_MS = 10000;
-const REFRESH_MS = 60000;
+
+// Live wall behavior:
+// - Only render the newest 20 finished entries.
+// - Re-check Airtable every 5 seconds so new images appear ASAP.
+const MAX_WALL_ENTRIES = 20;
+const REFRESH_MS = 5000;
+
 const MASTER_EVENT_MS = 20000;
 const AIRTABLE_TOKEN = "patYsJQ4hhojOhYuk.a0839f88a7ae231ce3bf1db6816c451efd8cc6dc7a313a99d4216dc1e557336e";
 /* ============================================================ */
@@ -298,19 +506,23 @@ async function fetchPeople(){
     records.sort((a,b)=> new Date(b.createdTime) - new Date(a.createdTime));
     const out = [];
     for(const rec of records) out.push(...entriesForRecord(rec));
-    return out;
+
+    // Keep the wall light: newest completed image entries only.
+    // In ALL mode, one record can create multiple entries, so sort/slice after expanding.
+    out.sort((a,b)=> new Date(b.createdTime) - new Date(a.createdTime));
+    return out.slice(0, MAX_WALL_ENTRIES);
   }catch(e){ console.error(e); return { error:e.message || String(e) }; }
 }
 
 function singleEntryHTML(p){
-  const cards = p.imgs.map(u=>`<div class="card"><img class="photo" src="${esc(u)}" alt="" loading="eager"></div>`).join("");
-  const qr = p.qr ? `<div class="qr"><img src="${esc(p.qr)}" alt="QR"><div class="cap">Scan to get yours</div></div>` : `<div class="qr empty"></div>`;
+  const cards = p.imgs.map(u=>`<div class="card"><img class="photo" src="${esc(u)}" alt="" loading="lazy" decoding="async"></div>`).join("");
+  const qr = p.qr ? `<div class="qr"><img src="${esc(p.qr)}" alt="QR" loading="lazy" decoding="async"><div class="cap">Scan to get yours</div></div>` : `<div class="qr empty"></div>`;
   return cards + qr;
 }
 function webexEntryHTML(p){
   return p.imgs.map((u,i)=>{
     const cap = p.captions[i] || "WebexOne Experience";
-    return `<div class="card"><img class="photo" src="${esc(u)}" alt="" loading="eager"><div class="caption">${esc(cap)}</div></div>`;
+    return `<div class="card"><img class="photo" src="${esc(u)}" alt="" loading="lazy" decoding="async"><div class="caption">${esc(cap)}</div></div>`;
   }).join("");
 }
 function entryHTML(p){ return p.layout === "webex" ? webexEntryHTML(p) : singleEntryHTML(p); }
@@ -326,9 +538,14 @@ function updateWebexFloatingQr(){
   }
 }
 
+function isMobileWall(){
+  return window.matchMedia("(max-width: 700px), (max-height: 520px) and (orientation: landscape)").matches;
+}
+
 function layout(){
   const nodes = [...trackEl.children];
   const n = people.length;
+  const mobile = isMobileWall();
   nodes.forEach((node,i)=>{
     let d = i - cur;
     if(n > 2){ if(d > n/2) d -= n; if(d < -n/2) d += n; }
@@ -339,16 +556,17 @@ function layout(){
     else node.classList.add("far");
     const isWebex = node.classList.contains("webex");
 
-    // BALANCED HERO MODE:
-    // Single MLB/NBA/FLGISA cards get a bigger live card + readable QR, but stay on-screen.
-    // WebexOne is already three cards wide, so it uses a smaller center scale.
-    const x = isWebex ? d * 31 : d * 27;
-    const scale = isWebex
-      ? (d===0 ? .98 : (ad===1 ? .50 : .32))
-      : (d===0 ? 1.12 : (ad===1 ? .58 : .38));
+    // Desktop/computer math is unchanged.
+    // Mobile uses its own smaller spacing so the hero card and QR stay on-screen.
+    const x = mobile ? (d * 96) : (isWebex ? d * 31 : d * 27);
+    const scale = mobile
+      ? (d===0 ? 1 : (ad===1 ? .30 : .18))
+      : (isWebex
+        ? (d===0 ? .98 : (ad===1 ? .50 : .32))
+        : (d===0 ? 1.12 : (ad===1 ? .58 : .38)));
 
     node.style.transform = `translate(-50%,-50%) translateX(${x}vw) scale(${scale})`;
-    node.style.opacity = ad>2 ? 0 : 1;
+    node.style.opacity = mobile ? (ad>1 ? 0 : (d===0 ? 1 : .22)) : (ad>2 ? 0 : 1);
   });
   [...dotsBox.children].forEach((dot,i)=>dot.classList.toggle("on", i===cur));
   updateWebexFloatingQr();
@@ -371,6 +589,8 @@ document.addEventListener("keydown",(e)=>{ if(e.key==="ArrowRight"){ go(1); e.pr
 })();
 prevBtn.addEventListener("click",()=>go(-1));
 nextBtn.addEventListener("click",()=>go(1));
+window.addEventListener("resize", layout);
+window.addEventListener("orientationchange", ()=>setTimeout(layout, 250));
 
 function showStage(){
   loadingEl.classList.add("hidden");
@@ -380,15 +600,44 @@ function showStage(){
   prevBtn.classList.toggle("hidden", !many);
   nextBtn.classList.toggle("hidden", !many);
 }
+function entryKey(p){
+  return p ? `${p.eventKey}|${p.createdTime}|${(p.imgs || []).join("|")}` : "";
+}
+
+function peopleSignature(list){
+  return (list || []).map(entryKey).join("||");
+}
+
 async function load(initial){
+  const oldTop = entryKey(people[0]);
+  const oldSig = peopleSignature(people);
+
   const next = await fetchPeople();
   if(next && next.error){
     if(initial) loadingEl.innerHTML = `<div class="big">Can’t reach Airtable</div><div>${esc(next.error)}</div>`;
     return;
   }
-  people = next || [];
-  if(cur >= people.length) cur = 0;
-  buildDots(); renderAll(); restartRotation(); showStage();
+
+  const nextPeople = next || [];
+  const newTop = entryKey(nextPeople[0]);
+  const newSig = peopleSignature(nextPeople);
+
+  // Check Airtable often, but do not rebuild/restart rotation if nothing changed.
+  if(!initial && newSig === oldSig){
+    showStage();
+    return;
+  }
+
+  people = nextPeople;
+
+  // If a brand-new image appears, jump the wall to it immediately.
+  if(initial || (newTop && newTop !== oldTop)) cur = 0;
+  else if(cur >= people.length) cur = 0;
+
+  buildDots();
+  renderAll();
+  restartRotation();
+  showStage();
 }
 function setupMaster(){
   controls.classList.remove("hidden");
