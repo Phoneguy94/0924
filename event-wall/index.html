@@ -373,7 +373,13 @@ const EVENTS = {
 };
 
 const ROTATE_MS = 10000;
-const REFRESH_MS = 60000;
+
+// Live wall behavior:
+// - Only render the newest 20 finished entries.
+// - Re-check Airtable every 5 seconds so new images appear ASAP.
+const MAX_WALL_ENTRIES = 20;
+const REFRESH_MS = 5000;
+
 const MASTER_EVENT_MS = 20000;
 const AIRTABLE_TOKEN = "patYsJQ4hhojOhYuk.a0839f88a7ae231ce3bf1db6816c451efd8cc6dc7a313a99d4216dc1e557336e";
 /* ============================================================ */
@@ -477,19 +483,23 @@ async function fetchPeople(){
     records.sort((a,b)=> new Date(b.createdTime) - new Date(a.createdTime));
     const out = [];
     for(const rec of records) out.push(...entriesForRecord(rec));
-    return out;
+
+    // Keep the wall light: newest completed image entries only.
+    // In ALL mode, one record can create multiple entries, so sort/slice after expanding.
+    out.sort((a,b)=> new Date(b.createdTime) - new Date(a.createdTime));
+    return out.slice(0, MAX_WALL_ENTRIES);
   }catch(e){ console.error(e); return { error:e.message || String(e) }; }
 }
 
 function singleEntryHTML(p){
-  const cards = p.imgs.map(u=>`<div class="card"><img class="photo" src="${esc(u)}" alt="" loading="eager"></div>`).join("");
-  const qr = p.qr ? `<div class="qr"><img src="${esc(p.qr)}" alt="QR"><div class="cap">Scan to get yours</div></div>` : `<div class="qr empty"></div>`;
+  const cards = p.imgs.map(u=>`<div class="card"><img class="photo" src="${esc(u)}" alt="" loading="lazy" decoding="async"></div>`).join("");
+  const qr = p.qr ? `<div class="qr"><img src="${esc(p.qr)}" alt="QR" loading="lazy" decoding="async"><div class="cap">Scan to get yours</div></div>` : `<div class="qr empty"></div>`;
   return cards + qr;
 }
 function webexEntryHTML(p){
   return p.imgs.map((u,i)=>{
     const cap = p.captions[i] || "WebexOne Experience";
-    return `<div class="card"><img class="photo" src="${esc(u)}" alt="" loading="eager"><div class="caption">${esc(cap)}</div></div>`;
+    return `<div class="card"><img class="photo" src="${esc(u)}" alt="" loading="lazy" decoding="async"><div class="caption">${esc(cap)}</div></div>`;
   }).join("");
 }
 function entryHTML(p){ return p.layout === "webex" ? webexEntryHTML(p) : singleEntryHTML(p); }
@@ -567,14 +577,25 @@ function showStage(){
   prevBtn.classList.toggle("hidden", !many);
   nextBtn.classList.toggle("hidden", !many);
 }
+function entryKey(p){
+  return p ? `${p.eventKey}|${p.createdTime}|${(p.imgs || []).join("|")}` : "";
+}
+
 async function load(initial){
+  const oldTop = entryKey(people[0]);
   const next = await fetchPeople();
   if(next && next.error){
     if(initial) loadingEl.innerHTML = `<div class="big">Can’t reach Airtable</div><div>${esc(next.error)}</div>`;
     return;
   }
+
   people = next || [];
-  if(cur >= people.length) cur = 0;
+  const newTop = entryKey(people[0]);
+
+  // If a brand-new image appears, jump the wall to it immediately.
+  if(initial || (newTop && newTop !== oldTop)) cur = 0;
+  else if(cur >= people.length) cur = 0;
+
   buildDots(); renderAll(); restartRotation(); showStage();
 }
 function setupMaster(){
