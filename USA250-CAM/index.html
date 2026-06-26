@@ -13,7 +13,7 @@
     body {
       font-family: Arial, sans-serif;
       background:
-        linear-gradient(rgba(7,17,31,0.28), rgba(7,17,31,0.45)),
+        linear-gradient(rgba(7, 17, 31, 0.25), rgba(7, 17, 31, 0.45)),
         url("https://phoneguy94.github.io/0924/USA250-CAM/USA_Background.png")
         center center / cover no-repeat fixed;
       color: white;
@@ -36,7 +36,7 @@
       font-weight: bold;
       letter-spacing: 1px;
       line-height: 1.1;
-      text-shadow: 0 3px 18px rgba(0,0,0,0.65);
+      text-shadow: 0 3px 18px rgba(0,0,0,0.7);
     }
 
     .subheader {
@@ -45,7 +45,7 @@
       opacity: 0.95;
       margin-bottom: 12px;
       padding: 0 16px;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.65);
+      text-shadow: 0 2px 12px rgba(0,0,0,0.7);
     }
 
     .camera-wrap {
@@ -114,7 +114,7 @@
     }
 
     button.secondary {
-      background: rgba(255,255,255,0.86);
+      background: rgba(255,255,255,0.9);
     }
 
     button:disabled {
@@ -132,7 +132,7 @@
       font-size: clamp(16px, 4vw, 22px);
       min-height: 24px;
       opacity: 0.95;
-      text-shadow: 0 2px 12px rgba(0,0,0,0.65);
+      text-shadow: 0 2px 12px rgba(0,0,0,0.7);
     }
 
     .watermark {
@@ -146,7 +146,6 @@
     }
   </style>
 </head>
-
 <body>
   <div class="header">🇺🇸 USA250 Photo Kiosk</div>
   <div class="subheader">Look at the camera and tap Take Picture</div>
@@ -177,11 +176,13 @@
     const statusEl = document.getElementById("status");
     const countdownEl = document.getElementById("countdown");
 
+    // ── CONFIG ──────────────────────────────────────────────
     const WEBHOOK_URL = "https://hooks.us.webexconnect.io/events/X6LYS4HP7U";
     const OUT_WIDTH = 768;
     const OUT_HEIGHT = 1024;
     const JPEG_QUALITY = 0.7;
     const IDLE_TIMEOUT_MS = 30000;
+    // ────────────────────────────────────────────────────────
 
     let capturedBase64 = "";
     let idleTimer = null;
@@ -200,7 +201,7 @@
         const stream = await navigator.mediaDevices.getUserMedia({
           video: {
             facingMode: "user",
-            width: { ideal: 1080 },
+            width:  { ideal: 1080 },
             height: { ideal: 1440 }
           },
           audio: false
@@ -233,13 +234,16 @@
 
       canvas.width = OUT_WIDTH;
       canvas.height = OUT_HEIGHT;
-
       const ctx = canvas.getContext("2d");
 
       ctx.save();
       ctx.translate(OUT_WIDTH, 0);
       ctx.scale(-1, 1);
-      ctx.drawImage(video, cropX, cropY, cropW, cropH, 0, 0, OUT_WIDTH, OUT_HEIGHT);
+      ctx.drawImage(
+        video,
+        cropX, cropY, cropW, cropH,
+        0, 0, OUT_WIDTH, OUT_HEIGHT
+      );
       ctx.restore();
 
       const dataUrl = canvas.toDataURL("image/jpeg", JPEG_QUALITY);
