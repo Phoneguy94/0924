@@ -1,1 +1,706 @@
-test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>USA250 Wall</title>
+<style>
+  :root{
+    --ink:#0B1A2B;
+    --chalk:#F4F1E8;
+    --gold:#D9DEE8;
+    --line:rgba(244,241,232,.14);
+    --accent:#D9DEE8;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0;}
+  html,body{height:100%;overflow:hidden;}
+
+  body{
+    background:
+      linear-gradient(rgba(8,18,32,.58), rgba(6,15,26,.78)),
+      url("https://phoneguy94.github.io/0924/USA250-Wall/USA_Background.png") center center / cover no-repeat,
+      #0B1A2B;
+    font-family:"Inter","Segoe UI",system-ui,sans-serif;
+    color:var(--chalk);
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    user-select:none;
+    -webkit-user-select:none;
+  }
+
+  body::before{
+    content:"";
+    position:fixed;
+    inset:0;
+    pointer-events:none;
+    background:
+      radial-gradient(60% 40% at 12% 0%, rgba(255,255,255,.10), transparent 60%),
+      radial-gradient(60% 40% at 88% 0%, rgba(180,40,45,.12), transparent 60%);
+  }
+
+  header{
+    flex:0 0 auto;
+    text-align:center;
+    padding:2.1vh 2vw .8vh;
+    position:relative;
+    z-index:3;
+  }
+
+  .eyebrow{
+    font-size:1.45vh;
+    letter-spacing:.42em;
+    text-transform:uppercase;
+    color:var(--gold);
+    font-weight:700;
+    margin-bottom:.55vh;
+  }
+
+  h1{
+    font-family:"Georgia","Times New Roman",serif;
+    font-weight:800;
+    font-style:italic;
+    font-size:4vh;
+    line-height:1;
+    text-shadow:0 2px 0 rgba(0,0,0,.35);
+  }
+
+  h1 .accent{ color:var(--accent); }
+
+  .stage{
+    flex:1 1 auto;
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+
+  .track{
+    position:absolute;
+    inset:0;
+  }
+
+  .entry{
+    position:absolute;
+    left:50%;
+    top:50%;
+    transform-origin:center center;
+    transition:transform .5s cubic-bezier(.22,.61,.36,1), opacity .5s ease, filter .5s ease;
+    display:flex;
+    align-items:center;
+    gap:2.1vw;
+    will-change:transform,opacity;
+  }
+
+  .entry .card{
+    height:56vh;
+    aspect-ratio:660 / 950;
+    padding:1.15vh 1.15vh 2.3vh;
+    border-radius:14px;
+    display:flex;
+    flex-direction:column;
+    background:var(--chalk);
+    box-shadow:0 24px 48px rgba(0,0,0,.55);
+    overflow:hidden;
+  }
+
+  .entry .card .photo{
+    width:100%;
+    height:auto;
+    flex:1 1 auto;
+    min-height:0;
+    border-radius:8px;
+    object-fit:cover;
+    display:block;
+    background:#0c1722;
+    border:1px solid rgba(0,0,0,.12);
+  }
+
+  .entry .caption{
+    color:#111b2c;
+    font-family:"Georgia","Times New Roman",serif;
+    font-weight:900;
+    font-style:italic;
+    font-size:2vh;
+    letter-spacing:.02em;
+    text-align:center;
+    padding:1.1vh .4vh .2vh;
+    white-space:nowrap;
+  }
+
+  .entry .caption::before,
+  .entry .caption::after{
+    content:"●";
+    color:#B23A48;
+    font-family:system-ui,sans-serif;
+    font-style:normal;
+    font-size:1.5vh;
+    margin:0 .7vh;
+  }
+
+  .entry.focus{ z-index:10; }
+  .entry.side{ filter:grayscale(.65) brightness(.62); z-index:5; }
+  .entry.far{ filter:grayscale(1) brightness(.42); z-index:2; }
+
+  .nav{
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    z-index:20;
+    width:6vh;
+    height:6vh;
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background:rgba(0,0,0,.35);
+    border:1px solid var(--line);
+    color:var(--chalk);
+    font-size:3vh;
+    cursor:pointer;
+    backdrop-filter:blur(4px);
+  }
+
+  .nav:hover{ background:rgba(0,0,0,.6); }
+  .nav.prev{ left:2.5vw; }
+  .nav.next{ right:2.5vw; }
+  .nav.hidden{ display:none; }
+
+  footer{
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:1.4vw;
+    padding:1.1vh 2vw 2vh;
+    position:relative;
+    z-index:3;
+  }
+
+  .dots{
+    display:flex;
+    gap:.7vh;
+    flex-wrap:wrap;
+    max-width:60vw;
+    justify-content:center;
+  }
+
+  .dots i{
+    width:1.1vh;
+    height:1.1vh;
+    border-radius:50%;
+    background:var(--line);
+    display:block;
+    transition:background .4s,transform .4s;
+  }
+
+  .dots i.on{
+    background:var(--accent);
+    transform:scale(1.4);
+  }
+
+  .brand{
+    font-size:1.4vh;
+    letter-spacing:.3em;
+    text-transform:uppercase;
+    color:rgba(244,241,232,.55);
+    font-weight:600;
+  }
+
+  .msg{
+    position:absolute;
+    inset:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex-direction:column;
+    gap:1.2vh;
+    text-align:center;
+    z-index:60;
+    font-size:2.2vh;
+    color:rgba(244,241,232,.7);
+    padding:0 8vw;
+  }
+
+  .msg .big{
+    font-family:"Georgia",serif;
+    font-style:italic;
+    font-size:3.4vh;
+    color:var(--chalk);
+  }
+
+  .hidden{ display:none !important; }
+
+  @media (max-width: 700px), (max-height: 520px) and (orientation: landscape){
+    html,body{
+      width:100%;
+      min-height:100%;
+      overflow:hidden;
+      position:fixed;
+      inset:0;
+      overscroll-behavior:none;
+      -webkit-text-size-adjust:100%;
+    }
+
+    body{
+      height:100svh;
+      min-height:100svh;
+    }
+
+    header{
+      padding:1.25svh 4vw .55svh;
+    }
+
+    .eyebrow{
+      font-size:1.15svh;
+      letter-spacing:.26em;
+      margin-bottom:.35svh;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    h1{
+      font-size:2.65svh;
+      line-height:1.05;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width:94vw;
+      margin:0 auto;
+    }
+
+    .stage{
+      min-height:0;
+      width:100vw;
+      overflow:hidden;
+      align-items:center;
+      justify-content:center;
+    }
+
+    .track{
+      inset:0;
+      overflow:hidden;
+    }
+
+    .entry{
+      gap:1svh;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      width:100vw;
+      max-width:100vw;
+      max-height:100%;
+    }
+
+    .entry .card{
+      width:min(78vw, 42svh);
+      height:auto;
+      max-height:26svh;
+      aspect-ratio:660 / 950;
+      padding:.7svh .7svh 1.25svh;
+      border-radius:11px;
+    }
+
+    .entry .caption{
+      font-size:1.35svh;
+      padding:.6svh .25svh 0;
+      max-width:100%;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+
+    .entry .caption::before,
+    .entry .caption::after{
+      font-size:1svh;
+      margin:0 .35svh;
+    }
+
+    .entry.side,
+    .entry.far{
+      pointer-events:none;
+    }
+
+    .nav{
+      width:4.8svh;
+      height:4.8svh;
+      font-size:2.8svh;
+      background:rgba(0,0,0,.28);
+    }
+
+    .nav.prev{ left:2.2vw; }
+    .nav.next{ right:2.2vw; }
+
+    footer{
+      padding:.55svh 3vw 1.1svh;
+      gap:2.2vw;
+    }
+
+    .dots{
+      max-width:64vw;
+      gap:.55svh;
+    }
+
+    .dots i{
+      width:.85svh;
+      height:.85svh;
+    }
+
+    .brand{
+      font-size:1.05svh;
+      letter-spacing:.18em;
+      white-space:nowrap;
+    }
+
+    .msg{
+      font-size:1.65svh;
+      padding:0 9vw;
+    }
+
+    .msg .big{
+      font-size:2.7svh;
+    }
+  }
+
+  @media (max-width: 380px){
+    .entry .card{
+      width:min(74vw, 38svh);
+      max-height:24.5svh;
+    }
+
+    h1{ font-size:2.45svh; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .entry{ transition:opacity .3s ease; }
+  }
+</style>
+</head>
+
+<body>
+  <header>
+    <div class="eyebrow" id="eyebrow">USA250 · Live</div>
+    <h1 id="title">USA250 <span class="accent">Wall</span></h1>
+  </header>
+
+  <div class="stage" id="stage">
+    <div class="nav prev hidden" id="prev">‹</div>
+    <div class="track" id="track"></div>
+    <div class="nav next hidden" id="next">›</div>
+    <div class="msg" id="loading">
+      <div class="big">Loading…</div>
+      <div>Fetching the latest USA250 images</div>
+    </div>
+    <div class="msg hidden" id="empty">
+      <div class="big">No USA250 entries yet</div>
+      <div>No populated USA250 image fields found</div>
+    </div>
+  </div>
+
+  <footer>
+    <div class="dots" id="dots"></div>
+    <div class="brand">Powered by Veytec + Webex</div>
+  </footer>
+
+<script>
+const BASE_ID  = "appSxuH0GH10rxd5y";
+const TABLE_ID = "tblI7llQH93Xkin3O";
+
+const USA250_FIELDS = [
+  "fldjLx8XrIxda4FcV",
+  "fldoj4Im2cUcxua5D",
+  "fld2p2xcD1atuV7CM"
+];
+
+const USA250_CAPTIONS = [
+  "America 250",
+  "Liberty Celebration",
+  "Hometown Parade"
+];
+
+const ROTATE_MS = 10000;
+const MAX_WALL_ENTRIES = 20;
+const REFRESH_MS = 30000;
+
+const AIRTABLE_TOKEN = "patYsJQ4hhojOhYuk.a0839f88a7ae231ce3bf1db6816c451efd8cc6dc7a313a99d4216dc1e557336e";
+
+const API = `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}?pageSize=100&returnFieldsByFieldId=true`;
+
+const trackEl = document.getElementById("track");
+const dotsBox = document.getElementById("dots");
+const loadingEl = document.getElementById("loading");
+const emptyEl = document.getElementById("empty");
+const prevBtn = document.getElementById("prev");
+const nextBtn = document.getElementById("next");
+
+let people = [];
+let cur = 0;
+let rotateTimer = null;
+
+function esc(s){
+  return String(s || "").replace(/[&<>'"]/g, c => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    "'":"&#39;",
+    "\"":"&quot;"
+  }[c]));
+}
+
+function attUrl(a){
+  return (a && a.thumbnails && a.thumbnails.large && a.thumbnails.large.url) || (a && a.url) || "";
+}
+
+function firstAttachmentUrl(fieldValue){
+  if(!Array.isArray(fieldValue) || !fieldValue.length) return "";
+  return attUrl(fieldValue[0]);
+}
+
+function entryFromRecord(rec){
+  const f = rec.fields || {};
+  const imgs = USA250_FIELDS.map(fid => firstAttachmentUrl(f[fid])).filter(Boolean);
+
+  if(!imgs.length) return null;
+
+  return {
+    layout: "usa250",
+    imgs,
+    captions: USA250_CAPTIONS,
+    createdTime: rec.createdTime
+  };
+}
+
+async function fetchPeople(){
+  try{
+    if(!AIRTABLE_TOKEN || AIRTABLE_TOKEN.includes("PASTE_READ_ONLY")){
+      throw new Error("Missing Airtable token.");
+    }
+
+    let records = [];
+    let offset = null;
+
+    do{
+      const url = API + (offset ? `&offset=${encodeURIComponent(offset)}` : "");
+      const res = await fetch(url, {
+        headers:{ Authorization:`Bearer ${AIRTABLE_TOKEN}` }
+      });
+
+      if(!res.ok) throw new Error(`Airtable returned ${res.status}`);
+
+      const data = await res.json();
+      records = records.concat(data.records || []);
+      offset = data.offset || null;
+    } while(offset);
+
+    records.sort((a,b)=> new Date(b.createdTime) - new Date(a.createdTime));
+
+    const out = [];
+
+    for(const rec of records){
+      const entry = entryFromRecord(rec);
+      if(entry) out.push(entry);
+    }
+
+    out.sort((a,b)=> new Date(b.createdTime) - new Date(a.createdTime));
+
+    return out.slice(0, MAX_WALL_ENTRIES);
+  }catch(e){
+    console.error(e);
+    return { error:e.message || String(e) };
+  }
+}
+
+function entryHTML(p){
+  return p.imgs.map((u,i)=>{
+    const cap = p.captions[i] || "USA250";
+    return `
+      <div class="card">
+        <img class="photo" src="${esc(u)}" alt="" loading="lazy" decoding="async">
+        <div class="caption">${esc(cap)}</div>
+      </div>
+    `;
+  }).join("");
+}
+
+function isMobileWall(){
+  return window.matchMedia("(max-width: 700px), (max-height: 520px) and (orientation: landscape)").matches;
+}
+
+function layout(){
+  const nodes = [...trackEl.children];
+  const n = people.length;
+  const mobile = isMobileWall();
+
+  nodes.forEach((node,i)=>{
+    let d = i - cur;
+
+    if(n > 2){
+      if(d > n/2) d -= n;
+      if(d < -n/2) d += n;
+    }
+
+    const ad = Math.abs(d);
+
+    node.classList.remove("focus","side","far");
+
+    if(d === 0) node.classList.add("focus");
+    else if(ad === 1) node.classList.add("side");
+    else node.classList.add("far");
+
+    const x = mobile ? (d * 96) : (d * 31);
+    const scale = mobile
+      ? (d === 0 ? 1 : (ad === 1 ? .30 : .18))
+      : (d === 0 ? .98 : (ad === 1 ? .50 : .32));
+
+    node.style.transform = `translate(-50%,-50%) translateX(${x}vw) scale(${scale})`;
+    node.style.opacity = mobile ? (ad > 1 ? 0 : (d === 0 ? 1 : .22)) : (ad > 2 ? 0 : 1);
+  });
+
+  [...dotsBox.children].forEach((dot,i)=>dot.classList.toggle("on", i === cur));
+}
+
+function renderAll(){
+  trackEl.innerHTML = people.map(p=>`<div class="entry">${entryHTML(p)}</div>`).join("");
+
+  [...trackEl.children].forEach((node,i)=>{
+    node.addEventListener("click", ()=>{
+      if(i !== cur){
+        cur = i;
+        layout();
+        restartRotation();
+      }
+    });
+  });
+
+  layout();
+}
+
+function buildDots(){
+  dotsBox.innerHTML = "";
+  people.forEach(()=>dotsBox.appendChild(document.createElement("i")));
+}
+
+function advance(){
+  if(people.length <= 1) return;
+  cur = (cur + 1) % people.length;
+  layout();
+}
+
+function go(dir){
+  if(people.length <= 1) return;
+  const n = people.length;
+  cur = (cur + dir + n) % n;
+  layout();
+  restartRotation();
+}
+
+function restartRotation(){
+  clearInterval(rotateTimer);
+  if(people.length > 1){
+    rotateTimer = setInterval(advance, ROTATE_MS);
+  }
+}
+
+document.addEventListener("keydown",(e)=>{
+  if(e.key === "ArrowRight"){
+    go(1);
+    e.preventDefault();
+  } else if(e.key === "ArrowLeft"){
+    go(-1);
+    e.preventDefault();
+  }
+});
+
+(function(){
+  const stage = document.getElementById("stage");
+  let x0 = null;
+  let y0 = null;
+  const T = 40;
+
+  stage.addEventListener("touchstart",(e)=>{
+    const t = e.changedTouches[0];
+    x0 = t.clientX;
+    y0 = t.clientY;
+  },{passive:true});
+
+  stage.addEventListener("touchend",(e)=>{
+    if(x0 === null) return;
+
+    const t = e.changedTouches[0];
+    const dx = t.clientX - x0;
+    const dy = t.clientY - y0;
+
+    if(Math.abs(dx) > T && Math.abs(dx) > Math.abs(dy)){
+      go(dx < 0 ? 1 : -1);
+    }
+
+    x0 = null;
+    y0 = null;
+  },{passive:true});
+})();
+
+prevBtn.addEventListener("click",()=>go(-1));
+nextBtn.addEventListener("click",()=>go(1));
+window.addEventListener("resize", layout);
+window.addEventListener("orientationchange", ()=>setTimeout(layout, 250));
+
+function showStage(){
+  loadingEl.classList.add("hidden");
+  emptyEl.classList.toggle("hidden", people.length > 0);
+
+  const many = people.length > 1;
+  prevBtn.classList.toggle("hidden", !many);
+  nextBtn.classList.toggle("hidden", !many);
+}
+
+function entryKey(p){
+  return p ? `${p.createdTime}|${(p.imgs || []).join("|")}` : "";
+}
+
+function peopleSignature(list){
+  return (list || []).map(entryKey).join("||");
+}
+
+async function load(initial){
+  const oldTop = entryKey(people[0]);
+  const oldSig = peopleSignature(people);
+
+  const next = await fetchPeople();
+
+  if(next && next.error){
+    if(initial){
+      loadingEl.innerHTML = `<div class="big">Can’t reach Airtable</div><div>${esc(next.error)}</div>`;
+    }
+    return;
+  }
+
+  const nextPeople = next || [];
+  const newTop = entryKey(nextPeople[0]);
+  const newSig = peopleSignature(nextPeople);
+
+  if(!initial && newSig === oldSig){
+    showStage();
+    return;
+  }
+
+  people = nextPeople;
+
+  if(initial || (newTop && newTop !== oldTop)){
+    cur = 0;
+  } else if(cur >= people.length){
+    cur = 0;
+  }
+
+  buildDots();
+  renderAll();
+  restartRotation();
+  showStage();
+}
+
+load(true);
+setInterval(()=>load(false), REFRESH_MS);
+</script>
+</body>
+</html>
