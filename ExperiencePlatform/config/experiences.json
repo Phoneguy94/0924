@@ -1,0 +1,35 @@
+{
+  "platformName": "Veytec Experience Platform",
+  "version": "0.1.0-prototype",
+  "experiences": [
+    {
+      "id": "usa250",
+      "displayName": "USA250 Experience",
+      "description": "Friends and family patriotic AI photo experience.",
+      "status": "live-prototype",
+      "configUrl": "config/usa250.json",
+      "tags": ["USA250", "Hosted Event", "AI Images"]
+    },
+    {
+      "id": "golf",
+      "displayName": "Golf Classic",
+      "description": "Golf event experience placeholder.",
+      "status": "coming-soon",
+      "tags": ["Golf", "Sports", "Customer Event"]
+    },
+    {
+      "id": "webexone",
+      "displayName": "WebexOne Experience",
+      "description": "Conference experience placeholder.",
+      "status": "coming-soon",
+      "tags": ["WebexOne", "Conference", "AI Images"]
+    },
+    {
+      "id": "transformation",
+      "displayName": "Customer Transformation",
+      "description": "Customer migration excitement experience placeholder.",
+      "status": "coming-soon",
+      "tags": ["Migration", "Customer Kickoff", "Webex"]
+    }
+  ]
+}
