@@ -1,0 +1,21 @@
+{
+  "experienceId": "usa250",
+  "displayName": "USA250 Experience",
+  "status": "live-prototype",
+  "journey": "HostedEvent",
+  "version": "2.0.0-RC1",
+  "urls": {
+    "camera": "https://phoneguy94.github.io/0924/USA250v2-CAM/",
+    "gallery": "https://phoneguy94.github.io/0924/USA250v2-Photo/",
+    "wall": "https://phoneguy94.github.io/0924/USA250-Wall/"
+  },
+  "modules": [
+    "camera",
+    "upload",
+    "gallery",
+    "wall",
+    "webexConnect",
+    "airtable",
+    "aiImageGeneration"
+  ]
+}
