@@ -1,0 +1,19 @@
+html,body{margin:0;min-height:100%}
+body{font-family:Arial,sans-serif;background:linear-gradient(rgba(7,17,31,.35),rgba(7,17,31,.82)),var(--bg-img,none) center/cover fixed no-repeat,#07111f;color:#fff;display:flex;align-items:center;justify-content:center;padding:22px;box-sizing:border-box}
+.wrap{text-align:center;width:min(1000px,100%)}
+h1{font-size:clamp(30px,7vw,54px);margin:0 0 8px}
+p{font-size:clamp(16px,4vw,23px)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,500px));gap:24px;justify-content:center;margin-top:18px}
+.card{background:#f4f1e8;color:#111b2c;border-radius:18px;padding:12px 12px 16px;box-shadow:0 18px 50px rgba(0,0,0,.55)}
+.card img{width:100%;max-height:68vh;object-fit:contain;border-radius:12px;background:#07111f}
+.caption{font-family:Georgia,serif;font-weight:900;font-style:italic;font-size:22px;margin-top:10px}
+.claim{display:none;margin:20px auto 0;align-items:center;justify-content:center;gap:16px;flex-wrap:wrap}
+.claim.show{display:flex}
+.claim img{width:130px;height:130px;background:#fff;border-radius:12px;padding:8px}
+.hint{text-align:left;font-size:18px}
+.actions{margin-top:20px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+a,button{font-size:20px;font-weight:800;padding:13px 20px;border:0;border-radius:14px;background:#fff;color:#07111f;text-decoration:none;cursor:pointer}
+.spin{width:58px;height:58px;border:7px solid rgba(255,255,255,.25);border-top-color:#fff;border-radius:50%;animation:s 1s linear infinite;margin:24px auto}
+@keyframes s{to{transform:rotate(360deg)}}
+.small{font-size:14px;opacity:.75;margin-top:12px}
+.hide{display:none!important}
