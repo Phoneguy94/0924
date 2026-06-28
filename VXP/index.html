@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VXP | Veytec Experience Platform</title>
+  <style>
+    :root {
+      --bg: #07111f;
+      --panel: rgba(255,255,255,0.10);
+      --panel-strong: rgba(255,255,255,0.18);
+      --text: #ffffff;
+      --muted: rgba(255,255,255,0.72);
+      --accent: #58d3ff;
+      --gold: #f4d27a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(88,211,255,0.24), transparent 34%),
+        radial-gradient(circle at bottom right, rgba(244,210,122,0.14), transparent 30%),
+        linear-gradient(135deg, #07111f 0%, #0b1f3a 58%, #111827 100%);
+    }
+    .wrap { width: min(1180px, calc(100vw - 32px)); margin: 0 auto; padding: 42px 0 70px; }
+    header { margin-bottom: 34px; }
+    .eyebrow { color: var(--accent); text-transform: uppercase; letter-spacing: 4px; font-weight: 800; font-size: 13px; }
+    h1 { margin: 8px 0 0; font-size: clamp(44px, 8vw, 86px); line-height: .92; }
+    .subtitle { margin-top: 16px; max-width: 830px; color: var(--muted); font-size: clamp(17px, 2.4vw, 24px); line-height: 1.35; }
+    .statusbar { display: flex; flex-wrap: wrap; gap: 10px; margin: 24px 0 32px; }
+    .pill { border: 1px solid rgba(255,255,255,0.22); border-radius: 999px; padding: 9px 13px; background: rgba(255,255,255,0.08); font-weight: 700; color: rgba(255,255,255,0.86); }
+    .grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 18px; }
+    .card { grid-column: span 6; background: var(--panel); border: 1px solid rgba(255,255,255,0.18); border-radius: 26px; padding: 24px; box-shadow: 0 20px 60px rgba(0,0,0,0.28); backdrop-filter: blur(12px); }
+    .card.featured { grid-column: span 12; background: linear-gradient(135deg, rgba(255,255,255,0.16), rgba(255,255,255,0.08)); }
+    .card h2 { margin: 0 0 8px; font-size: clamp(26px, 3vw, 42px); }
+    .card p { color: var(--muted); line-height: 1.45; margin: 0 0 20px; font-size: 16px; }
+    .tagrow { display: flex; flex-wrap: wrap; gap: 8px; margin: 14px 0 20px; }
+    .tag { font-size: 12px; font-weight: 800; letter-spacing: .4px; color: #06111f; background: var(--gold); padding: 7px 10px; border-radius: 999px; }
+    .actions { display: flex; flex-wrap: wrap; gap: 12px; }
+    a.button, button.button { appearance: none; border: 0; text-decoration: none; cursor: pointer; color: #06111f; background: #fff; border-radius: 16px; padding: 14px 18px; font-weight: 900; font-size: 15px; box-shadow: 0 10px 26px rgba(0,0,0,0.25); }
+    a.button.secondary, button.button.secondary { color: #fff; background: var(--panel-strong); border: 1px solid rgba(255,255,255,0.24); }
+    .coming { opacity: .72; }
+    footer { margin-top: 28px; color: rgba(255,255,255,0.52); font-weight: 700; }
+    @media (max-width: 760px) { .card, .card.featured { grid-column: span 12; } .actions a, .actions button { width: 100%; text-align: center; } }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <header>
+      <div class="eyebrow">VXP Prototype</div>
+      <h1>Veytec Experience Platform</h1>
+      <div class="subtitle">One platform for many branded experiences. Shared components. Configurable events. Built for customer engagement, executive demos, and live walls.</div>
+    </header>
+
+    <section class="statusbar">
+      <div class="pill">Platform v0.1.0</div>
+      <div class="pill">USA250 Live Prototype</div>
+      <div class="pill">More Experiences Coming</div>
+    </section>
+
+    <section class="grid">
+      <article class="card featured">
+        <h2>USA250 Experience</h2>
+        <p>The first configured VXP experience. This currently launches the working USA250v2 camera, personal gallery, and live wall.</p>
+        <div class="tagrow"><span class="tag">LIVE</span><span class="tag">HOSTED EVENT</span><span class="tag">AI IMAGE</span></div>
+        <div class="actions">
+          <a class="button" href="https://phoneguy94.github.io/0924/USA250v2-CAM/">Launch Camera</a>
+          <a class="button secondary" href="https://phoneguy94.github.io/0924/USA250v2-Photo/">Open Gallery</a>
+          <a class="button secondary" href="https://phoneguy94.github.io/0924/USA250-Wall/">View Wall</a>
+        </div>
+      </article>
+
+      <article class="card coming"><h2>Golf Classic</h2><p>Sports and customer-event experience placeholder.</p><div class="tagrow"><span class="tag">COMING SOON</span></div></article>
+      <article class="card coming"><h2>WebexOne</h2><p>Conference and event-wall experience placeholder.</p><div class="tagrow"><span class="tag">COMING SOON</span></div></article>
+      <article class="card coming"><h2>Customer Transformation</h2><p>Migration excitement and executive kickoff experience placeholder.</p><div class="tagrow"><span class="tag">COMING SOON</span></div></article>
+      <article class="card coming"><h2>VXP Admin</h2><p>Future admin and experience builder module.</p><div class="tagrow"><span class="tag">FUTURE</span></div></article>
+    </section>
+
+    <footer>Powered by Veytec + Webex &middot; VXP prototype</footer>
+  </main>
+</body>
+</html>
