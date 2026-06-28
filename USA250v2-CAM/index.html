@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>USA250v2 Photo Kiosk</title>
+  <style>
+    html, body { margin: 0; height: 100%; }
+
+    body {
+      font-family: Arial, sans-serif;
+      background:
+        linear-gradient(rgba(7,17,31,.25), rgba(7,17,31,.45)),
+        url("https://phoneguy94.github.io/0924/USA250-CAM/USA_Background.png")
+        center center / cover no-repeat fixed;
+      color: white;
+      text-align: center;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: env(safe-area-inset-top) 0 env(safe-area-inset-bottom);
+      box-sizing: border-box;
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 14px 16px 4px;
+      font-size: clamp(24px, 6vw, 42px);
+      font-weight: bold;
+      text-shadow: 0 3px 18px rgba(0,0,0,.7);
+    }
+
+    .subheader {
+      font-size: clamp(15px, 3.5vw, 24px);
+      margin-bottom: 10px;
+      padding: 0 16px;
+      text-shadow: 0 2px 12px rgba(0,0,0,.7);
+    }
+
+    .mode-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin: 0 10px 10px;
+    }
+
+    .mode-row button {
+      font-size: clamp(14px, 3.4vw, 20px);
+      padding: 10px 14px;
+      margin: 0;
+      border-radius: 999px;
+      background: rgba(255,255,255,.88);
+    }
+
+    .mode-row button.active {
+      background: #fff;
+      outline: 3px solid rgba(178,58,72,.9);
+    }
+
+    .camera-wrap {
+      position: relative;
+      flex: 1 1 auto;
+      min-height: 0;
+      aspect-ratio: 3 / 4;
+      max-height: 56vh;
+      max-width: 90vw;
+      border: 8px solid rgba(255,255,255,.88);
+      border-radius: 24px;
+      overflow: hidden;
+      background: #000;
+      box-shadow: 0 18px 60px rgba(0,0,0,.45);
+    }
+
+    video, canvas, img {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover;
+      pointer-events: none;
+      user-select: none;
+    }
+
+    video.mirror { transform: scaleX(-1); }
+
+    .countdown {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(120px, 30vw, 220px);
+      font-weight: bold;
+      text-shadow: 0 0 30px rgba(0,0,0,.8);
+      background: rgba(0,0,0,.25);
+    }
+
+    .button-row {
+      margin-top: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+
+    button, a.big-link {
+      font-size: clamp(19px, 5vw, 29px);
+      font-weight: bold;
+      padding: clamp(12px, 3vw, 20px) clamp(20px, 6vw, 38px);
+      margin: 7px;
+      border: none;
+      border-radius: 16px;
+      background: #fff;
+      color: #07111f;
+      cursor: pointer;
+      box-shadow: 0 8px 24px rgba(0,0,0,.35);
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    button.secondary { background: rgba(255,255,255,.9); }
+    button:disabled { opacity: .5; cursor: default; }
+    .hidden { display: none !important; }
+
+    .status {
+      margin-top: 4px;
+      font-size: clamp(16px, 4vw, 22px);
+      min-height: 24px;
+      text-shadow: 0 2px 12px rgba(0,0,0,.7);
+      padding: 0 14px;
+    }
+
+    .watermark {
+      margin-top: auto;
+      padding: 8px 16px;
+      font-size: clamp(13px, 3vw, 18px);
+      opacity: .78;
+      font-weight: bold;
+      text-shadow: 0 2px 12px rgba(0,0,0,.7);
+    }
+
+    input[type=file] { display: none; }
+  </style>
+</head>
+
+<body>
+  <div class="header">🇺🇸 USA250 Photo Kiosk</div>
+  <div class="subheader" id="subheader">Choose a camera or upload a photo</div>
+
+  <div class="mode-row">
+    <button id="frontMode" class="active">🤳 Front Camera</button>
+    <button id="backMode">📷 Back Camera</button>
+    <button id="uploadMode">⬆️ Upload Image</button>
+  </div>
+
+  <div class="camera-wrap">
+    <video id="video" autoplay playsinline class="mirror"></video>
+    <canvas id="canvas" class="hidden"></canvas>
+    <img id="photo" class="hidden" alt="Selected photo" />
+    <div id="countdown" class="countdown hidden"></div>
+  </div>
+
+  <input id="fileInput" type="file" accept="image/*" />
+
+  <div class="button-row">
+    <button id="takePhoto">📸 Take Picture</button>
+    <button id="chooseFile" class="hidden">⬆️ Choose Image</button>
+    <button id="retake" class="secondary hidden">↩ Retake</button>
+    <button id="submit" class="hidden">✅ Send It</button>
+    <a id="viewPhoto" class="big-link hidden" href="#">🔎 Click here to view your photo</a>
+  </div>
+
+  <div class="status" id="status"></div>
+  <div class="watermark">Powered by Veytec + Webex · USA250v2-CAM</div>
+
+  <script>
+    const WEBHOOK_URL = "https://hooks.us.webexconnect.io/events/X6LYS4HP7U";
+    const OUT_WIDTH = 768;
+    const OUT_HEIGHT = 1024;
+    const JPEG_QUALITY = 0.7;
+    const IDLE_TIMEOUT_MS = 45000;
+
+    const video = document.getElementById("video");
+    const canvas = document.getElementById("canvas");
+    const photo = document.getElementById("photo");
+    const takePhotoBtn = document.getElementById("takePhoto");
+    const chooseFileBtn = document.getElementById("chooseFile");
+    const retakeBtn = document.getElementById("retake");
+    const submitBtn = document.getElementById("submit");
+    const viewPhotoLink = document.getElementById("viewPhoto");
+    const statusEl = document.getElementById("status");
+    const countdownEl = document.getElementById("countdown");
+    const fileInput = document.getElementById("fileInput");
+    const subheader = document.getElementById("subheader");
+    const frontMode = document.getElementById("frontMode");
+    const backMode = document.getElementById("backMode");
+    const uploadMode = document.getElementById("uploadMode");
+
+    let capturedBase64 = "";
+    let currentMode = "front";
+    let stream = null;
+    let idleTimer = null;
+
+    function setStatus(t) { statusEl.textContent = t || ""; }
+    function startIdleTimer() {
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(resetToCamera, IDLE_TIMEOUT_MS);
+    }
+    function stopIdleTimer() { clearTimeout(idleTimer); }
+
+    function stopCamera() {
+      if (stream) {
+        stream.getTracks().forEach(t => t.stop());
+        stream = null;
+      }
+      video.srcObject = null;
+    }
+
+    async function startCamera(facingMode = "user") {
+      stopCamera();
+      video.classList.toggle("mirror", facingMode === "user");
+
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: {
+            facingMode,
+            width: { ideal: 1080 },
+            height: { ideal: 1440 }
+          },
+          audio: false
+        });
+        video.srcObject = stream;
+      } catch (err) {
+        console.error(err);
+        setStatus("Camera could not start. Try Upload Image or check camera permissions.");
+      }
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      stopIdleTimer();
+      capturedBase64 = "";
+
+      photo.classList.add("hidden");
+      viewPhotoLink.classList.add("hidden");
+      submitBtn.classList.add("hidden");
+      retakeBtn.classList.add("hidden");
+
+      frontMode.classList.toggle("active", mode === "front");
+      backMode.classList.toggle("active", mode === "back");
+      uploadMode.classList.toggle("active", mode === "upload");
+
+      takePhotoBtn.classList.toggle("hidden", mode === "upload");
+      chooseFileBtn.classList.toggle("hidden", mode !== "upload");
+
+      setStatus("");
+
+      if (mode === "front") {
+        subheader.textContent = "Look at the camera and tap Take Picture";
+        video.classList.remove("hidden");
+        startCamera("user");
+      }
+
+      if (mode === "back") {
+        subheader.textContent = "Use the rear camera and tap Take Picture";
+        video.classList.remove("hidden");
+        startCamera("environment");
+      }
+
+      if (mode === "upload") {
+        subheader.textContent = "Upload a photo instead of using the camera";
+        stopCamera();
+        video.classList.add("hidden");
+      }
+    }
+
+    frontMode.onclick = () => setMode("front");
+    backMode.onclick = () => setMode("back");
+    uploadMode.onclick = () => setMode("upload");
+    chooseFileBtn.onclick = () => fileInput.click();
+
+    function drawCoverImage(source, mirror = false) {
+      const sw = source.videoWidth || source.naturalWidth;
+      const sh = source.videoHeight || source.naturalHeight;
+
+      const targetAR = OUT_WIDTH / OUT_HEIGHT;
+      const srcAR = sw / sh;
+
+      let cropW, cropH;
+
+      if (srcAR > targetAR) {
+        cropH = sh;
+        cropW = sh * targetAR;
+      } else {
+        cropW = sw;
+        cropH = sw / targetAR;
+      }
+
+      const cropX = (sw - cropW) / 2;
+      const cropY = (sh - cropH) / 2;
+
+      canvas.width = OUT_WIDTH;
+      canvas.height = OUT_HEIGHT;
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, OUT_WIDTH, OUT_HEIGHT);
+
+      if (mirror) {
+        ctx.save();
+        ctx.translate(OUT_WIDTH, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(source, cropX, cropY, cropW, cropH, 0, 0, OUT_WIDTH, OUT_HEIGHT);
+        ctx.restore();
+      } else {
+        ctx.drawImage(source, cropX, cropY, cropW, cropH, 0, 0, OUT_WIDTH, OUT_HEIGHT);
+      }
+
+      return canvas.toDataURL("image/jpeg", JPEG_QUALITY).split(",")[1];
+    }
+
+    function showCaptured() {
+      photo.src = "data:image/jpeg;base64," + capturedBase64;
+
+      const kb = Math.round((capturedBase64.length * 3 / 4) / 1024);
+      setStatus("Ready to send (~" + kb + " KB)");
+
+      video.classList.add("hidden");
+      photo.classList.remove("hidden");
+      takePhotoBtn.classList.add("hidden");
+      chooseFileBtn.classList.add("hidden");
+      retakeBtn.classList.remove("hidden");
+      submitBtn.classList.remove("hidden");
+      viewPhotoLink.classList.add("hidden");
+
+      startIdleTimer();
+    }
+
+    takePhotoBtn.onclick = () => {
+      takePhotoBtn.disabled = true;
+      let n = 3;
+      countdownEl.textContent = n;
+      countdownEl.classList.remove("hidden");
+
+      const tick = setInterval(() => {
+        n -= 1;
+
+        if (n > 0) {
+          countdownEl.textContent = n;
+        } else {
+          clearInterval(tick);
+          countdownEl.classList.add("hidden");
+          takePhotoBtn.disabled = false;
+          capturedBase64 = drawCoverImage(video, currentMode === "front");
+          showCaptured();
+        }
+      }, 1000);
+    };
+
+    fileInput.onchange = () => {
+      const file = fileInput.files && fileInput.files[0];
+      if (!file) return;
+
+      const img = new Image();
+
+      img.onload = () => {
+        capturedBase64 = drawCoverImage(img, false);
+        URL.revokeObjectURL(img.src);
+        showCaptured();
+      };
+
+      img.src = URL.createObjectURL(file);
+    };
+
+    retakeBtn.onclick = () => resetToCamera();
+
+    submitBtn.onclick = async () => {
+      if (!capturedBase64) return;
+
+      stopIdleTimer();
+      submitBtn.disabled = true;
+      retakeBtn.disabled = true;
+      setStatus("Sending…");
+
+      const submittedAt = Date.now();
+      const photoUrl = `https://phoneguy94.github.io/0924/USA250v2-Photo/?ts=${submittedAt}`;
+
+      const payload = {
+        automation: "bobblehead_kiosk",
+        custname: "Veytec",
+        demo_type: "usa250",
+        Name: "Kiosk",
+        MobileNumber: "0000000000",
+        EventName: "Kiosk-USA250",
+        source: "USA250v2",
+        captureMode: currentMode,
+        submittedAt: new Date(submittedAt).toISOString(),
+        photoUrl: photoUrl,
+        imageB64: capturedBase64
+      };
+
+      try {
+        const res = await fetch(WEBHOOK_URL, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload)
+        });
+
+        let data = null;
+        try { data = await res.clone().json(); } catch(e) {}
+
+        if (res.ok) {
+          const id = data && (data.recordId || data.id || data.airtableRecordId);
+
+          viewPhotoLink.href = id
+            ? `https://phoneguy94.github.io/0924/USA250v2-Photo/?id=${encodeURIComponent(id)}&ts=${submittedAt}`
+            : photoUrl;
+
+          viewPhotoLink.classList.remove("hidden");
+          submitBtn.classList.add("hidden");
+          retakeBtn.classList.add("hidden");
+          setStatus("Sent! Tap below to view your USA250 photo 🇺🇸");
+        } else {
+          setStatus("Hmm, let's try that again.");
+          submitBtn.disabled = false;
+          retakeBtn.disabled = false;
+          startIdleTimer();
+        }
+      } catch (err) {
+        console.error(err);
+        setStatus("Let's try that again.");
+        submitBtn.disabled = false;
+        retakeBtn.disabled = false;
+        startIdleTimer();
+      }
+    };
+
+    function resetToCamera() {
+      stopIdleTimer();
+      countdownEl.classList.add("hidden");
+      capturedBase64 = "";
+      setStatus("");
+
+      photo.classList.add("hidden");
+      submitBtn.classList.add("hidden");
+      retakeBtn.classList.add("hidden");
+      viewPhotoLink.classList.add("hidden");
+
+      submitBtn.disabled = false;
+      retakeBtn.disabled = false;
+      takePhotoBtn.disabled = false;
+      fileInput.value = "";
+
+      setMode(currentMode);
+    }
+
+    setMode("front");
+  </script>
+</body>
+</html>
