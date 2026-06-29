@@ -377,22 +377,25 @@ const F = {
 
 const EVENTS = {
   MLB: {
-    label:"MLB", accent:"#2E86DE", bg:"Kiosk_background.png", type:"single",
+    label:"MLB", accent:"#2E86DE", bg:"https://phoneguy94.github.io/0924/VXP/assets/backgrounds/mlb.png", type:"single",
     fields:[F.MLB]
   },
   NBA: {
-    label:"NBA", accent:"#C8102E", bg:"", type:"single",
+    label:"NBA", accent:"#C8102E", bg:"https://phoneguy94.github.io/0924/VXP/assets/backgrounds/nba.png", type:"single",
     fields:[F.NBA_Card]
   },
   FLGISA: {
-    label:"FLGISA Florida Man", accent:"#2ECC71", bg:"", type:"single",
+    label:"FLGISA Florida Man", accent:"#2ECC71", bg:"https://phoneguy94.github.io/0924/VXP/assets/backgrounds/flgisa.png", type:"single",
     fields:[F.FLGISA]
   },
-  WebexOne: {
-    label:"WebexOne Austin 2026", accent:"#FFD400", bg:"", type:"webex3",
-    fields:[F.WebexOne_1, F.WebexOne_2, F.WebexOne_3],
-    captions:["Drone Show Activated", "DJ Set In-Progress", "Showtime"]
-  }
+WebexOne: {
+  label:"WebexOne Austin 2026",
+  accent:"#FFD400",
+  bg:"https://phoneguy94.github.io/0924/VXP/assets/backgrounds/webexone.png",
+  type:"webex3",
+  fields:[F.WebexOne_1, F.WebexOne_2, F.WebexOne_3],
+  captions:["Drone Show Activated", "DJ Set In-Progress", "Showtime"]
+}
 };
 
 const ROTATE_MS = 10000;
@@ -516,7 +519,7 @@ async function fetchPeople(){
 
 function singleEntryHTML(p){
   const cards = p.imgs.map(u=>`<div class="card"><img class="photo" src="${esc(u)}" alt="" loading="lazy" decoding="async"></div>`).join("");
-  const qr = p.qr ? `<div class="qr"><img src="${esc(p.qr)}" alt="QR" loading="lazy" decoding="async"><div class="cap">Scan to get yours</div></div>` : `<div class="qr empty"></div>`;
+  const qr = p.qr ? `<div class="qr"><img src="${esc(p.qr)}" alt="QR" loading="lazy" decoding="async"><div class="cap">Scan to claim your image</div></div>` : `<div class="qr empty"></div>`;
   return cards + qr;
 }
 function webexEntryHTML(p){
