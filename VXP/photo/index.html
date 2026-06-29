@@ -19,7 +19,7 @@
 <script src="../../vxp/config/experiences.js"></script>
 <script>
 const $=id=>document.getElementById(id),root=window.VXP_CONFIG,p=new URLSearchParams(location.search),AT=root.airtable,recordId=p.get('id'),ts=Number(p.get('ts')||Date.now());
-const FIELD_NAMES={fldvQvP6xGTCpB71A:'MLB',fldUDkaG8rZwL4Dk4:'NBA CARD',fldgormjiaZzb2amU:'FLGISA',fld7W7JS6XPIZLoMp:'AIKioskv3',fld6ejAJTGpRuztwp:'AIKioskv3 copy',fldJ4mNylPdtD8u14:'AIKioskv3 copy copy',fldjLx8XrIxda4FcV:'USA 250 Scene 1',fldoj4Im2cUcxua5D:'USA 250 Scene 2',fld2p2xcD1atuV7CM:'USA 250 Scene 3'};
+const FIELD_NAMES={fldvQvP6xGTCpB71A:'MLB',fldUDkaG8rZwL4Dk4:'NBA CARD',fldgormjiaZzb2amU:'FLGISA',fld7W7JS6XPIZLoMp:'AIKioskv3 copy copy',fld6ejAJTGpRuztwp:'AIKioskv3 copy copy copy',fldJ4mNylPdtD8u14:'AIKioskv3 copy copy copy copy',fldjLx8XrIxda4FcV:'USA 250 Scene 1',fldoj4Im2cUcxua5D:'USA 250 Scene 2',fld2p2xcD1atuV7CM:'USA 250 Scene 3'};
 let exp=getExpFromParam();
 function norm(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'')}
 function getExpFromParam(){const raw=String(p.get('experience')||p.get('event')||'').toLowerCase();for(const e of Object.values(root.experiences)){if(e.id===raw||(e.aliases||[]).map(a=>String(a).toLowerCase()).includes(raw))return e}return null}
