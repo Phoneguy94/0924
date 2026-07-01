@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>VXP Overlay Engine</title>
+  <link rel="stylesheet" href="overlay.css" />
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">Veytec Experience Platform</div>
+      <h1>VXP <span>Overlay Engine</span></h1>
+      <p class="subhead">Turn every AI-generated image into a premium, named event collectible without regenerating AI.</p>
+    </section>
+
+    <section class="workspace">
+      <aside class="panel controls-panel">
+        <div class="panel-title">Create Collectible</div>
+
+        <label>
+          Guest Name
+          <input id="nameInput" type="text" value="Anthony Cotignola" autocomplete="off" />
+        </label>
+
+        <label>
+          Experience
+          <select id="eventInput">
+            <option value="usa250">USA250 · Liberty Celebration</option>
+            <option value="webexone">WebexOne · Drone Show</option>
+            <option value="flgisa">FLGISA · Florida Hero</option>
+            <option value="mlb">MLB · Game Day</option>
+            <option value="nba">NBA · All-Star</option>
+          </select>
+        </label>
+
+        <label>
+          Image URL
+          <input id="imageInput" type="url" placeholder="Paste Airtable/generated image URL" />
+        </label>
+
+        <label class="file-picker">
+          Or Upload Test Image
+          <input id="fileInput" type="file" accept="image/*" />
+        </label>
+
+        <div class="button-row">
+          <button id="renderBtn" class="primary">Render Overlay</button>
+          <button id="downloadBtn" class="secondary" disabled>Download</button>
+        </div>
+
+        <div class="hint">
+          URL params supported:<br />
+          <code>?event=usa250&amp;name=Anthony&amp;image=https://...</code>
+        </div>
+      </aside>
+
+      <section class="preview-wrap">
+        <div class="preview-card">
+          <div class="preview-label">Final Collectible Preview</div>
+          <canvas id="overlayCanvas" width="1080" height="1620" aria-label="Overlay preview"></canvas>
+          <div id="status" class="status">Load an image or use the sample preview.</div>
+        </div>
+      </section>
+
+      <aside class="panel theme-panel">
+        <div class="panel-title">Overlay Style</div>
+        <div id="themeInfo" class="theme-info"></div>
+        <div class="mini-note">
+          The AI artwork stays clean. The name, title, frame, badge, and branding are added after the fact using HTML Canvas.
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="overlay.js"></script>
+</body>
+</html>
