@@ -3,28 +3,32 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>VXP Overlay Engine</title>
+  <title>VXP Overlay Studio</title>
   <link rel="stylesheet" href="overlay.css" />
 </head>
 <body>
-  <main class="shell">
-    <section class="hero">
+  <main class="app">
+    <header class="hero">
       <div class="eyebrow">Veytec Experience Platform</div>
-      <h1>VXP <span>Overlay Engine</span></h1>
-      <p class="subhead">Turn every AI-generated image into a premium, named event collectible without regenerating AI.</p>
-    </section>
+      <h1>VXP <span>Overlay</span> Studio</h1>
+      <p>Premium event frames, names, nicknames, company branding, and downloadable collectibles.</p>
+    </header>
 
-    <section class="workspace">
-      <aside class="panel controls-panel">
+    <section class="grid">
+      <aside class="panel steps">
+        <div class="panel-title">How it works</div>
+        <div class="step"><b>1</b><div><strong>Upload or paste image</strong><span>Use an Airtable image URL or a local test file.</span></div></div>
+        <div class="step"><b>2</b><div><strong>Add details</strong><span>Name, nickname, company, and experience.</span></div></div>
+        <div class="step"><b>3</b><div><strong>Choose style</strong><span>Classic, Deluxe, or Hero collectible.</span></div></div>
+        <div class="step"><b>4</b><div><strong>Download</strong><span>Save the finished JPG for SMS or sharing.</span></div></div>
+      </aside>
+
+      <section class="panel controls">
         <div class="panel-title">Create Collectible</div>
-
-        <label>
-          Guest Name
-          <input id="nameInput" type="text" value="Anthony Cotignola" autocomplete="off" />
-        </label>
-
-        <label>
-          Experience
+        <label>Name <input id="nameInput" value="BILLY" autocomplete="off" /></label>
+        <label>Nickname / Title <input id="nickInput" value="The Closer" autocomplete="off" placeholder="Optional" /></label>
+        <label>Company / Organization <input id="companyInput" value="Target" autocomplete="off" placeholder="Optional" /></label>
+        <label>Experience
           <select id="eventInput">
             <option value="usa250">USA250 · Liberty Celebration</option>
             <option value="webexone">WebexOne · Drone Show</option>
@@ -33,46 +37,46 @@
             <option value="nba">NBA · All-Star</option>
           </select>
         </label>
-
-        <label>
-          Image URL
-          <input id="imageInput" type="url" placeholder="Paste Airtable/generated image URL" />
+        <label>Frame Style
+          <select id="styleInput">
+            <option value="deluxe">Deluxe Collectible</option>
+            <option value="hero">Hero Poster</option>
+            <option value="classic">Classic Nameplate</option>
+          </select>
         </label>
-
-        <label class="file-picker">
-          Or Upload Test Image
-          <input id="fileInput" type="file" accept="image/*" />
-        </label>
-
-        <div class="button-row">
-          <button id="renderBtn" class="primary">Render Overlay</button>
-          <button id="downloadBtn" class="secondary" disabled>Download</button>
+        <label>Image URL <input id="imageInput" type="url" placeholder="Paste Airtable/generated image URL" /></label>
+        <label class="filebox">Upload Test Image <input id="fileInput" type="file" accept="image/*" /></label>
+        <div class="toggles">
+          <label><input id="veytecToggle" type="checkbox" checked /> Veytec</label>
+          <label><input id="webexToggle" type="checkbox" checked /> Webex</label>
+          <label><input id="qrToggle" type="checkbox" /> QR Placeholder</label>
         </div>
-
-        <div class="hint">
-          URL params supported:<br />
-          <code>?event=usa250&amp;name=Anthony&amp;image=https://...</code>
-        </div>
-      </aside>
-
-      <section class="preview-wrap">
-        <div class="preview-card">
-          <div class="preview-label">Final Collectible Preview</div>
-          <canvas id="overlayCanvas" width="1080" height="1620" aria-label="Overlay preview"></canvas>
-          <div id="status" class="status">Load an image or use the sample preview.</div>
-        </div>
+        <button id="renderBtn" class="primary">Generate Overlay</button>
+        <button id="downloadBtn" class="secondary" disabled>Download Image</button>
+        <div class="hint">URL params: <code>?event=usa250&amp;name=Billy&amp;nick=The+Closer&amp;company=Target&amp;style=deluxe&amp;image=https://...</code></div>
       </section>
 
-      <aside class="panel theme-panel">
+      <section class="preview">
+        <div class="preview-head">Final Collectible Preview</div>
+        <canvas id="overlayCanvas" width="1080" height="1620"></canvas>
+        <div id="status" class="status">Ready.</div>
+      </section>
+
+      <aside class="panel style-panel">
         <div class="panel-title">Overlay Style</div>
-        <div id="themeInfo" class="theme-info"></div>
-        <div class="mini-note">
-          The AI artwork stays clean. The name, title, frame, badge, and branding are added after the fact using HTML Canvas.
+        <div id="themeInfo"></div>
+        <div class="includes">
+          <b>Includes</b>
+          <span>✓ Premium frame</span>
+          <span>✓ Guest name</span>
+          <span>✓ Nickname/title</span>
+          <span>✓ Company</span>
+          <span>✓ Event branding</span>
+          <span>✓ Download JPG</span>
         </div>
       </aside>
     </section>
   </main>
-
   <script src="overlay.js"></script>
 </body>
 </html>
