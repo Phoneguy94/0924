@@ -53,55 +53,6 @@
   .entry .qr .cap{ font-family:"Georgia",serif; font-style:italic; color:var(--ink); font-size:1.6vh; text-align:center; line-height:1.2; }
   .entry .qr.empty{ display:none; }
 
-  /* WebexOne target layout: three premium cards together. QR floats separately, only when focused. */
-  .entry.webex{ gap:2.1vw; }
-  .entry.webex .card{
-    height:56vh; aspect-ratio:660 / 950; padding:1.15vh 1.15vh 2.3vh;
-    border-radius:14px; display:flex; flex-direction:column; background:var(--chalk);
-  }
-  .entry.webex .card .photo{ height:auto; flex:1 1 auto; min-height:0; border-radius:8px; }
-  .entry.webex .caption{
-    color:#111b2c; font-family:"Georgia","Times New Roman",serif; font-weight:900; font-style:italic;
-    font-size:2vh; letter-spacing:.02em; text-align:center; padding:1.1vh .4vh .2vh;
-    white-space:nowrap;
-  }
-  .entry.webex .caption::before,.entry.webex .caption::after{ content:"●"; color:#D45A13; font-family:system-ui,sans-serif; font-style:normal; font-size:1.5vh; margin:0 .7vh; }
-  .entry.webex .qr{ display:none; }
-
-  /* WebexOne-only floating QR. Does not affect MLB/NBA/FLGISA layout. */
-  .webex-floating-qr{
-    position:absolute;
-    right:1.5vw;
-    bottom:3.8vh;
-    width:11.5vh;
-    background:var(--chalk);
-    border-radius:10px;
-    padding:.7vh;
-    box-shadow:0 14px 30px rgba(0,0,0,.45);
-    display:none;
-    flex-direction:column;
-    align-items:center;
-    gap:.35vh;
-    z-index:55;
-    pointer-events:none;
-  }
-  .webex-floating-qr.show{ display:flex; }
-  .webex-floating-qr img{
-    width:100%;
-    aspect-ratio:1/1;
-    object-fit:contain;
-    background:#fff;
-    border-radius:6px;
-  }
-  .webex-floating-qr .cap{
-    color:var(--ink);
-    font-family:"Georgia","Times New Roman",serif;
-    font-style:italic;
-    font-size:1.05vh;
-    line-height:1;
-    white-space:nowrap;
-  }
-
   .entry.focus{ z-index:10; }
   .entry.side{ filter:grayscale(.85) brightness(.58); z-index:5; }
   .entry.far{ filter:grayscale(1) brightness(.42); z-index:2; }
@@ -118,94 +69,20 @@
   .msg .big{ font-family:"Georgia",serif; font-style:italic; font-size:3.4vh; color:var(--chalk); }
   .hidden{ display:none !important; }
 
-
-  /* ============================================================
-     MOBILE FIX ONLY
-     These rules apply only on narrow/touch screens. Desktop/tablet
-     landscape keeps the original computer layout above.
-     ============================================================ */
   @media (max-width: 700px), (max-height: 520px) and (orientation: landscape){
-    html,body{
-      width:100%;
-      min-height:100%;
-      overflow:hidden;
-      position:fixed;
-      inset:0;
-      overscroll-behavior:none;
-      -webkit-text-size-adjust:100%;
-    }
-    body{
-      height:100svh;
-      min-height:100svh;
-    }
-    header{
-      padding:1.25svh 4vw .55svh;
-    }
-    .eyebrow{
-      font-size:1.15svh;
-      letter-spacing:.26em;
-      margin-bottom:.35svh;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    h1{
-      font-size:2.65svh;
-      line-height:1.05;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width:94vw;
-      margin:0 auto;
-    }
-    .controls{
-      gap:2vw;
-      margin-top:.7svh;
-    }
-    .controls select,
-    .controls .toggle{
-      font-size:1.25svh;
-      padding:.55svh 2vw;
-      max-width:46vw;
-    }
-    .stage{
-      min-height:0;
-      width:100vw;
-      overflow:hidden;
-      align-items:center;
-      justify-content:center;
-    }
-    .track{
-      inset:0;
-      overflow:hidden;
-    }
-    .entry{
-      gap:0;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      max-width:100vw;
-      max-height:100%;
-    }
-    .entry .card{
-      height:auto;
-      width:min(74vw, 39svh);
-      max-height:58svh;
-      aspect-ratio:864 / 1320;
-      padding:.75svh;
-      border-radius:12px;
-      box-shadow:0 14px 28px rgba(0,0,0,.48);
-    }
-    .entry .card .photo{
-      border-radius:8px;
-    }
-
-    /* Mobile single-card QR:
-       Keep the card centered and place a small QR at the bottom-right of the image/card area.
-       WebexOne still uses the separate floating QR below. */
-    .entry.single{
-      position:absolute;
-    }
+    html,body{ width:100%; min-height:100%; overflow:hidden; position:fixed; inset:0; overscroll-behavior:none; -webkit-text-size-adjust:100%; }
+    body{ height:100svh; min-height:100svh; }
+    header{ padding:1.25svh 4vw .55svh; }
+    .eyebrow{ font-size:1.15svh; letter-spacing:.26em; margin-bottom:.35svh; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    h1{ font-size:2.65svh; line-height:1.05; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:94vw; margin:0 auto; }
+    .controls{ gap:2vw; margin-top:.7svh; }
+    .controls select,.controls .toggle{ font-size:1.25svh; padding:.55svh 2vw; max-width:46vw; }
+    .stage{ min-height:0; width:100vw; overflow:hidden; align-items:center; justify-content:center; }
+    .track{ inset:0; overflow:hidden; }
+    .entry{ gap:0; flex-direction:column; align-items:center; justify-content:center; max-width:100vw; max-height:100%; }
+    .entry .card{ height:auto; width:min(74vw, 39svh); max-height:58svh; aspect-ratio:864 / 1320; padding:.75svh; border-radius:12px; box-shadow:0 14px 28px rgba(0,0,0,.48); }
+    .entry .card .photo{ border-radius:8px; }
+    .entry.single{ position:absolute; }
     .entry.single .qr{
       position:absolute;
       right:calc(50% - min(74vw, 39svh) / 2 + .7svh);
@@ -219,92 +96,19 @@
       z-index:25;
       box-shadow:0 10px 22px rgba(0,0,0,.48);
     }
-    .entry.single.focus .qr{
-      width:min(24vw, 9.5svh);
-      opacity:1;
-    }
-    .entry.single .qr .cap{
-      font-size:.75svh;
-      line-height:1;
-      white-space:nowrap;
-    }
-
-    .entry .qr .cap{
-      font-size:1.1svh;
-      line-height:1.05;
-      white-space:nowrap;
-    }
-    .entry.side,
-    .entry.far{
-      pointer-events:none;
-    }
-    .entry.webex{
-      gap:1svh;
-      width:100vw;
-      max-height:100%;
-    }
-    .entry.webex .card{
-      width:min(78vw, 42svh);
-      height:auto;
-      max-height:26svh;
-      aspect-ratio:660 / 950;
-      padding:.7svh .7svh 1.25svh;
-      border-radius:11px;
-    }
-    .entry.webex .caption{
-      font-size:1.35svh;
-      padding:.6svh .25svh 0;
-      max-width:100%;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .entry.webex .caption::before,
-    .entry.webex .caption::after{
-      font-size:1svh;
-      margin:0 .35svh;
-    }
-    .webex-floating-qr{
-      right:3vw;
-      bottom:6.5svh;
-      width:min(26vw, 10.5svh);
-      padding:.55svh;
-      border-radius:8px;
-    }
-    .webex-floating-qr .cap{
-      font-size:.9svh;
-    }
-    .nav{
-      width:4.8svh;
-      height:4.8svh;
-      font-size:2.8svh;
-      background:rgba(0,0,0,.28);
-    }
+    .entry.single.focus .qr{ width:min(24vw, 9.5svh); opacity:1; }
+    .entry.single .qr .cap{ font-size:.75svh; line-height:1; white-space:nowrap; }
+    .entry .qr .cap{ font-size:1.1svh; line-height:1.05; white-space:nowrap; }
+    .entry.side,.entry.far{ pointer-events:none; }
+    .nav{ width:4.8svh; height:4.8svh; font-size:2.8svh; background:rgba(0,0,0,.28); }
     .nav.prev{ left:2.2vw; }
     .nav.next{ right:2.2vw; }
-    footer{
-      padding:.55svh 3vw 1.1svh;
-      gap:2.2vw;
-    }
-    .dots{
-      max-width:64vw;
-      gap:.55svh;
-    }
-    .dots i{
-      width:.85svh;
-      height:.85svh;
-    }
-    .brand{
-      font-size:1.05svh;
-      letter-spacing:.18em;
-      white-space:nowrap;
-    }
-    .msg{
-      font-size:1.65svh;
-      padding:0 9vw;
-    }
-    .msg .big{
-      font-size:2.7svh;
-    }
+    footer{ padding:.55svh 3vw 1.1svh; gap:2.2vw; }
+    .dots{ max-width:64vw; gap:.55svh; }
+    .dots i{ width:.85svh; height:.85svh; }
+    .brand{ font-size:1.05svh; letter-spacing:.18em; white-space:nowrap; }
+    .msg{ font-size:1.65svh; padding:0 9vw; }
+    .msg .big{ font-size:2.7svh; }
   }
 
   @media (max-width: 380px){
@@ -315,7 +119,6 @@
       bottom:calc(50% - 54svh / 2 + .75svh);
       width:min(22vw, 8.5svh);
     }
-    .entry.webex .card{ width:min(74vw, 38svh); max-height:24.5svh; }
     h1{ font-size:2.45svh; }
   }
 
@@ -336,7 +139,6 @@
     <div class="nav prev hidden" id="prev">‹</div>
     <div class="track" id="track"></div>
     <div class="nav next hidden" id="next">›</div>
-    <div class="webex-floating-qr" id="webexFloatQr"></div>
     <div class="msg" id="loading"><div class="big">Loading…</div><div>Fetching the latest demo images</div></div>
     <div class="msg hidden" id="empty"><div class="big">No entries yet</div><div>No populated image fields found for this event</div></div>
   </div>
@@ -347,68 +149,63 @@
   </footer>
 
 <script>
-/* ============================================================
-   DEMO MODE: field-driven routing.
-   The Event field / EventName is ignored.
-
-   If a specific image attachment field is populated, that record
-   belongs to that event wall.
-
-   Examples:
-   - MLB image in MLB column       -> MLB wall
-   - NBA image in NBA_Card column  -> NBA wall
-   - FLGISA image in FLGISA column -> FLGISA wall
-   - WebexOne images in Webex cols -> WebexOne wall
-   ============================================================ */
 const BASE_ID  = "appSxuH0GH10rxd5y";
 const TABLE_ID = "tblI7llQH93Xkin3O";
 const QR_FIELD = "fld2Ehe0YS7e6W6jm";
 
 const F = {
   MLB:        "fldvQvP6xGTCpB71A",
-  WebexOne_1: "fld7W7JS6XPIZLoMp",
-  WebexOne_2: "fld6ejAJTGpRuztwp",
-  WebexOne_3: "fldJ4mNylPdtD8u14",
-  NBA_Card:   "fldUDkaG8rZwL4Dk4",
-
-  // FLGISA / Florida Man attachment field
-  FLGISA:     "fldgormjiaZzb2amU"
+  WebexOne:  "fld7W7JS6XPIZLoMp",
+  NBA_Card:  "fldUDkaG8rZwL4Dk4",
+  FLGISA:    "fldgormjiaZzb2amU",
+  USA250:    "fldoj4Im2cUcxua5D"
 };
 
 const EVENTS = {
   MLB: {
-    label:"MLB", accent:"#2E86DE", bg:"https://phoneguy94.github.io/0924/VXP/assets/backgrounds/mlb.png", type:"single",
+    label:"MLB",
+    accent:"#2E86DE",
+    bg:"https://phoneguy94.github.io/0924/VXP/assets/backgrounds/mlb.png",
+    type:"single",
     fields:[F.MLB]
   },
   NBA: {
-    label:"NBA", accent:"#C8102E", bg:"https://phoneguy94.github.io/0924/VXP/assets/backgrounds/nba.png", type:"single",
+    label:"NBA",
+    accent:"#C8102E",
+    bg:"https://phoneguy94.github.io/0924/VXP/assets/backgrounds/nba.png",
+    type:"single",
     fields:[F.NBA_Card]
   },
   FLGISA: {
-    label:"FLGISA Florida Man", accent:"#2ECC71", bg:"https://phoneguy94.github.io/0924/VXP/assets/backgrounds/flgisa.png", type:"single",
+    label:"FLGISA Florida Hero",
+    accent:"#2ECC71",
+    bg:"https://phoneguy94.github.io/0924/VXP/assets/backgrounds/flgisa.png",
+    type:"single",
     fields:[F.FLGISA]
   },
-WebexOne: {
-  label:"WebexOne Austin 2026",
-  accent:"#FFD400",
-  bg:"https://phoneguy94.github.io/0924/VXP/assets/backgrounds/webexone.png",
-  type:"webex3",
-  fields:[F.WebexOne_1, F.WebexOne_2, F.WebexOne_3],
-  captions:["Drone Show Activated", "DJ Set In-Progress", "Showtime"]
-}
+  WebexOne: {
+    label:"WebexOne Austin 2026",
+    accent:"#FFD400",
+    bg:"https://phoneguy94.github.io/0924/VXP/assets/backgrounds/webexone.png",
+    type:"single",
+    fields:[F.WebexOne]
+  },
+  USA250: {
+    label:"USA250",
+    accent:"#B23A48",
+    bg:"https://phoneguy94.github.io/0924/VXP/assets/backgrounds/usa250.png",
+    type:"single",
+    fields:[F.USA250]
+  }
 };
 
 const ROTATE_MS = 10000;
-
-// Live wall behavior:
-// - Only render the newest 20 finished entries.
-// - Re-check Airtable every 5 seconds so new images appear ASAP.
-const MAX_WALL_ENTRIES = 20;
+const MAX_WALL_ENTRIES = 30;
 const REFRESH_MS = 30000;
-
 const MASTER_EVENT_MS = 20000;
+
+/* PASTE YOUR READ-ONLY AIRTABLE TOKEN HERE */
 const AIRTABLE_TOKEN = "patYsJQ4hhojOhYuk.a0839f88a7ae231ce3bf1db6816c451efd8cc6dc7a313a99d4216dc1e557336e";
-/* ============================================================ */
 
 const params = new URLSearchParams(location.search);
 const rawEvent = (params.get("event") || "ALL").trim();
@@ -422,7 +219,6 @@ const loadingEl = document.getElementById("loading");
 const emptyEl = document.getElementById("empty");
 const prevBtn = document.getElementById("prev");
 const nextBtn = document.getElementById("next");
-const webexFloatQr = document.getElementById("webexFloatQr");
 const controls = document.getElementById("controls");
 const eventSel = document.getElementById("eventSelect");
 const rotToggle = document.getElementById("rotateToggle");
@@ -439,21 +235,22 @@ function normalizeEvent(value){
   if(!v || v === "all") return "ALL";
   if(v.includes("flgisa") || v.includes("florida") || v.includes("gisa")) return "FLGISA";
   if(v.includes("webex")) return "WebexOne";
+  if(v.includes("usa250") || v.includes("usa") || v.includes("america250") || v.includes("july4") || v.includes("fourth")) return "USA250";
   if(v.includes("nba") || v.includes("basketball") || v.includes("magic")) return "NBA";
   if(v.includes("mlb") || v.includes("baseball") || v.includes("pirates") || v.includes("pittsburgh")) return "MLB";
   return "ALL";
 }
+
 function esc(s){ return String(s || "").replace(/[&<>'"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c])); }
 function attUrl(a){ return (a && a.thumbnails && a.thumbnails.large && a.thumbnails.large.url) || (a && a.url) || ""; }
+
 function newestAttachmentUrl(fieldValue){
   if(!Array.isArray(fieldValue) || !fieldValue.length) return "";
   return attUrl(fieldValue[fieldValue.length - 1]);
 }
-function firstAttachmentUrl(fieldValue){
-  if(!Array.isArray(fieldValue) || !fieldValue.length) return "";
-  return attUrl(fieldValue[0]);
-}
+
 function themeFor(key){ return key === "ALL" ? {label:"All Events", accent:"#2E86DE", bg:""} : EVENTS[key]; }
+
 function applyTheme(key){
   const c = themeFor(key) || themeFor("ALL");
   document.documentElement.style.setProperty("--accent", c.accent);
@@ -466,13 +263,6 @@ function entryFromRecord(rec, eventKey){
   const cfg = EVENTS[eventKey];
   const f = rec.fields || {};
   const qr = typeof f[QR_FIELD] === "string" ? f[QR_FIELD] : "";
-
-  if(cfg.type === "webex3"){
-    const imgs = cfg.fields.map(fid => firstAttachmentUrl(f[fid])).filter(Boolean);
-    if(!imgs.length) return null;
-    return { eventKey, layout:"webex", imgs, captions:cfg.captions, qr, createdTime:rec.createdTime };
-  }
-
   const img = newestAttachmentUrl(f[cfg.fields[0]]);
   if(!img) return null;
   return { eventKey, layout:"single", imgs:[img], captions:[], qr, createdTime:rec.createdTime };
@@ -493,9 +283,10 @@ function entriesForRecord(rec){
 
 async function fetchPeople(){
   try{
-    if(!AIRTABLE_TOKEN || AIRTABLE_TOKEN.includes("PASTE_READ_ONLY")){
+    if(!AIRTABLE_TOKEN || AIRTABLE_TOKEN.includes("PASTE_YOUR")){
       throw new Error("Missing Airtable token. Paste your read-only PAT into AIRTABLE_TOKEN.");
     }
+
     let records = [], offset = null;
     do{
       const url = API + (offset ? `&offset=${encodeURIComponent(offset)}` : "");
@@ -510,11 +301,12 @@ async function fetchPeople(){
     const out = [];
     for(const rec of records) out.push(...entriesForRecord(rec));
 
-    // Keep the wall light: newest completed image entries only.
-    // In ALL mode, one record can create multiple entries, so sort/slice after expanding.
     out.sort((a,b)=> new Date(b.createdTime) - new Date(a.createdTime));
     return out.slice(0, MAX_WALL_ENTRIES);
-  }catch(e){ console.error(e); return { error:e.message || String(e) }; }
+  }catch(e){
+    console.error(e);
+    return { error:e.message || String(e) };
+  }
 }
 
 function singleEntryHTML(p){
@@ -522,24 +314,8 @@ function singleEntryHTML(p){
   const qr = p.qr ? `<div class="qr"><img src="${esc(p.qr)}" alt="QR" loading="lazy" decoding="async"><div class="cap">Scan to claim your image</div></div>` : `<div class="qr empty"></div>`;
   return cards + qr;
 }
-function webexEntryHTML(p){
-  return p.imgs.map((u,i)=>{
-    const cap = p.captions[i] || "WebexOne Experience";
-    return `<div class="card"><img class="photo" src="${esc(u)}" alt="" loading="lazy" decoding="async"><div class="caption">${esc(cap)}</div></div>`;
-  }).join("");
-}
-function entryHTML(p){ return p.layout === "webex" ? webexEntryHTML(p) : singleEntryHTML(p); }
 
-function updateWebexFloatingQr(){
-  const p = people[cur];
-  if(p && p.layout === "webex" && p.qr){
-    webexFloatQr.innerHTML = `<img src="${esc(p.qr)}" alt="QR"><div class="cap">Scan to claim</div>`;
-    webexFloatQr.classList.add("show");
-  } else {
-    webexFloatQr.classList.remove("show");
-    webexFloatQr.innerHTML = "";
-  }
-}
+function entryHTML(p){ return singleEntryHTML(p); }
 
 function isMobileWall(){
   return window.matchMedia("(max-width: 700px), (max-height: 520px) and (orientation: landscape)").matches;
@@ -549,47 +325,93 @@ function layout(){
   const nodes = [...trackEl.children];
   const n = people.length;
   const mobile = isMobileWall();
+
   nodes.forEach((node,i)=>{
     let d = i - cur;
-    if(n > 2){ if(d > n/2) d -= n; if(d < -n/2) d += n; }
+    if(n > 2){
+      if(d > n/2) d -= n;
+      if(d < -n/2) d += n;
+    }
+
     const ad = Math.abs(d);
     node.classList.remove("focus","side","far");
     if(d===0) node.classList.add("focus");
     else if(ad===1) node.classList.add("side");
     else node.classList.add("far");
-    const isWebex = node.classList.contains("webex");
 
-    // Desktop/computer math is unchanged.
-    // Mobile uses its own smaller spacing so the hero card and QR stay on-screen.
-    const x = mobile ? (d * 96) : (isWebex ? d * 31 : d * 27);
+    const x = mobile ? (d * 96) : (d * 27);
     const scale = mobile
       ? (d===0 ? 1 : (ad===1 ? .30 : .18))
-      : (isWebex
-        ? (d===0 ? .98 : (ad===1 ? .50 : .32))
-        : (d===0 ? 1.12 : (ad===1 ? .58 : .38)));
+      : (d===0 ? 1.12 : (ad===1 ? .58 : .38));
 
     node.style.transform = `translate(-50%,-50%) translateX(${x}vw) scale(${scale})`;
     node.style.opacity = mobile ? (ad>1 ? 0 : (d===0 ? 1 : .22)) : (ad>2 ? 0 : 1);
   });
+
   [...dotsBox.children].forEach((dot,i)=>dot.classList.toggle("on", i===cur));
-  updateWebexFloatingQr();
 }
+
 function renderAll(){
-  trackEl.innerHTML = people.map(p=>`<div class="entry ${p.layout === "webex" ? "webex" : "single"}">${entryHTML(p)}</div>`).join("");
-  [...trackEl.children].forEach((node,i)=> node.addEventListener("click", ()=>{ if(i!==cur){ cur=i; layout(); restartRotation(); }}));
+  trackEl.innerHTML = people.map(p=>`<div class="entry single">${entryHTML(p)}</div>`).join("");
+  [...trackEl.children].forEach((node,i)=> node.addEventListener("click", ()=>{
+    if(i!==cur){
+      cur=i;
+      layout();
+      restartRotation();
+    }
+  }));
   layout();
 }
-function buildDots(){ dotsBox.innerHTML=""; people.forEach(()=>dotsBox.appendChild(document.createElement("i"))); }
-function advance(){ if(people.length<=1) return; cur=(cur+1)%people.length; layout(); }
-function go(dir){ if(people.length<=1) return; const n=people.length; cur=(cur+dir+n)%n; layout(); restartRotation(); }
-function restartRotation(){ clearInterval(rotateTimer); if(people.length>1) rotateTimer=setInterval(advance, ROTATE_MS); }
 
-document.addEventListener("keydown",(e)=>{ if(e.key==="ArrowRight"){ go(1); e.preventDefault(); } else if(e.key==="ArrowLeft"){ go(-1); e.preventDefault(); }});
+function buildDots(){
+  dotsBox.innerHTML="";
+  people.forEach(()=>dotsBox.appendChild(document.createElement("i")));
+}
+
+function advance(){
+  if(people.length<=1) return;
+  cur=(cur+1)%people.length;
+  layout();
+}
+
+function go(dir){
+  if(people.length<=1) return;
+  const n=people.length;
+  cur=(cur+dir+n)%n;
+  layout();
+  restartRotation();
+}
+
+function restartRotation(){
+  clearInterval(rotateTimer);
+  if(people.length>1) rotateTimer=setInterval(advance, ROTATE_MS);
+}
+
+document.addEventListener("keydown",(e)=>{
+  if(e.key==="ArrowRight"){ go(1); e.preventDefault(); }
+  else if(e.key==="ArrowLeft"){ go(-1); e.preventDefault(); }
+});
+
 (function(){
-  const stage=document.getElementById("stage"); let x0=null,y0=null; const T=40;
-  stage.addEventListener("touchstart",(e)=>{const t=e.changedTouches[0];x0=t.clientX;y0=t.clientY;},{passive:true});
-  stage.addEventListener("touchend",(e)=>{ if(x0===null)return; const t=e.changedTouches[0]; const dx=t.clientX-x0, dy=t.clientY-y0; if(Math.abs(dx)>T && Math.abs(dx)>Math.abs(dy)) go(dx<0?1:-1); x0=y0=null; },{passive:true});
+  const stage=document.getElementById("stage");
+  let x0=null,y0=null;
+  const T=40;
+
+  stage.addEventListener("touchstart",(e)=>{
+    const t=e.changedTouches[0];
+    x0=t.clientX;
+    y0=t.clientY;
+  },{passive:true});
+
+  stage.addEventListener("touchend",(e)=>{
+    if(x0===null)return;
+    const t=e.changedTouches[0];
+    const dx=t.clientX-x0, dy=t.clientY-y0;
+    if(Math.abs(dx)>T && Math.abs(dx)>Math.abs(dy)) go(dx<0?1:-1);
+    x0=y0=null;
+  },{passive:true});
 })();
+
 prevBtn.addEventListener("click",()=>go(-1));
 nextBtn.addEventListener("click",()=>go(1));
 window.addEventListener("resize", layout);
@@ -598,11 +420,11 @@ window.addEventListener("orientationchange", ()=>setTimeout(layout, 250));
 function showStage(){
   loadingEl.classList.add("hidden");
   emptyEl.classList.toggle("hidden", people.length>0);
-  if(!people.length) updateWebexFloatingQr();
   const many = people.length>1;
   prevBtn.classList.toggle("hidden", !many);
   nextBtn.classList.toggle("hidden", !many);
 }
+
 function entryKey(p){
   return p ? `${p.eventKey}|${p.createdTime}|${(p.imgs || []).join("|")}` : "";
 }
@@ -616,6 +438,7 @@ async function load(initial){
   const oldSig = peopleSignature(people);
 
   const next = await fetchPeople();
+
   if(next && next.error){
     if(initial) loadingEl.innerHTML = `<div class="big">Can’t reach Airtable</div><div>${esc(next.error)}</div>`;
     return;
@@ -625,7 +448,6 @@ async function load(initial){
   const newTop = entryKey(nextPeople[0]);
   const newSig = peopleSignature(nextPeople);
 
-  // Check Airtable often, but do not rebuild/restart rotation if nothing changed.
   if(!initial && newSig === oldSig){
     showStage();
     return;
@@ -633,7 +455,6 @@ async function load(initial){
 
   people = nextPeople;
 
-  // If a brand-new image appears, jump the wall to it immediately.
   if(initial || (newTop && newTop !== oldTop)) cur = 0;
   else if(cur >= people.length) cur = 0;
 
@@ -642,23 +463,41 @@ async function load(initial){
   restartRotation();
   showStage();
 }
+
 function setupMaster(){
   controls.classList.remove("hidden");
   const keys = Object.keys(EVENTS);
   eventSel.innerHTML = [`<option value="ALL">All Events</option>`].concat(keys.map(k=>`<option value="${k}">${EVENTS[k].label}</option>`)).join("");
   eventSel.value = currentEvent;
-  eventSel.addEventListener("change",()=>{ currentEvent = eventSel.value; applyTheme(currentEvent); cur=0; loadingEl.classList.remove("hidden"); load(false); });
+
+  eventSel.addEventListener("change",()=>{
+    currentEvent = eventSel.value;
+    applyTheme(currentEvent);
+    cur=0;
+    loadingEl.classList.remove("hidden");
+    load(false);
+  });
+
   rotToggle.addEventListener("click",()=>{
     masterRotateOn = !masterRotateOn;
     rotToggle.classList.toggle("on", masterRotateOn);
-    rotToggle.textContent = `Auto-rotate: ${masterRotateOn?"on":"off"}`;
+    rotToggle.textContent = `Auto-rotate: ${masterRotateOn ? "on" : "off"}`;
     clearInterval(masterTimer);
+
     if(masterRotateOn){
       const order = ["ALL", ...keys];
-      masterTimer = setInterval(()=>{ let i = order.indexOf(currentEvent); currentEvent = order[(i+1)%order.length]; eventSel.value = currentEvent; applyTheme(currentEvent); cur=0; load(false); }, MASTER_EVENT_MS);
+      masterTimer = setInterval(()=>{
+        let i = order.indexOf(currentEvent);
+        currentEvent = order[(i+1)%order.length];
+        eventSel.value = currentEvent;
+        applyTheme(currentEvent);
+        cur=0;
+        load(false);
+      }, MASTER_EVENT_MS);
     }
   });
 }
+
 applyTheme(currentEvent);
 if(isMaster) setupMaster();
 load(true);
