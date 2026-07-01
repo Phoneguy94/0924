@@ -11,15 +11,15 @@
     <header class="hero">
       <div class="eyebrow">Veytec Experience Platform</div>
       <h1>VXP <span>Overlay</span> Studio</h1>
-      <p>Premium event frames, bold names, nicknames, company branding, and downloadable collectibles.</p>
+      <p>Premium VIP passes, hero posters, event badges, and downloadable collectibles.</p>
     </header>
 
     <section class="grid">
       <aside class="panel steps">
         <div class="panel-title">How it works</div>
         <div class="step"><b>1</b><div><strong>Upload or paste image</strong><span>Use an Airtable image URL or a local test file.</span></div></div>
-        <div class="step"><b>2</b><div><strong>Add details</strong><span>Name, nickname, company, and experience.</span></div></div>
-        <div class="step"><b>3</b><div><strong>Choose collectible type</strong><span>Classic, Deluxe, Hero, Graffiti, VIP, Card, or Badge.</span></div></div>
+        <div class="step"><b>2</b><div><strong>Add details</strong><span>Name, nickname, event, and experience.</span></div></div>
+        <div class="step"><b>3</b><div><strong>Choose product</strong><span>VIP Pass, Hero Poster, or Event Badge.</span></div></div>
         <div class="step"><b>4</b><div><strong>Download</strong><span>Save the finished JPG for SMS, email, or the event wall.</span></div></div>
       </aside>
 
@@ -27,7 +27,7 @@
         <div class="panel-title">Create Collectible</div>
         <label>Name <input id="nameInput" value="BILLY" autocomplete="off" /></label>
         <label>Nickname / Title <input id="nickInput" value="The Closer" autocomplete="off" placeholder="Optional" /></label>
-        <label>Company / Organization <input id="companyInput" value="Target" autocomplete="off" placeholder="Optional" /></label>
+        <label class="hidden-field">Company / Organization <input id="companyInput" value="" autocomplete="off" placeholder="Optional" /></label>
         <label>Experience
           <select id="eventInput">
             <option value="usa250">USA250 · Liberty Celebration</option>
@@ -37,15 +37,18 @@
             <option value="nba">NBA · All-Star</option>
           </select>
         </label>
-        <label>Collectible Type
+        <label>Collectible Product
           <select id="styleInput">
-            <option value="deluxe">Deluxe Collectible</option>
-            <option value="hero">Hero Poster</option>
-            <option value="graffiti">Graffiti / Bubble Name</option>
             <option value="vip">VIP Pass</option>
-            <option value="card">Trading Card</option>
+            <option value="hero">Hero Poster</option>
             <option value="badge">Event Badge</option>
-            <option value="classic">Classic Nameplate</option>
+          </select>
+        </label>
+        <label>Border Style
+          <select id="borderInput">
+            <option value="clean">Clean</option>
+            <option value="premium">Premium</option>
+            <option value="none">None</option>
           </select>
         </label>
         <label>Image URL <input id="imageInput" type="url" placeholder="Paste Airtable/generated image URL" /></label>
@@ -57,7 +60,7 @@
         </div>
         <button id="renderBtn" class="primary">Generate Overlay</button>
         <button id="downloadBtn" class="secondary" disabled>Download Image</button>
-        <div class="hint">URL params: <code>?event=usa250&amp;name=Billy&amp;nick=The+Closer&amp;company=Target&amp;style=graffiti&amp;image=https://...</code></div>
+        <div class="hint">URL params: <code>?event=usa250&amp;name=Billy&amp;nick=The+Closer&amp;style=vip&amp;border=clean&amp;image=https://...</code></div>
       </section>
 
       <section class="preview">
@@ -71,10 +74,10 @@
         <div id="themeInfo"></div>
         <div class="includes">
           <b>Includes</b>
-          <span>✓ Premium frame</span>
-          <span>✓ Guest name</span>
-          <span>✓ Nickname/title</span>
-          <span>✓ Company</span>
+          <span>✓ VIP Pass</span>
+          <span>✓ Hero Poster</span>
+          <span>✓ Event Badge</span>
+          <span>✓ Border options</span>
           <span>✓ Event branding</span>
           <span>✓ Download JPG</span>
         </div>
