@@ -11,7 +11,7 @@
     <header class="hero">
       <div class="eyebrow">Veytec Experience Platform</div>
       <h1>VXP <span>Overlay</span> Studio</h1>
-      <p>Premium event frames, names, nicknames, company branding, and downloadable collectibles.</p>
+      <p>Premium event frames, bold names, nicknames, company branding, and downloadable collectibles.</p>
     </header>
 
     <section class="grid">
@@ -19,8 +19,8 @@
         <div class="panel-title">How it works</div>
         <div class="step"><b>1</b><div><strong>Upload or paste image</strong><span>Use an Airtable image URL or a local test file.</span></div></div>
         <div class="step"><b>2</b><div><strong>Add details</strong><span>Name, nickname, company, and experience.</span></div></div>
-        <div class="step"><b>3</b><div><strong>Choose style</strong><span>Classic, Deluxe, or Hero collectible.</span></div></div>
-        <div class="step"><b>4</b><div><strong>Download</strong><span>Save the finished JPG for SMS or sharing.</span></div></div>
+        <div class="step"><b>3</b><div><strong>Choose collectible type</strong><span>Classic, Deluxe, Hero, Graffiti, VIP, Card, or Badge.</span></div></div>
+        <div class="step"><b>4</b><div><strong>Download</strong><span>Save the finished JPG for SMS, email, or the event wall.</span></div></div>
       </aside>
 
       <section class="panel controls">
@@ -37,10 +37,14 @@
             <option value="nba">NBA · All-Star</option>
           </select>
         </label>
-        <label>Frame Style
+        <label>Collectible Type
           <select id="styleInput">
             <option value="deluxe">Deluxe Collectible</option>
             <option value="hero">Hero Poster</option>
+            <option value="graffiti">Graffiti / Bubble Name</option>
+            <option value="vip">VIP Pass</option>
+            <option value="card">Trading Card</option>
+            <option value="badge">Event Badge</option>
             <option value="classic">Classic Nameplate</option>
           </select>
         </label>
@@ -53,7 +57,7 @@
         </div>
         <button id="renderBtn" class="primary">Generate Overlay</button>
         <button id="downloadBtn" class="secondary" disabled>Download Image</button>
-        <div class="hint">URL params: <code>?event=usa250&amp;name=Billy&amp;nick=The+Closer&amp;company=Target&amp;style=deluxe&amp;image=https://...</code></div>
+        <div class="hint">URL params: <code>?event=usa250&amp;name=Billy&amp;nick=The+Closer&amp;company=Target&amp;style=graffiti&amp;image=https://...</code></div>
       </section>
 
       <section class="preview">
