@@ -19,7 +19,7 @@
         <div class="panel-title">How it works</div>
         <div class="step"><b>1</b><div><strong>Upload or paste image</strong><span>Use an Airtable image URL or a local test file.</span></div></div>
         <div class="step"><b>2</b><div><strong>Add details</strong><span>Name, nickname, event, and experience.</span></div></div>
-        <div class="step"><b>3</b><div><strong>Choose product</strong><span>VIP Pass, Hero Poster, or Event Badge.</span></div></div>
+        <div class="step"><b>3</b><div><strong>Choose product</strong><span>VIP Pass, VIP2, Hero Poster, or Event Badge.</span></div></div>
         <div class="step"><b>4</b><div><strong>Download</strong><span>Save the finished JPG for SMS, email, or the event wall.</span></div></div>
       </aside>
 
@@ -39,6 +39,7 @@
         </label>
         <label>Collectible Product
           <select id="styleInput">
+            <option value="vip2">VIP2 Pass</option>
             <option value="vip">VIP Pass</option>
             <option value="hero">Hero Poster</option>
             <option value="badge">Event Badge</option>
@@ -46,9 +47,9 @@
         </label>
         <label>Border Style
           <select id="borderInput">
-            <option value="clean">Clean</option>
             <option value="premium">Premium</option>
             <option value="none">None</option>
+            <option value="clean">Clean</option>
           </select>
         </label>
         <label>Image URL <input id="imageInput" type="url" placeholder="Paste Airtable/generated image URL" /></label>
@@ -60,7 +61,7 @@
         </div>
         <button id="renderBtn" class="primary">Generate Overlay</button>
         <button id="downloadBtn" class="secondary" disabled>Download Image</button>
-        <div class="hint">URL params: <code>?event=usa250&amp;name=Billy&amp;nick=The+Closer&amp;style=vip&amp;border=clean&amp;image=https://...</code></div>
+        <div class="hint">URL params: <code>?event=usa250&amp;name=Billy&amp;nick=The+Closer&amp;style=vip2&amp;border=premium&amp;image=https://...</code></div>
       </section>
 
       <section class="preview">
@@ -74,11 +75,11 @@
         <div id="themeInfo"></div>
         <div class="includes">
           <b>Includes</b>
+          <span>✓ VIP2 Pass</span>
           <span>✓ VIP Pass</span>
           <span>✓ Hero Poster</span>
           <span>✓ Event Badge</span>
           <span>✓ Border options</span>
-          <span>✓ Event branding</span>
           <span>✓ Download JPG</span>
         </div>
       </aside>
