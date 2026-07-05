@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mini Golf Score Keeper</title>
+  <style>
+    :root {
+      --bg: #0d3b2e;
+      --card: #ffffff;
+      --ink: #10231d;
+      --muted: #5f726b;
+      --green: #1fbf75;
+      --green-dark: #118452;
+      --fairway: #e8fff3;
+      --border: #d6e7dd;
+      --danger: #d94c4c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(31, 191, 117, 0.35), transparent 35%),
+        linear-gradient(145deg, #09251d, var(--bg));
+      color: var(--ink);
+      min-height: 100vh;
+      padding: 18px;
+    }
+
+    .app {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+
+    header {
+      color: white;
+      text-align: center;
+      margin: 8px 0 18px;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 7vw, 4rem);
+      letter-spacing: -1px;
+    }
+
+    header p {
+      margin: 8px 0 0;
+      color: #d7f8e7;
+      font-weight: 600;
+    }
+
+    .card {
+      background: var(--card);
+      border-radius: 22px;
+      padding: 18px;
+      box-shadow: 0 18px 50px rgba(0,0,0,0.22);
+      margin-bottom: 16px;
+    }
+
+    .players {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"], input[type="number"] {
+      width: 100%;
+      border: 2px solid var(--border);
+      border-radius: 14px;
+      padding: 12px;
+      font-size: 1rem;
+      font-weight: 800;
+      outline: none;
+      background: #fbfffd;
+    }
+
+    input:focus {
+      border-color: var(--green);
+      box-shadow: 0 0 0 4px rgba(31,191,117,0.15);
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .hole-control {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 900;
+    }
+
+    button {
+      border: 0;
+      border-radius: 999px;
+      padding: 12px 16px;
+      font-weight: 900;
+      cursor: pointer;
+      background: var(--green);
+      color: white;
+      font-size: 0.95rem;
+    }
+
+    button.secondary { background: #e7f5ee; color: var(--green-dark); }
+    button.danger { background: #ffecec; color: var(--danger); }
+    button:active { transform: scale(0.98); }
+
+    .score-table-wrap {
+      overflow-x: auto;
+      border-radius: 18px;
+      border: 1px solid var(--border);
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+      background: white;
+    }
+
+    th, td {
+      border-bottom: 1px solid var(--border);
+      border-right: 1px solid var(--border);
+      padding: 8px;
+      text-align: center;
+    }
+
+    th {
+      background: var(--fairway);
+      font-size: 0.85rem;
+      color: var(--green-dark);
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    th:first-child, td:first-child {
+      position: sticky;
+      left: 0;
+      background: white;
+      z-index: 2;
+      text-align: left;
+      font-weight: 900;
+      min-width: 130px;
+    }
+
+    th:first-child { background: var(--fairway); z-index: 3; }
+
+    td.total, th.total {
+      background: #10231d;
+      color: white;
+      font-weight: 1000;
+      min-width: 72px;
+    }
+
+    .score-input {
+      width: 48px !important;
+      text-align: center;
+      padding: 8px !important;
+      border-radius: 10px !important;
+      font-size: 1rem !important;
+    }
+
+    .leaderboard {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    .leader {
+      border: 2px solid var(--border);
+      border-radius: 18px;
+      padding: 14px;
+      background: #fbfffd;
+    }
+
+    .leader .place {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .leader .name {
+      font-size: 1.1rem;
+      font-weight: 1000;
+      margin-top: 4px;
+    }
+
+    .leader .score {
+      font-size: 2rem;
+      font-weight: 1000;
+      color: var(--green-dark);
+      line-height: 1;
+      margin-top: 8px;
+    }
+
+    .note {
+      color: var(--muted);
+      font-size: 0.9rem;
+      margin-top: 10px;
+      font-weight: 600;
+    }
+
+    @media (max-width: 760px) {
+      body { padding: 12px; }
+      .players, .leaderboard { grid-template-columns: 1fr 1fr; }
+      .card { padding: 14px; border-radius: 18px; }
+      .controls { align-items: stretch; }
+      .hole-control, .controls > div:last-child { width: 100%; justify-content: center; }
+      button { flex: 1; }
+      h1 { font-size: 2.25rem; }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1>⛳ Mini Golf</h1>
+      <p>4-player score keeper</p>
+    </header>
+
+    <section class="card">
+      <div class="players" id="players"></div>
+      <p class="note">Lowest score wins. Names and scores save on this device automatically.</p>
+    </section>
+
+    <section class="card">
+      <div class="controls">
+        <div class="hole-control">
+          <button class="secondary" onclick="changeHoles(-1)">− Hole</button>
+          <span><span id="holeCount">18</span> Holes</span>
+          <button class="secondary" onclick="changeHoles(1)">+ Hole</button>
+        </div>
+        <div style="display:flex; gap:10px; flex-wrap:wrap;">
+          <button onclick="fillPar()">Fill Empty with 3</button>
+          <button class="danger" onclick="resetGame()">Reset Scores</button>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <div class="leaderboard" id="leaderboard"></div>
+    </section>
+
+    <section class="card">
+      <div class="score-table-wrap">
+        <table id="scoreTable"></table>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const STORAGE_KEY = 'miniGolfScoreKeeper.v1';
+    let state = loadState();
+
+    function defaultState() {
+      return {
+        holes: 18,
+        players: [
+          { name: 'Player 1', scores: Array(18).fill('') },
+          { name: 'Player 2', scores: Array(18).fill('') },
+          { name: 'Player 3', scores: Array(18).fill('') },
+          { name: 'Player 4', scores: Array(18).fill('') }
+        ]
+      };
+    }
+
+    function loadState() {
+      try {
+        const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+        if (saved && saved.players && saved.players.length === 4) return saved;
+      } catch (e) {}
+      return defaultState();
+    }
+
+    function saveState() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function total(player) {
+      return player.scores.reduce((sum, val) => sum + (Number(val) || 0), 0);
+    }
+
+    function renderPlayers() {
+      const box = document.getElementById('players');
+      box.innerHTML = '';
+      state.players.forEach((player, index) => {
+        const wrap = document.createElement('div');
+        wrap.innerHTML = `
+          <label>Player ${index + 1}</label>
+          <input type="text" value="${escapeHtml(player.name)}" oninput="updateName(${index}, this.value)" />
+        `;
+        box.appendChild(wrap);
+      });
+    }
+
+    function renderTable() {
+      document.getElementById('holeCount').textContent = state.holes;
+      const table = document.getElementById('scoreTable');
+      let html = '<thead><tr><th>Player</th>';
+      for (let h = 1; h <= state.holes; h++) html += `<th>${h}</th>`;
+      html += '<th class="total">Total</th></tr></thead><tbody>';
+
+      state.players.forEach((player, pIndex) => {
+        html += `<tr><td>${escapeHtml(player.name)}</td>`;
+        for (let h = 0; h < state.holes; h++) {
+          html += `<td><input class="score-input" type="number" min="1" max="20" inputmode="numeric" value="${player.scores[h] || ''}" onchange="updateScore(${pIndex}, ${h}, this.value)" /></td>`;
+        }
+        html += `<td class="total">${total(player)}</td></tr>`;
+      });
+
+      html += '</tbody>';
+      table.innerHTML = html;
+    }
+
+    function renderLeaderboard() {
+      const board = document.getElementById('leaderboard');
+      const ranked = state.players
+        .map((p, i) => ({ ...p, original: i, total: total(p) }))
+        .sort((a, b) => a.total - b.total);
+
+      board.innerHTML = ranked.map((p, idx) => `
+        <div class="leader">
+          <div class="place">${idx + 1}${suffix(idx + 1)} Place</div>
+          <div class="name">${escapeHtml(p.name)}</div>
+          <div class="score">${p.total}</div>
+        </div>
+      `).join('');
+    }
+
+    function render() {
+      renderPlayers();
+      renderTable();
+      renderLeaderboard();
+    }
+
+    function updateName(index, value) {
+      state.players[index].name = value || `Player ${index + 1}`;
+      saveState();
+      renderTable();
+      renderLeaderboard();
+    }
+
+    function updateScore(playerIndex, holeIndex, value) {
+      const clean = value === '' ? '' : Math.max(1, Math.min(20, Number(value) || 1));
+      state.players[playerIndex].scores[holeIndex] = clean;
+      saveState();
+      renderTable();
+      renderLeaderboard();
+    }
+
+    function changeHoles(delta) {
+      const next = Math.max(1, Math.min(36, state.holes + delta));
+      state.holes = next;
+      state.players.forEach(player => {
+        while (player.scores.length < next) player.scores.push('');
+        player.scores = player.scores.slice(0, next);
+      });
+      saveState();
+      render();
+    }
+
+    function fillPar() {
+      state.players.forEach(player => {
+        for (let i = 0; i < state.holes; i++) {
+          if (player.scores[i] === '') player.scores[i] = 3;
+        }
+      });
+      saveState();
+      renderTable();
+      renderLeaderboard();
+    }
+
+    function resetGame() {
+      if (!confirm('Reset all scores? Player names will stay.')) return;
+      state.players.forEach(player => player.scores = Array(state.holes).fill(''));
+      saveState();
+      renderTable();
+      renderLeaderboard();
+    }
+
+    function suffix(n) {
+      if (n === 1) return 'st';
+      if (n === 2) return 'nd';
+      if (n === 3) return 'rd';
+      return 'th';
+    }
+
+    function escapeHtml(text) {
+      return String(text)
+        .replaceAll('&', '&amp;')
+        .replaceAll('<', '&lt;')
+        .replaceAll('>', '&gt;')
+        .replaceAll('"', '&quot;')
+        .replaceAll("'", '&#039;');
+    }
+
+    render();
+  </script>
+</body>
+</html>
