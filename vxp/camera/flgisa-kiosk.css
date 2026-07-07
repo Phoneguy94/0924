@@ -34,7 +34,7 @@ body.kiosk-flgisa .camera-wrap{
   top:calc(var(--stage-top) + (var(--stage-h) * 0.535));
   transform:translate(-50%,-50%);
   width:calc(var(--stage-w) * 0.405);
-  height:calc(var(--stage-h) * 0.405);
+  height:calc(var(--stage-h) * 0.470);
   max-width:none;
   max-height:none;
   min-width:0;
