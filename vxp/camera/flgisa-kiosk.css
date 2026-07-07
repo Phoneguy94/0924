@@ -1,16 +1,26 @@
 body.kiosk-flgisa{
   --accent:#58F2A6;
+  --stage-w:min(100vw, calc(100vh * 16 / 9));
+  --stage-h:min(100vh, calc(100vw * 9 / 16));
+  --stage-left:calc((100vw - var(--stage-w)) / 2);
+  --stage-top:calc((100vh - var(--stage-h)) / 2);
   width:100vw;
   height:100vh;
   min-height:100vh;
-  background-image:url("https://phoneguy94.github.io/0924/vxp/assets/backgrounds/flgisa-kiosk-main.png")!important;
-  background-size:cover!important;
-  background-position:center center!important;
-  background-repeat:no-repeat!important;
-  background-attachment:fixed!important;
-  background-color:#061326!important;
+  background:#061326!important;
   justify-content:flex-start;
   overflow:hidden;
+}
+
+body.kiosk-flgisa::before{
+  content:"";
+  position:fixed;
+  z-index:-1;
+  left:var(--stage-left);
+  top:var(--stage-top);
+  width:var(--stage-w);
+  height:var(--stage-h);
+  background:url("https://phoneguy94.github.io/0924/vxp/assets/backgrounds/flgisa-kiosk-main.png") center center / 100% 100% no-repeat;
 }
 
 /* The PNG owns the event branding, logos, title, subtitle, skyline, and 50-year badge. */
@@ -22,28 +32,29 @@ body.kiosk-flgisa .watermark{
   display:none!important;
 }
 
-/* Adaptive camera kiosk layout for Desk Pro / laptop.
-   The page background fills the screen; the live preview stays usable and centered. */
+/* Adaptive camera kiosk layout. The full 16:9 artwork remains visible, so Veytec/Webex never crop off-screen. */
 body.kiosk-flgisa .camera-wrap{
   position:fixed;
-  left:50%;
-  top:50%;
+  left:calc(var(--stage-left) + (var(--stage-w) * 0.500));
+  top:calc(var(--stage-top) + (var(--stage-h) * 0.515));
   transform:translate(-50%,-50%);
-  width:clamp(520px,58vw,980px);
-  height:clamp(295px,32.6vw,552px);
-  max-width:82vw;
-  max-height:56vh;
-  aspect-ratio:16/9;
-  border:5px solid rgba(88,242,166,.94);
-  border-radius:32px;
+  width:calc(var(--stage-w) * 0.515);
+  height:calc(var(--stage-h) * 0.335);
+  max-width:none;
+  max-height:none;
+  min-width:0;
+  min-height:0;
+  aspect-ratio:auto;
+  border:calc(var(--stage-w) * 0.0032) solid rgba(88,242,166,.94);
+  border-radius:calc(var(--stage-w) * 0.017);
   background:rgba(3,10,22,.55);
-  box-shadow:0 0 0 1px rgba(255,255,255,.14),0 0 44px rgba(88,242,166,.38),0 24px 90px rgba(0,0,0,.55);
+  box-shadow:0 0 0 1px rgba(255,255,255,.14),0 0 calc(var(--stage-w) * 0.023) rgba(88,242,166,.38),0 calc(var(--stage-w) * 0.012) calc(var(--stage-w) * 0.047) rgba(0,0,0,.55);
 }
 
 body.kiosk-flgisa .button-row{
   position:fixed;
-  left:50%;
-  top:calc(50% + min(32vh,330px));
+  left:calc(var(--stage-left) + (var(--stage-w) * 0.500));
+  top:calc(var(--stage-top) + (var(--stage-h) * 0.865));
   transform:translateX(-50%);
   margin:0;
   width:auto;
@@ -51,47 +62,21 @@ body.kiosk-flgisa .button-row{
 }
 
 body.kiosk-flgisa #takePhoto{
-  font-size:clamp(22px,2.2vw,38px);
+  font-size:clamp(18px, calc(var(--stage-w) * 0.0185), 38px);
   text-transform:uppercase;
   letter-spacing:.04em;
   border-radius:999px;
-  padding:clamp(14px,1.8vh,22px) clamp(34px,4vw,68px);
+  padding:clamp(12px, calc(var(--stage-h) * 0.020), 22px) clamp(30px, calc(var(--stage-w) * 0.040), 68px);
   background:linear-gradient(90deg,#7bf59b,#16c9ff);
-  box-shadow:0 18px 48px rgba(0,0,0,.45);
+  box-shadow:0 calc(var(--stage-h) * 0.017) calc(var(--stage-w) * 0.025) rgba(0,0,0,.45);
   color:#041322;
 }
 
 body.kiosk-flgisa .status{
   position:fixed;
-  left:50%;
-  top:calc(50% + min(25vh,255px));
+  left:calc(var(--stage-left) + (var(--stage-w) * 0.500));
+  top:calc(var(--stage-top) + (var(--stage-h) * 0.785));
   transform:translateX(-50%);
-  width:min(900px,82vw);
-  font-size:clamp(16px,1.5vw,24px);
-}
-
-@media(max-height:760px){
-  body.kiosk-flgisa .camera-wrap{
-    top:49%;
-    width:clamp(420px,52vw,760px);
-    height:clamp(236px,29.25vw,428px);
-    max-height:48vh;
-  }
-  body.kiosk-flgisa .button-row{top:82vh;}
-  body.kiosk-flgisa #takePhoto{
-    font-size:clamp(18px,1.8vw,28px);
-    padding:12px 34px;
-  }
-  body.kiosk-flgisa .status{top:75vh;}
-}
-
-@media(max-width:760px){
-  body.kiosk-flgisa .camera-wrap{
-    width:86vw;
-    height:48.4vw;
-    min-width:0;
-    min-height:0;
-    top:50%;
-  }
-  body.kiosk-flgisa .button-row{top:79vh;}
+  width:calc(var(--stage-w) * 0.62);
+  font-size:clamp(14px, calc(var(--stage-w) * 0.014), 24px);
 }
