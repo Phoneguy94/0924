@@ -1,10 +1,15 @@
 body.kiosk-flgisa{
   --accent:#58F2A6;
-  background:url("https://phoneguy94.github.io/0924/vxp/assets/backgrounds/flgisa-kiosk-main.png") center center / cover no-repeat fixed,#061326!important;
+  background-image:url("https://phoneguy94.github.io/0924/vxp/assets/backgrounds/flgisa-kiosk-main.png")!important;
+  background-size:100vw 100vh!important;
+  background-position:center center!important;
+  background-repeat:no-repeat!important;
+  background-attachment:fixed!important;
+  background-color:#061326!important;
   justify-content:flex-start;
 }
 
-/* The PNG now owns the event branding, logos, title, subtitle, skyline, and 50-year badge. */
+/* The PNG owns the event branding, logos, title, subtitle, skyline, and 50-year badge. */
 body.kiosk-flgisa .mode-row,
 body.kiosk-flgisa #flgisaBrand,
 body.kiosk-flgisa .header,
@@ -16,13 +21,13 @@ body.kiosk-flgisa .watermark{
 body.kiosk-flgisa .camera-wrap{
   position:absolute;
   left:50%;
-  top:45.5%;
+  top:50.5%;
   transform:translate(-50%,-50%);
-  width:min(42vw,760px);
-  height:min(43vh,470px);
+  width:42vw;
+  height:auto;
   max-width:none;
   max-height:none;
-  aspect-ratio:auto;
+  aspect-ratio:16/9;
   border:5px solid rgba(88,242,166,.92);
   border-radius:28px;
   background:rgba(3,10,22,.55);
@@ -32,17 +37,17 @@ body.kiosk-flgisa .camera-wrap{
 body.kiosk-flgisa .button-row{
   position:absolute;
   left:50%;
-  top:82%;
+  top:84.5%;
   transform:translateX(-50%);
   margin:0;
 }
 
 body.kiosk-flgisa #takePhoto{
-  font-size:clamp(28px,2.6vw,44px);
+  font-size:clamp(22px,2.1vw,38px);
   text-transform:uppercase;
   letter-spacing:.04em;
   border-radius:999px;
-  padding:22px 58px;
+  padding:18px 52px;
   background:linear-gradient(90deg,#7bf59b,#16c9ff);
   box-shadow:0 18px 48px rgba(0,0,0,.45);
   color:#041322;
@@ -51,16 +56,28 @@ body.kiosk-flgisa #takePhoto{
 body.kiosk-flgisa .status{
   position:absolute;
   left:50%;
-  top:75%;
+  top:78.5%;
   transform:translateX(-50%);
   width:min(900px,80vw);
 }
 
+/* On non-16:9 browser windows, keep the controls tied to the artwork instead of letting them drift. */
+@media(max-aspect-ratio:16/9){
+  body.kiosk-flgisa{background-size:100vw auto!important;}
+  body.kiosk-flgisa .camera-wrap{width:42vw;top:50.5%;}
+  body.kiosk-flgisa .button-row{top:84.5%;}
+}
+
+@media(min-aspect-ratio:16/9){
+  body.kiosk-flgisa{background-size:auto 100vh!important;}
+  body.kiosk-flgisa .camera-wrap{width:74.7vh;top:50.5%;}
+  body.kiosk-flgisa .button-row{top:84.5%;}
+}
+
 @media(max-width:900px){
   body.kiosk-flgisa .camera-wrap{
-    top:47%;
-    width:84vw;
-    height:48vh;
+    width:58vw;
+    top:51%;
   }
-  body.kiosk-flgisa .button-row{top:84%;}
+  body.kiosk-flgisa .button-row{top:85%;}
 }
