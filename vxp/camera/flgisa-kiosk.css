@@ -1,0 +1,23 @@
+body.kiosk-flgisa{
+  --accent:#58F2A6;
+  background:linear-gradient(rgba(3,10,22,.05),rgba(3,10,22,.18)),url("https://phoneguy94.github.io/0924/vxp/assets/backgrounds/flgisa-tech.svg") center/cover no-repeat fixed,#061326!important;
+  justify-content:flex-start;
+}
+body.kiosk-flgisa .mode-row{display:none!important}
+body.kiosk-flgisa .header{
+  font-size:clamp(42px,4.1vw,74px);
+  line-height:.95;
+  padding-top:54px;
+  max-width:980px;
+  font-weight:900;
+  letter-spacing:.01em;
+  text-shadow:0 6px 22px rgba(0,0,0,.55);
+}
+body.kiosk-flgisa .hero-emphasis{display:block;font-size:1.23em;background:linear-gradient(90deg,#82f59d,#10d8ff);-webkit-background-clip:text;background-clip:text;color:transparent}
+body.kiosk-flgisa .subheader{font-size:clamp(22px,2.1vw,36px);color:#dff9ff;margin:10px 0 20px;text-shadow:0 3px 16px rgba(0,0,0,.55)}
+body.kiosk-flgisa .camera-wrap{max-height:58vh;max-width:42vw;border:5px solid rgba(88,242,166,.94);border-radius:28px;background:rgba(3,10,22,.7);box-shadow:0 0 0 1px rgba(255,255,255,.14),0 0 44px rgba(88,242,166,.42),0 24px 90px rgba(0,0,0,.55)}
+body.kiosk-flgisa #takePhoto{font-size:clamp(28px,2.6vw,44px);text-transform:uppercase;letter-spacing:.04em;border-radius:999px;padding:22px 58px;background:linear-gradient(90deg,#7bf59b,#16c9ff);box-shadow:0 18px 48px rgba(0,0,0,.45);color:#041322}
+body.kiosk-flgisa .watermark{font-size:clamp(15px,1.25vw,22px);opacity:.9;padding-bottom:18px}
+.flgisa-brand-row{display:flex;position:absolute;top:26px;left:44px;right:44px;z-index:3;align-items:center;justify-content:space-between;pointer-events:none}.flgisa-brand{font-weight:900;letter-spacing:.04em;text-transform:uppercase;text-shadow:0 4px 18px rgba(0,0,0,.6)}.flgisa-brand.veytec{font-size:clamp(32px,3.4vw,60px);font-style:italic}.flgisa-brand.webex{font-size:clamp(28px,3vw,52px);text-transform:none}.flgisa-brand small{display:block;font-size:.28em;letter-spacing:.15em;font-style:normal;font-weight:700;opacity:.85;margin-top:2px}
+.flgisa-left-card{display:block;position:absolute;left:64px;top:300px;width:330px;text-align:left;background:rgba(4,20,42,.42);border:1px solid rgba(88,242,166,.44);box-shadow:0 0 30px rgba(18,216,255,.14);border-radius:18px;padding:24px;color:#eefcff}.flgisa-left-card .big{font-size:54px;font-weight:900;color:#72ef9b;line-height:.9}.flgisa-left-card .years{font-size:26px;font-weight:800;letter-spacing:.08em}.flgisa-left-card p{font-size:18px;line-height:1.35;opacity:.92;margin:14px 0 0}.flgisa-left-card .flgisa-word{font-size:40px;font-weight:900;letter-spacing:.04em;margin-bottom:18px;background:linear-gradient(90deg,#2176ff,#6df58f);-webkit-background-clip:text;background-clip:text;color:transparent}
+@media(max-width:900px){.flgisa-brand-row{left:18px;right:18px;top:14px}.flgisa-left-card{display:none!important}body.kiosk-flgisa .header{padding-top:82px;font-size:38px}body.kiosk-flgisa .camera-wrap{max-width:84vw;max-height:52vh}.flgisa-brand.veytec,.flgisa-brand.webex{font-size:24px}}
