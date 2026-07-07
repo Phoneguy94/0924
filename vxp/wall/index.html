@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VXP Wall</title>
+<style>
+  :root{
+    --accent:#58F2A6;
+    --stage-w:min(100vw, calc(100vh * 16 / 9));
+    --stage-h:min(100vh, calc(100vw * 9 / 16));
+    --stage-left:calc((100vw - var(--stage-w)) / 2);
+    --stage-top:calc((100vh - var(--stage-h)) / 2);
+    --chalk:#F4F1E8;
+    --ink:#061326;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{width:100%;height:100%;overflow:hidden;background:#061326;font-family:Inter,"Segoe UI",system-ui,sans-serif;color:var(--chalk);user-select:none}
+  body::before{
+    content:"";
+    position:fixed;
+    left:var(--stage-left);
+    top:var(--stage-top);
+    width:var(--stage-w);
+    height:var(--stage-h);
+    background:url("../assets/backgrounds/flgisa-kiosk-main.png") center center / 100% 100% no-repeat;
+    z-index:0;
+    pointer-events:none;
+  }
+  .wall{position:fixed;left:var(--stage-left);top:var(--stage-top);width:var(--stage-w);height:var(--stage-h);overflow:hidden;z-index:1}
+  .track{position:absolute;inset:0}
+  .item{position:absolute;left:50%;top:54.5%;transform-origin:center center;transition:transform .7s cubic-bezier(.22,.61,.36,1),opacity .7s ease,filter .7s ease;display:flex;align-items:center;justify-content:center;will-change:transform,opacity,filter}
+  .card{width:calc(var(--stage-w) * .278);aspect-ratio:864/1320;border-radius:calc(var(--stage-w) * .011);background:#f4f1e8;padding:calc(var(--stage-w) * .006);box-shadow:0 calc(var(--stage-w) * .018) calc(var(--stage-w) * .040) rgba(0,0,0,.58),0 0 calc(var(--stage-w) * .017) rgba(88,242,166,.22);overflow:hidden}
+  .photo{width:100%;height:100%;display:block;object-fit:cover;border-radius:calc(var(--stage-w) * .007);background:#071827}
+  .item.focus{z-index:10;filter:none}.item.side{z-index:5;filter:grayscale(.82) brightness(.58)}.item.far{z-index:2;filter:grayscale(1) brightness(.35)}
+  .nav{position:absolute;top:54.5%;transform:translateY(-50%);z-index:20;width:calc(var(--stage-w) * .04);height:calc(var(--stage-w) * .04);border-radius:50%;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.22);border:1px solid rgba(88,242,166,.22);color:rgba(244,241,232,.8);font-size:calc(var(--stage-w) * .024);cursor:pointer;backdrop-filter:blur(4px)}
+  .nav.prev{left:calc(var(--stage-w) * .035)}.nav.next{right:calc(var(--stage-w) * .035)}.nav.hidden{display:none}
+  .dots{position:absolute;left:50%;bottom:calc(var(--stage-h) * .045);transform:translateX(-50%);display:flex;gap:calc(var(--stage-w) * .005);z-index:12;max-width:55%;flex-wrap:wrap;justify-content:center}
+  .dots i{width:calc(var(--stage-w) * .007);height:calc(var(--stage-w) * .007);border-radius:50%;background:rgba(244,241,232,.22)}.dots i.on{background:var(--accent);transform:scale(1.35)}
+  .badge{position:absolute;right:calc(var(--stage-w) * .055);bottom:calc(var(--stage-h) * .080);z-index:12;font-size:clamp(13px,calc(var(--stage-w) * .011),22px);letter-spacing:.12em;text-transform:uppercase;color:rgba(244,241,232,.58)}
+  .status{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:70%;text-align:center;padding:2.5vh 3vw;border:1px solid rgba(88,242,166,.32);border-radius:18px;background:rgba(3,10,22,.62);box-shadow:0 20px 70px rgba(0,0,0,.5);color:rgba(244,241,232,.82);font-size:clamp(16px, calc(var(--stage-w) * .018), 32px);line-height:1.35;z-index:50}.status .big{font-family:Georgia,serif;font-style:italic;font-weight:800;color:#fff;font-size:1.6em;margin-bottom:.35em}.hidden{display:none!important}
+  #sourceFrame{position:fixed;left:-9999px;top:-9999px;width:1px;height:1px;border:0;opacity:0;pointer-events:none}
+  @media(max-width:700px),(max-height:520px) and (orientation:landscape){.card{width:calc(var(--stage-w) * .34)}.item{top:55%}.nav{width:calc(var(--stage-w) * .07);height:calc(var(--stage-w) * .07);font-size:calc(var(--stage-w) * .045)}}
+</style>
+</head>
+<body>
+  <main class="wall">
+    <div class="track" id="track"></div>
+    <button class="nav prev hidden" id="prev" aria-label="Previous">‹</button>
+    <button class="nav next hidden" id="next" aria-label="Next">›</button>
+    <div class="dots" id="dots"></div>
+    <div class="badge" id="badge">FLGISA Wall</div>
+    <div class="status" id="status"><div class="big">Loading…</div><div>Fetching the latest FLGISA images</div></div>
+  </main>
+  <iframe id="sourceFrame" src="../../event-wall/?event=FLGISA"></iframe>
+<script>
+const MAX_WALL_ENTRIES=30;
+const REFRESH_MS=30000;
+const ROTATE_MS=9000;
+let items=[];
+let cur=0;
+let timer=null;
+const track=document.getElementById("track");
+const dots=document.getElementById("dots");
+const statusEl=document.getElementById("status");
+const prev=document.getElementById("prev");
+const next=document.getElementById("next");
+const badge=document.getElementById("badge");
+const sourceFrame=document.getElementById("sourceFrame");
+function esc(s){return String(s||"").replace(/[&<>'"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;","\"":"&quot;"}[c]))}
+function signature(list){return(list||[]).map(x=>x.img).join("||")}
+function scrapeSource(){
+  try{
+    const doc=sourceFrame.contentDocument;
+    if(!doc)return[];
+    const imgs=[...doc.querySelectorAll("img.photo")].map(img=>img.currentSrc||img.src).filter(Boolean);
+    const seen=new Set();
+    return imgs.filter(u=>!seen.has(u)&&seen.add(u)).slice(0,MAX_WALL_ENTRIES).map(img=>({img}));
+  }catch(e){
+    console.error(e);
+    return[];
+  }
+}
+function layout(){
+  const nodes=[...track.children];
+  const n=items.length;
+  nodes.forEach((node,i)=>{
+    let d=i-cur;
+    if(n>2){if(d>n/2)d-=n;if(d<-n/2)d+=n}
+    const ad=Math.abs(d);
+    node.className="item "+(d===0?"focus":ad===1?"side":"far");
+    const x=d*27;
+    const scale=d===0?1.18:ad===1?.62:.38;
+    node.style.transform=`translate(-50%,-50%) translateX(${x}vw) scale(${scale})`;
+    node.style.opacity=ad>2?0:(d===0?1:.84);
+  });
+  [...dots.children].forEach((dot,i)=>dot.classList.toggle("on",i===cur));
+}
+function render(){
+  track.innerHTML=items.map(x=>`<div class="item"><div class="card"><img class="photo" src="${esc(x.img)}" alt=""></div></div>`).join("");
+  [...track.children].forEach((node,i)=>node.addEventListener("click",()=>{if(i!==cur){cur=i;layout();restart()}}));
+  dots.innerHTML="";
+  items.forEach(()=>dots.appendChild(document.createElement("i")));
+  badge.textContent=`FLGISA Wall · ${items.length} Image${items.length===1?"":"s"}`;
+  layout();
+}
+function show(){
+  statusEl.classList.toggle("hidden",items.length>0);
+  const many=items.length>1;
+  prev.classList.toggle("hidden",!many);
+  next.classList.toggle("hidden",!many);
+}
+function refresh(){
+  const nextItems=scrapeSource();
+  if(!nextItems.length){
+    statusEl.classList.remove("hidden");
+    statusEl.innerHTML="<div class='big'>Waiting for images…</div><div>The FLGISA source wall is still loading.</div>";
+    return;
+  }
+  if(signature(nextItems)===signature(items)){show();return;}
+  items=nextItems;
+  cur=0;
+  render();
+  restart();
+  show();
+}
+function advance(){if(items.length>1){cur=(cur+1)%items.length;layout()}}
+function go(dir){if(items.length>1){cur=(cur+dir+items.length)%items.length;layout();restart()}}
+function restart(){clearInterval(timer);if(items.length>1)timer=setInterval(advance,ROTATE_MS)}
+prev.addEventListener("click",()=>go(-1));
+next.addEventListener("click",()=>go(1));
+window.addEventListener("resize",layout);
+document.addEventListener("keydown",e=>{if(e.key==="ArrowRight")go(1);if(e.key==="ArrowLeft")go(-1)});
+sourceFrame.addEventListener("load",()=>setTimeout(refresh,2000));
+setInterval(refresh,3000);
+setInterval(()=>{sourceFrame.contentWindow.location.reload()},REFRESH_MS);
+</script>
+</body>
+</html>
