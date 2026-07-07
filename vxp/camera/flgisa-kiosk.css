@@ -1,16 +1,25 @@
 body.kiosk-flgisa{
   --accent:#58F2A6;
+  --bg-w:max(100vw, calc(100vh * 16 / 9));
+  --bg-h:max(100vh, calc(100vw * 9 / 16));
   width:100vw;
   height:100vh;
   min-height:100vh;
-  background-image:url("https://phoneguy94.github.io/0924/vxp/assets/backgrounds/flgisa-kiosk-main.png")!important;
-  background-size:cover!important;
-  background-position:center center!important;
-  background-repeat:no-repeat!important;
-  background-attachment:fixed!important;
-  background-color:#061326!important;
+  background:#061326!important;
   justify-content:flex-start;
   overflow:hidden;
+}
+
+body.kiosk-flgisa::before{
+  content:"";
+  position:fixed;
+  z-index:-1;
+  left:50%;
+  top:50%;
+  width:var(--bg-w);
+  height:var(--bg-h);
+  transform:translate(-50%,-50%);
+  background:url("https://phoneguy94.github.io/0924/vxp/assets/backgrounds/flgisa-kiosk-main.png") center center / 100% 100% no-repeat;
 }
 
 /* The PNG owns the event branding, logos, title, subtitle, skyline, and 50-year badge. */
@@ -22,28 +31,29 @@ body.kiosk-flgisa .watermark{
   display:none!important;
 }
 
+/* Fixed 1920x1080 artwork coordinates, scaled with the background image. */
 body.kiosk-flgisa .camera-wrap{
   position:fixed;
-  left:50vw;
-  top:51vh;
+  left:calc((100vw - var(--bg-w)) / 2 + (var(--bg-w) * 0.500));
+  top:calc((100vh - var(--bg-h)) / 2 + (var(--bg-h) * 0.515));
   transform:translate(-50%,-50%);
-  width:58vw;
-  height:35.5vw;
-  max-width:1080px;
-  max-height:620px;
-  min-width:640px;
-  min-height:360px;
+  width:calc(var(--bg-w) * 0.510);
+  height:calc(var(--bg-h) * 0.325);
+  max-width:none;
+  max-height:none;
+  min-width:0;
+  min-height:0;
   aspect-ratio:auto;
-  border:5px solid rgba(88,242,166,.94);
-  border-radius:34px;
+  border:calc(var(--bg-w) * 0.0032) solid rgba(88,242,166,.94);
+  border-radius:calc(var(--bg-w) * 0.017);
   background:rgba(3,10,22,.55);
-  box-shadow:0 0 0 1px rgba(255,255,255,.14),0 0 44px rgba(88,242,166,.38),0 24px 90px rgba(0,0,0,.55);
+  box-shadow:0 0 0 1px rgba(255,255,255,.14),0 0 calc(var(--bg-w) * 0.023) rgba(88,242,166,.38),0 calc(var(--bg-w) * 0.012) calc(var(--bg-w) * 0.047) rgba(0,0,0,.55);
 }
 
 body.kiosk-flgisa .button-row{
   position:fixed;
-  left:50vw;
-  top:86vh;
+  left:calc((100vw - var(--bg-w)) / 2 + (var(--bg-w) * 0.500));
+  top:calc((100vh - var(--bg-h)) / 2 + (var(--bg-h) * 0.858));
   transform:translateX(-50%);
   margin:0;
   width:auto;
@@ -51,35 +61,21 @@ body.kiosk-flgisa .button-row{
 }
 
 body.kiosk-flgisa #takePhoto{
-  font-size:clamp(28px,2.55vw,44px);
+  font-size:calc(var(--bg-w) * 0.0185);
   text-transform:uppercase;
   letter-spacing:.04em;
   border-radius:999px;
-  padding:22px 68px;
+  padding:calc(var(--bg-h) * 0.021) calc(var(--bg-w) * 0.041);
   background:linear-gradient(90deg,#7bf59b,#16c9ff);
-  box-shadow:0 18px 48px rgba(0,0,0,.45);
+  box-shadow:0 calc(var(--bg-h) * 0.017) calc(var(--bg-w) * 0.025) rgba(0,0,0,.45);
   color:#041322;
 }
 
 body.kiosk-flgisa .status{
   position:fixed;
-  left:50vw;
-  top:78.5vh;
+  left:calc((100vw - var(--bg-w)) / 2 + (var(--bg-w) * 0.500));
+  top:calc((100vh - var(--bg-h)) / 2 + (var(--bg-h) * 0.785));
   transform:translateX(-50%);
-  width:min(900px,80vw);
-  font-size:clamp(18px,1.4vw,26px);
-}
-
-/* Kiosk should be displayed full-screen on a 16:9 monitor. These rules keep it usable if tested in smaller windows. */
-@media(max-width:1100px){
-  body.kiosk-flgisa .camera-wrap{
-    width:58vw;
-    height:35.5vw;
-    min-width:0;
-    min-height:0;
-  }
-  body.kiosk-flgisa #takePhoto{
-    font-size:clamp(18px,2.3vw,30px);
-    padding:14px 34px;
-  }
+  width:calc(var(--bg-w) * 0.58);
+  font-size:calc(var(--bg-w) * 0.014);
 }
