@@ -11,7 +11,6 @@ body.kiosk-flgisa{
   justify-content:flex-start;
   overflow:hidden;
 }
-
 body.kiosk-flgisa::before{
   content:"";
   position:fixed;
@@ -20,10 +19,8 @@ body.kiosk-flgisa::before{
   top:var(--stage-top);
   width:var(--stage-w);
   height:var(--stage-h);
-  background:url("https://phoneguy94.github.io/0924/vxp/assets/backgrounds/flgisa-kiosk-main.png") center center / 100% 100% no-repeat;
+  background:url("./../assets/backgrounds/flgisa-kiosk-main.png") center center / 100% 100% no-repeat;
 }
-
-/* The PNG owns the event branding, logos, title, subtitle, skyline, and 50-year badge. */
 body.kiosk-flgisa .mode-row,
 body.kiosk-flgisa #flgisaBrand,
 body.kiosk-flgisa .header,
@@ -31,36 +28,32 @@ body.kiosk-flgisa .subheader,
 body.kiosk-flgisa .watermark{
   display:none!important;
 }
-
-/* Adaptive camera kiosk layout. The full 16:9 artwork remains visible, so Veytec/Webex never crop off-screen. */
 body.kiosk-flgisa .camera-wrap{
   position:fixed;
   left:calc(var(--stage-left) + (var(--stage-w) * 0.500));
-  top:calc(var(--stage-top) + (var(--stage-h) * 0.515));
+  top:calc(var(--stage-top) + (var(--stage-h) * 0.535));
   transform:translate(-50%,-50%);
-  width:calc(var(--stage-w) * 0.515);
-  height:calc(var(--stage-h) * 0.335);
+  width:calc(var(--stage-w) * 0.405);
+  height:calc(var(--stage-h) * 0.405);
   max-width:none;
   max-height:none;
   min-width:0;
   min-height:0;
-  aspect-ratio:auto;
+  aspect-ratio:1/1;
   border:calc(var(--stage-w) * 0.0032) solid rgba(88,242,166,.94);
   border-radius:calc(var(--stage-w) * 0.017);
   background:rgba(3,10,22,.55);
   box-shadow:0 0 0 1px rgba(255,255,255,.14),0 0 calc(var(--stage-w) * 0.023) rgba(88,242,166,.38),0 calc(var(--stage-w) * 0.012) calc(var(--stage-w) * 0.047) rgba(0,0,0,.55);
 }
-
 body.kiosk-flgisa .button-row{
   position:fixed;
   left:calc(var(--stage-left) + (var(--stage-w) * 0.500));
-  top:calc(var(--stage-top) + (var(--stage-h) * 0.865));
+  top:calc(var(--stage-top) + (var(--stage-h) * 0.880));
   transform:translateX(-50%);
   margin:0;
   width:auto;
   white-space:nowrap;
 }
-
 body.kiosk-flgisa #takePhoto{
   font-size:clamp(18px, calc(var(--stage-w) * 0.0185), 38px);
   text-transform:uppercase;
@@ -71,11 +64,10 @@ body.kiosk-flgisa #takePhoto{
   box-shadow:0 calc(var(--stage-h) * 0.017) calc(var(--stage-w) * 0.025) rgba(0,0,0,.45);
   color:#041322;
 }
-
 body.kiosk-flgisa .status{
   position:fixed;
   left:calc(var(--stage-left) + (var(--stage-w) * 0.500));
-  top:calc(var(--stage-top) + (var(--stage-h) * 0.785));
+  top:calc(var(--stage-top) + (var(--stage-h) * 0.805));
   transform:translateX(-50%);
   width:calc(var(--stage-w) * 0.62);
   font-size:clamp(14px, calc(var(--stage-w) * 0.014), 24px);
