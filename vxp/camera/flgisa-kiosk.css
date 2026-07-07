@@ -1,12 +1,16 @@
 body.kiosk-flgisa{
   --accent:#58F2A6;
+  width:100vw;
+  height:100vh;
+  min-height:100vh;
   background-image:url("https://phoneguy94.github.io/0924/vxp/assets/backgrounds/flgisa-kiosk-main.png")!important;
-  background-size:100vw 100vh!important;
+  background-size:cover!important;
   background-position:center center!important;
   background-repeat:no-repeat!important;
   background-attachment:fixed!important;
   background-color:#061326!important;
   justify-content:flex-start;
+  overflow:hidden;
 }
 
 /* The PNG owns the event branding, logos, title, subtitle, skyline, and 50-year badge. */
@@ -19,65 +23,63 @@ body.kiosk-flgisa .watermark{
 }
 
 body.kiosk-flgisa .camera-wrap{
-  position:absolute;
-  left:50%;
-  top:50.5%;
+  position:fixed;
+  left:50vw;
+  top:51vh;
   transform:translate(-50%,-50%);
-  width:42vw;
-  height:auto;
-  max-width:none;
-  max-height:none;
-  aspect-ratio:16/9;
-  border:5px solid rgba(88,242,166,.92);
-  border-radius:28px;
+  width:58vw;
+  height:35.5vw;
+  max-width:1080px;
+  max-height:620px;
+  min-width:640px;
+  min-height:360px;
+  aspect-ratio:auto;
+  border:5px solid rgba(88,242,166,.94);
+  border-radius:34px;
   background:rgba(3,10,22,.55);
   box-shadow:0 0 0 1px rgba(255,255,255,.14),0 0 44px rgba(88,242,166,.38),0 24px 90px rgba(0,0,0,.55);
 }
 
 body.kiosk-flgisa .button-row{
-  position:absolute;
-  left:50%;
-  top:84.5%;
+  position:fixed;
+  left:50vw;
+  top:86vh;
   transform:translateX(-50%);
   margin:0;
+  width:auto;
+  white-space:nowrap;
 }
 
 body.kiosk-flgisa #takePhoto{
-  font-size:clamp(22px,2.1vw,38px);
+  font-size:clamp(28px,2.55vw,44px);
   text-transform:uppercase;
   letter-spacing:.04em;
   border-radius:999px;
-  padding:18px 52px;
+  padding:22px 68px;
   background:linear-gradient(90deg,#7bf59b,#16c9ff);
   box-shadow:0 18px 48px rgba(0,0,0,.45);
   color:#041322;
 }
 
 body.kiosk-flgisa .status{
-  position:absolute;
-  left:50%;
-  top:78.5%;
+  position:fixed;
+  left:50vw;
+  top:78.5vh;
   transform:translateX(-50%);
   width:min(900px,80vw);
+  font-size:clamp(18px,1.4vw,26px);
 }
 
-/* On non-16:9 browser windows, keep the controls tied to the artwork instead of letting them drift. */
-@media(max-aspect-ratio:16/9){
-  body.kiosk-flgisa{background-size:100vw auto!important;}
-  body.kiosk-flgisa .camera-wrap{width:42vw;top:50.5%;}
-  body.kiosk-flgisa .button-row{top:84.5%;}
-}
-
-@media(min-aspect-ratio:16/9){
-  body.kiosk-flgisa{background-size:auto 100vh!important;}
-  body.kiosk-flgisa .camera-wrap{width:74.7vh;top:50.5%;}
-  body.kiosk-flgisa .button-row{top:84.5%;}
-}
-
-@media(max-width:900px){
+/* Kiosk should be displayed full-screen on a 16:9 monitor. These rules keep it usable if tested in smaller windows. */
+@media(max-width:1100px){
   body.kiosk-flgisa .camera-wrap{
     width:58vw;
-    top:51%;
+    height:35.5vw;
+    min-width:0;
+    min-height:0;
   }
-  body.kiosk-flgisa .button-row{top:85%;}
+  body.kiosk-flgisa #takePhoto{
+    font-size:clamp(18px,2.3vw,30px);
+    padding:14px 34px;
+  }
 }
