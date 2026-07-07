@@ -1,0 +1,96 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#061326"/>
+      <stop offset="0.45" stop-color="#082b52"/>
+      <stop offset="1" stop-color="#020814"/>
+    </linearGradient>
+    <linearGradient id="water" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#092d58" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#03111f" stop-opacity="1"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="72%" cy="44%" r="55%">
+      <stop offset="0" stop-color="#17d7ff" stop-opacity="0.28"/>
+      <stop offset="0.5" stop-color="#1fcf8f" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="softGlow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur"/>
+      <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+  </defs>
+
+  <rect width="1920" height="1080" fill="url(#sky)"/>
+  <rect width="1920" height="1080" fill="url(#glow)"/>
+
+  <!-- Subtle circuit / network lines -->
+  <g fill="none" stroke="#12d7ff" stroke-opacity="0.20" stroke-width="3">
+    <path d="M1210 250h190l35 35h170"/>
+    <path d="M1190 330h250l40 40h250"/>
+    <path d="M1160 420h180l48-48h190"/>
+    <path d="M1195 505h280l55 55h200"/>
+    <path d="M1450 255h170"/>
+    <path d="M1360 610h330"/>
+  </g>
+  <g fill="#18e3ff" fill-opacity="0.35">
+    <circle cx="1400" cy="250" r="6"/><circle cx="1435" cy="285" r="6"/><circle cx="1480" cy="370" r="6"/>
+    <circle cx="1340" cy="420" r="6"/><circle cx="1530" cy="560" r="6"/><circle cx="1690" cy="610" r="6"/>
+  </g>
+
+  <!-- Florida network outline, intentionally subtle -->
+  <g transform="translate(1335 135) scale(1.15)" opacity="0.42" filter="url(#softGlow)">
+    <path d="M32 42 L200 38 L238 54 L270 43 L328 48 L343 82 L332 122 L354 150 L346 190 L372 230 L360 270 L377 315 L350 360 L358 412 L330 456 L316 520 L288 585 L252 612 L228 570 L208 506 L176 460 L164 402 L137 360 L118 308 L91 265 L78 205 L51 175 L60 128 L24 95 Z" fill="none" stroke="#b7f7ff" stroke-width="4"/>
+    <g stroke="#b7f7ff" stroke-width="2" fill="none" opacity="0.85">
+      <path d="M40 50L200 40L342 84L80 205L360 270L176 460L288 585"/>
+      <path d="M200 40L118 308L346 190L208 506"/>
+      <path d="M60 128L270 43L377 315L228 570"/>
+      <path d="M91 265L350 360L164 402L316 520"/>
+    </g>
+    <g fill="#fff">
+      <circle cx="40" cy="50" r="5"/><circle cx="200" cy="40" r="5"/><circle cx="342" cy="84" r="5"/><circle cx="80" cy="205" r="5"/>
+      <circle cx="360" cy="270" r="5"/><circle cx="176" cy="460" r="5"/><circle cx="288" cy="585" r="5"/><circle cx="118" cy="308" r="5"/>
+      <circle cx="346" cy="190" r="5"/><circle cx="208" cy="506" r="5"/><circle cx="350" cy="360" r="5"/>
+    </g>
+  </g>
+
+  <!-- Skyline -->
+  <g transform="translate(0 650)">
+    <rect x="0" y="180" width="1920" height="430" fill="url(#water)"/>
+    <g fill="#07192d">
+      <rect x="0" y="125" width="70" height="105"/><rect x="78" y="75" width="95" height="155"/><rect x="185" y="105" width="80" height="125"/>
+      <rect x="280" y="35" width="130" height="195"/><rect x="430" y="95" width="72" height="135"/><rect x="520" y="60" width="108" height="170"/>
+      <rect x="650" y="130" width="90" height="100"/><rect x="760" y="86" width="115" height="144"/><rect x="900" y="30" width="150" height="200"/>
+      <rect x="1080" y="112" width="80" height="118"/><rect x="1180" y="70" width="120" height="160"/><rect x="1320" y="16" width="124" height="214"/>
+      <rect x="1465" y="92" width="90" height="138"/><rect x="1580" y="48" width="130" height="182"/><rect x="1730" y="110" width="95" height="120"/><rect x="1840" y="70" width="80" height="160"/>
+    </g>
+    <g fill="#21b8ff" opacity="0.75">
+      <rect x="105" y="92" width="42" height="4"/><rect x="305" y="53" width="70" height="4"/><rect x="550" y="80" width="52" height="4"/>
+      <rect x="928" y="48" width="95" height="4"/><rect x="1210" y="87" width="62" height="4"/><rect x="1342" y="34" width="82" height="4"/>
+      <rect x="1608" y="62" width="72" height="4"/>
+    </g>
+    <g stroke="#25b8ff" stroke-opacity="0.22" stroke-width="2">
+      <path d="M0 230 C240 260 420 205 680 236 S1130 263 1430 230 S1780 220 1920 252" fill="none"/>
+      <path d="M0 280 C280 320 480 250 760 294 S1210 330 1500 282 S1780 260 1920 300" fill="none"/>
+      <path d="M0 352 C260 390 540 324 850 360 S1320 410 1640 348 S1840 330 1920 360" fill="none"/>
+    </g>
+    <g stroke="#5af4c4" stroke-opacity="0.18" stroke-width="6">
+      <path d="M0 238h1920"/><path d="M0 310h1920"/>
+    </g>
+  </g>
+
+  <!-- Very soft palm silhouettes, edges only -->
+  <g fill="#020814" opacity="0.55">
+    <path d="M80 210 C20 150 0 105 0 65 C60 115 85 158 80 210Z"/>
+    <path d="M95 230 C45 200 12 185 0 175 C55 176 95 195 95 230Z"/>
+    <path d="M1805 175 C1865 112 1900 75 1920 44 C1880 118 1840 165 1805 175Z"/>
+    <path d="M1785 205 C1852 186 1895 180 1920 172 C1870 218 1825 226 1785 205Z"/>
+  </g>
+
+  <!-- Center vignette keeps the live camera readable -->
+  <rect width="1920" height="1080" fill="rgba(0,0,0,0.08)"/>
+  <radialGradient id="centerClear" cx="50%" cy="43%" r="36%">
+    <stop offset="0" stop-color="#061326" stop-opacity="0.10"/>
+    <stop offset="1" stop-color="#061326" stop-opacity="0"/>
+  </radialGradient>
+  <rect width="1920" height="1080" fill="url(#centerClear)"/>
+</svg>
