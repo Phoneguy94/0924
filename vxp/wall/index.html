@@ -20,18 +20,18 @@ function show(){statusEl.classList.toggle("hidden",items.length>0);const many=it
 function saveResumePoint(){if(!items.length)return;const nextNormal=items[idx(1)];if(nextNormal)resumeAfterLiveImg=nextNormal.img}
 function showImg(img,isLive=false){const i=findImgIndex(img);if(i<0)return false;cur=i;showingLive=!!isLive;lastLiveShown=isLive?img:lastLiveShown;lastRenderedSig="";renderSlots(true);restart();return true}
 function promoteNextLive(){while(liveQueue.length){const img=liveQueue.shift();if(findImgIndex(img)>=0){newUntil.set(img,Date.now()+NEW_MS);showImg(img,true);return true}}showingLive=false;return false}
-function normalAdvance(){if(!items.length)return;if(showingLive){showingLive=false;if(promoteNextLive())return;if(resumeAfterLiveImg){const ri=findImgIndex(resumeAfterLiveImg);resumeAfterLiveImg=null;if(ri>=0){cur=ri;renderSlots();return}}}
+function normalAdvance(){if(!items.length)return;if(showingLive||(lastLiveShown&&items[cur]?.img===lastLiveShown&&resumeAfterLiveImg)){showingLive=false;if(promoteNextLive())return;if(resumeAfterLiveImg){const ri=findImgIndex(resumeAfterLiveImg);resumeAfterLiveImg=null;if(ri>=0){cur=ri;lastRenderedSig="";renderSlots(true);return}}}
 if(promoteNextLive())return;if(items.length>1){cur=(cur+1)%items.length;renderSlots()}}
 function go(dir){if(items.length>1){showingLive=false;resumeAfterLiveImg=null;cur=(cur+dir+items.length)%items.length;renderSlots();restart()}}
 function restart(){clearInterval(timer);if(items.length>1)timer=setInterval(normalAdvance,ROTATE_MS)}
 function refresh(){let nextItems=scrapeSource();if(!nextItems.length){if(!items.length){statusEl.classList.remove("hidden");statusEl.innerHTML="<div class='big'>Waiting for images…</div><div>The FLGISA source wall is still loading.</div>"}return}
-const currentImg=items[cur]?.img||"",oldSig=signature(items),oldCount=items.length;
+const currentImg=items[cur]?.img||"",resumeCandidate=items.length?(items[idx(1)]?.img||null):null,oldSig=signature(items),oldCount=items.length;
 const justAdded=booted?nextItems.filter(x=>!knownImgs.has(x.img)).map(x=>x.img):[];
 nextItems.forEach(x=>knownImgs.add(x.img));booted=true;items=markNewFlags(nextItems);
 const nextSig=signature(items);if(nextSig!==oldSig){rebuildDots();}
 if(!oldCount){cur=0;render(true);restart();show();return}
 if(currentImg){const keep=findImgIndex(currentImg);if(keep>=0)cur=keep;}
-if(justAdded.length){justAdded.forEach(preloadUrl);const existingLive=new Set(liveQueue);justAdded.slice().reverse().forEach(img=>{if(img!==lastLiveShown&&!existingLive.has(img)){liveQueue.unshift(img);existingLive.add(img)}});if(!showingLive){saveResumePoint();promoteNextLive();}}
+if(justAdded.length){justAdded.forEach(preloadUrl);const existingLive=new Set(liveQueue);justAdded.slice().reverse().forEach(img=>{if(img!==lastLiveShown&&!existingLive.has(img)){liveQueue.unshift(img);existingLive.add(img)}});if(!showingLive){resumeAfterLiveImg=resumeCandidate;promoteNextLive();}}
 else renderSlots(false);
 show();}
 prev.addEventListener("click",()=>go(-1));next.addEventListener("click",()=>go(1));
