@@ -127,11 +127,18 @@ function buildCard(device) {
       <span class="tag">${device.tag}</span>
       <span class="model">${device.label}</span>
     </div>
-    <div class="frame frame-${device.frame}">
-      <div class="screen" data-screen></div>
+    <div class="device-wrap">
+      <div class="frame frame-${device.frame}">
+        <div class="screen" data-screen></div>
+        ${
+          device.frame === "video"
+            ? '<div class="camera-bar"></div>'
+            : ""
+        }
+      </div>
       ${
-        device.frame === "video"
-          ? '<div class="camera-dot"></div>'
+        device.frame !== "kem"
+          ? '<div class="stand"></div><div class="softkeys"><span></span><span></span><span></span><span></span></div>'
           : ""
       }
     </div>
