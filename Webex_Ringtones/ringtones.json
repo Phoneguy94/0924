@@ -1,0 +1,17 @@
+[
+  {"id":1,"name":"Bellcore-dr1","file":"audio/Bellcore-dr1.mp3","default":true,"category":"Classic","recommended":"General office, shared desks, users migrating from CUCM","description":"Traditional business-phone ring. Familiar, clear, and easy to recognize."},
+  {"id":2,"name":"Bellcore-dr2","file":"audio/Bellcore-dr2.mp3","category":"Classic","recommended":"Reception, front desk, common area phones","description":"Classic cadence with a little more presence. Good where the phone needs to stand out."},
+  {"id":3,"name":"Bellcore-dr3","file":"audio/Bellcore-dr3.mp3","category":"Classic","recommended":"Office staff, migration demos, shared workspaces","description":"Another traditional ring pattern with a reliable desk-phone feel."},
+  {"id":4,"name":"Sunrise","file":"audio/Sunrise.mp3","category":"Friendly","recommended":"Executives, managers, quiet offices","description":"Bright and polished. Softer than a classic ring but still professional."},
+  {"id":5,"name":"Chirp 1","file":"","category":"Pending","recommended":"Pending audio verification","description":"Placeholder ringtone. Audio file still needs to be confirmed."},
+  {"id":6,"name":"Delight","file":"audio/Delight.mp3","category":"Friendly","recommended":"Customer-facing staff, general office users","description":"Pleasant melodic tone that feels modern without being distracting."},
+  {"id":7,"name":"Evolve","file":"audio/Evolve.mp3","category":"Modern","recommended":"IT, power users, modern office spaces","description":"Clean modern tone with a tech-forward feel."},
+  {"id":8,"name":"Mellow","file":"audio/Mellow.mp3","category":"Soft","recommended":"Executives, huddle rooms, quieter areas","description":"Calmer tone for people who do not want an aggressive ring."},
+  {"id":9,"name":"Mischief","file":"audio/Mischief.mp3","category":"Fun","recommended":"Demo phones, labs, less formal teams","description":"Playful and different. Useful when you want the ringtone to feel less standard."},
+  {"id":10,"name":"Reflections","file":"audio/Reflections.mp3","category":"Soft","recommended":"Managers, offices, low-noise spaces","description":"Smooth and professional with a softer notification style."},
+  {"id":11,"name":"Ringer","file":"audio/Ringer.mp3","category":"Loud","recommended":"Warehouses, busy rooms, shared phones","description":"Direct and attention-getting. Best where missed calls are a problem."},
+  {"id":12,"name":"Ascent","file":"audio/Ascent.mp3","category":"Modern","recommended":"Knowledge workers, general office users","description":"Upbeat modern ring that works well as a default alternative."},
+  {"id":13,"name":"Chirp 2 Candidate","file":"audio/Chirp-2-candidate-Ring7.mp3","category":"Modern","recommended":"IT, labs, test phones","description":"Short chirp-style tone. Good for quick notifications and testing."},
+  {"id":14,"name":"Incoming_EQ","file":"audio/Incoming_EQ.mp3","category":"Loud","recommended":"Call center, operations, shared spaces","description":"More alert-style tone designed to cut through busier environments."},
+  {"id":15,"name":"Vibes","file":"audio/Vibes.mp3","category":"Fun","recommended":"Demo users, informal spaces, unique personal ring","description":"More personality than a standard ringtone. Good for showing options in a demo."}
+]
