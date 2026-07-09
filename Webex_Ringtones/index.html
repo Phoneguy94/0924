@@ -3,47 +3,34 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Webex Calling Ringtone Preview</title>
-<style>
-body{font-family:Arial,Helvetica,sans-serif;margin:0;background:#071a2c;color:#eef6ff}
-header{padding:34px 22px;background:linear-gradient(135deg,#003b5c,#0b7fab)}
-main{max-width:980px;margin:0 auto;padding:24px}
-h1{margin:0 0 8px;font-size:32px}
-.note{background:#0f3656;border-left:4px solid #7fd7ff;padding:12px 14px;border-radius:8px;color:#d8efff;margin-bottom:24px}
-.card{display:flex;gap:18px;justify-content:space-between;align-items:center;background:#102b44;border:1px solid #264d68;border-radius:14px;padding:14px 16px;margin:10px 0}
-.info{min-width:250px}
-.ringnum{font-size:22px;font-weight:700;margin-bottom:3px}
-.name{font-size:15px;color:#b9d1e5}
-audio{width:320px;max-width:45vw}
-.pending{color:#ffd27d;font-style:italic;white-space:nowrap}
-.default{display:inline-block;border:1px solid #264d68;border-radius:999px;padding:2px 8px;margin-left:8px;color:#d8efff;font-size:12px;vertical-align:middle}
-@media(max-width:700px){.card{display:block}audio{width:100%;max-width:100%;margin-top:12px}.pending{display:block;margin-top:12px}}
-</style>
+<title>Webex Calling Ringtone Soundboard</title>
+<link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header>
-  <h1>Webex Calling Ringtone Preview</h1>
-  <div>Preview the Control Hub ringtone numbers for Cisco 8875 and 9800 Series PhoneOS phones.</div>
+  <div class="head">
+    <div>
+      <h1>Webex Calling Ringtone Soundboard</h1>
+      <div class="sub">Preview ringtone options for Cisco 8875 and 9800 Series PhoneOS phones. Pick a tile to play it; picking another tile automatically stops the first one.</div>
+    </div>
+    <div class="pill">3 × 5 Soundboard</div>
+  </div>
 </header>
-<main>
-  <div class="note">Unofficial lab/reference page. MP3 files are loaded from the <b>/audio</b> folder.</div>
+<main class="wrap">
+  <div class="toolbar">
+    <input id="search" class="search" type="search" placeholder="Search by ringtone, user type, mood, or description..." autocomplete="off">
+    <div id="filters" class="filters" aria-label="Ringtone filters"></div>
+  </div>
 
-  <div class="card"><div class="info"><div class="ringnum">Ringtone 1 <span class="default">Default</span></div><div class="name">Bellcore-dr1</div></div><audio controls preload="none" src="audio/Bellcore-dr1.mp3"></audio></div>
-  <div class="card"><div class="info"><div class="ringnum">Ringtone 2</div><div class="name">Bellcore-dr2</div></div><audio controls preload="none" src="audio/Bellcore-dr2.mp3"></audio></div>
-  <div class="card"><div class="info"><div class="ringnum">Ringtone 3</div><div class="name">Bellcore-dr3</div></div><audio controls preload="none" src="audio/Bellcore-dr3.mp3"></audio></div>
+  <div class="note">Unofficial lab/reference page. Audio files are loaded from the existing <b>/audio</b> folder. Ringtone 5 is still marked pending until the exact audio mapping is verified.</div>
 
-  <div class="card"><div class="info"><div class="ringnum">Ringtone 4</div><div class="name">Sunrise</div></div><audio controls preload="none" src="audio/Sunrise.mp3"></audio></div>
-  <div class="card"><div class="info"><div class="ringnum">Ringtone 5</div><div class="name">Chirp 1 — mapping/audio being verified</div></div><span class="pending">Audio pending</span></div>
-  <div class="card"><div class="info"><div class="ringnum">Ringtone 6</div><div class="name">Delight</div></div><audio controls preload="none" src="audio/Delight.mp3"></audio></div>
-  <div class="card"><div class="info"><div class="ringnum">Ringtone 7</div><div class="name">Evolve</div></div><audio controls preload="none" src="audio/Evolve.mp3"></audio></div>
-  <div class="card"><div class="info"><div class="ringnum">Ringtone 8</div><div class="name">Mellow</div></div><audio controls preload="none" src="audio/Mellow.mp3"></audio></div>
-  <div class="card"><div class="info"><div class="ringnum">Ringtone 9</div><div class="name">Mischief</div></div><audio controls preload="none" src="audio/Mischief.mp3"></audio></div>
-  <div class="card"><div class="info"><div class="ringnum">Ringtone 10</div><div class="name">Reflections</div></div><audio controls preload="none" src="audio/Reflections.mp3"></audio></div>
-  <div class="card"><div class="info"><div class="ringnum">Ringtone 11</div><div class="name">Ringer</div></div><audio controls preload="none" src="audio/Ringer.mp3"></audio></div>
-  <div class="card"><div class="info"><div class="ringnum">Ringtone 12</div><div class="name">Ascent</div></div><audio controls preload="none" src="audio/Ascent.mp3"></audio></div>
-  <div class="card"><div class="info"><div class="ringnum">Ringtone 13</div><div class="name">Chirp 2 candidate — Ring7</div></div><audio controls preload="none" src="audio/Chirp-2-candidate-Ring7.mp3"></audio></div>
-  <div class="card"><div class="info"><div class="ringnum">Ringtone 14</div><div class="name">Incoming_EQ</div></div><audio controls preload="none" src="audio/Incoming_EQ.mp3"></audio></div>
-  <div class="card"><div class="info"><div class="ringnum">Ringtone 15</div><div class="name">Vibes</div></div><audio controls preload="none" src="audio/Vibes.mp3"></audio></div>
+  <section id="board" class="board" aria-label="Ringtone soundboard"></section>
+  <div id="empty" class="empty">No ringtones match that search/filter.</div>
+
+  <footer>
+    Tip: use this page during Webex Calling demos to help users pick a ringtone by personality or work style instead of only by number.
+  </footer>
 </main>
+<script src="script.js"></script>
 </body>
 </html>
