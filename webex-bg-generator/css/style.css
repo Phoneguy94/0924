@@ -202,14 +202,22 @@ input[type="file"]::file-selector-button {
 
 /* ---------- phone frames ---------- */
 
+.device-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
 .frame {
   position: relative;
-  background: #05070C;
-  border-radius: 10px;
+  background: linear-gradient(180deg, #14181F 0%, #05070C 70%);
+  border-radius: 12px;
   padding: 10px;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: inset 0 0 0 1px #232A38, 0 6px 14px rgba(0,0,0,0.35);
 }
 
 .screen {
@@ -219,6 +227,7 @@ input[type="file"]::file-selector-button {
   overflow: hidden;
   cursor: grab;
   touch-action: none;
+  box-shadow: inset 0 0 0 1px #000;
 }
 
 .screen:active { cursor: grabbing; }
@@ -235,16 +244,59 @@ input[type="file"]::file-selector-button {
 .frame-kem .screen { aspect-ratio: 3 / 5; max-width: 120px; }
 
 .frame-video { padding-top: 22px; }
-.camera-dot {
+.camera-bar {
   position: absolute;
-  top: 8px;
+  top: 6px;
   left: 50%;
   transform: translateX(-50%);
-  width: 8px;
-  height: 8px;
+  width: 46px;
+  height: 10px;
+  border-radius: 5px;
+  background: #0A0D13;
+  box-shadow: inset 0 0 0 1px #232A38;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.camera-bar::after {
+  content: "";
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: #384258;
-  box-shadow: 0 0 0 2px #05070C;
+  background: radial-gradient(circle at 35% 35%, #4A5A78, #0A0D13 70%);
+  box-shadow: 0 0 0 1px #384258;
+}
+
+/* stand — a simple angled kickstand under the desk/video phones */
+.stand {
+  width: 46%;
+  height: 14px;
+  background: linear-gradient(180deg, #10141B, #05070C);
+  clip-path: polygon(12% 0, 88% 0, 100% 100%, 0% 100%);
+  margin-top: -2px;
+}
+.stand::after {
+  content: "";
+  display: block;
+  width: 70%;
+  height: 4px;
+  margin: 0 auto;
+  background: #05070C;
+  border-radius: 0 0 4px 4px;
+}
+
+/* softkey strip — reads as the row of physical buttons under a desk phone screen */
+.softkeys {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 6px;
+}
+.softkeys span {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: #232A38;
 }
 
 /* ---------- overlays ---------- */
