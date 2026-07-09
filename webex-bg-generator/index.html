@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Webex Custom Background Generator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+
+<header class="site-head">
+  <div class="head-inner">
+    <div class="brand">
+      <span class="brand-mark">WX</span>
+      <div class="brand-text">
+        <h1>Custom Background Generator</h1>
+        <p>Wallpapers, thumbnails &amp; logos for Cisco Desk Phone 9800 Series &amp; Video Phone 8875</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <section class="panel controls">
+    <div class="control-block">
+      <label class="control-label" for="wallpaper-input">
+        <span class="step">01</span> Upload background photo
+      </label>
+      <input type="file" id="wallpaper-input" accept="image/*" />
+      <p class="hint">Auto-cropped to fit all five device screens. Drag any preview to reposition the crop.</p>
+    </div>
+
+    <div class="control-block">
+      <label class="control-label" for="logo-input">
+        <span class="step">02</span> Upload logo <em>(optional)</em>
+      </label>
+      <input type="file" id="logo-input" accept="image/*" />
+      <p class="hint">Fit proportionally, not cropped. Replaces the on-screen clock when enabled.</p>
+    </div>
+
+    <div class="control-block">
+      <label class="control-label" for="base-url">
+        <span class="step">03</span> Hosting URL
+      </label>
+      <input type="text" id="base-url" placeholder="https://yourusername.github.io/repo-name" />
+      <p class="hint">Where these files will be publicly reachable — used to build the Control Hub string.</p>
+    </div>
+
+    <div class="control-block theme-block">
+      <span class="control-label"><span class="step">04</span> Theme</span>
+      <div class="theme-toggle">
+        <label><input type="radio" name="theme" value="dark" checked /> Dark</label>
+        <label><input type="radio" name="theme" value="light" /> Light</label>
+      </div>
+    </div>
+  </section>
+
+  <div id="empty-state" class="empty-state">
+    <p>Upload a photo to generate previews for every device.</p>
+  </div>
+
+  <section id="device-grid" class="device-grid hidden"></section>
+
+  <div id="logo-row" class="logo-note hidden">
+    <p>Logo enabled — toggle it per device below. It replaces the clock/date on that device's home screen.</p>
+  </div>
+
+  <button id="download-all" class="download-all hidden">Download all assets (.zip)</button>
+
+</main>
+
+<footer class="site-foot">
+  <p>Dimensions &amp; limits per Cisco's Custom wallpaper and logo for 9800/8875 (Control Hub) reference.</p>
+</footer>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script src="js/phones.js"></script>
+<script src="js/imaging.js"></script>
+<script src="js/export.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
