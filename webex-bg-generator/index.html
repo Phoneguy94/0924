@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Webex Custom Background Generator</title>
+<title>Webex Branding Studio</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -16,8 +16,8 @@
     <div class="brand">
       <span class="brand-mark">WX</span>
       <div class="brand-text">
-        <h1>Custom Background Generator</h1>
-        <p>Wallpapers, thumbnails &amp; logos for Cisco Desk Phone 9800 Series &amp; Video Phone 8875</p>
+        <h1>Webex Branding Studio</h1>
+        <p>Wallpaper, logo, thumbnail, KEM and Control Hub string generator for Webex Calling phones.</p>
       </div>
     </div>
   </div>
@@ -25,13 +25,31 @@
 
 <main>
 
+  <section class="intro-grid">
+    <div class="intro-card">
+      <span class="step">01</span>
+      <h2>Generate the files</h2>
+      <p>Upload one background image and this page creates the right wallpaper and thumbnail sizes for 9851, 9861, 9871, 8875 and the 9800 KEM.</p>
+    </div>
+    <div class="intro-card">
+      <span class="step">02</span>
+      <h2>Preview the phones</h2>
+      <p>See the wallpaper behind simulated Webex Calling idle screens, including clocks, line appearances, softkeys, dock buttons and KEM labels.</p>
+    </div>
+    <div class="intro-card">
+      <span class="step">03</span>
+      <h2>Copy Control Hub strings</h2>
+      <p>Enter your hosting URL and copy the string used in Control Hub. Download all generated assets as a ZIP and upload them to your GitHub Pages folder.</p>
+    </div>
+  </section>
+
   <section class="panel controls">
     <div class="control-block">
       <label class="control-label" for="wallpaper-input">
         <span class="step">01</span> Upload background photo
       </label>
       <input type="file" id="wallpaper-input" accept="image/*" />
-      <p class="hint">Auto-cropped to fit all five device screens. Drag any preview to reposition the crop.</p>
+      <p class="hint">Auto-cropped to fit every device screen. Drag any phone preview to reposition the crop.</p>
     </div>
 
     <div class="control-block">
@@ -39,7 +57,7 @@
         <span class="step">02</span> Upload logo <em>(optional)</em>
       </label>
       <input type="file" id="logo-input" accept="image/*" />
-      <p class="hint">Fit proportionally, not cropped. Replaces the on-screen clock when enabled.</p>
+      <p class="hint">Fit proportionally, not cropped. Used for logo preview and generated logo assets.</p>
     </div>
 
     <div class="control-block">
@@ -56,6 +74,15 @@
         <label><input type="radio" name="theme" value="dark" checked /> Dark</label>
         <label><input type="radio" name="theme" value="light" /> Light</label>
       </div>
+      <p class="hint">Preview whether white clock/text or dark UI elements will be readable.</p>
+    </div>
+  </section>
+
+  <section class="logo-lab">
+    <div>
+      <span class="tag">Logo Designer Idea</span>
+      <h2>Next: logo safe-zone designer</h2>
+      <p>Planned: upload a logo, test it against each phone's clock/logo area, export the exact Cisco-sized logo PNGs, and warn when the logo is unavailable on multiline 9851/9861 layouts.</p>
     </div>
   </section>
 
@@ -66,7 +93,7 @@
   <section id="device-grid" class="device-grid hidden"></section>
 
   <div id="logo-row" class="logo-note hidden">
-    <p>Logo enabled — toggle it per device below. It replaces the clock/date on that device's home screen.</p>
+    <p>Logo enabled — toggle it per device below. It previews how the logo could replace the clock/date area where supported.</p>
   </div>
 
   <button id="download-all" class="download-all hidden">Download all assets (.zip)</button>
@@ -74,7 +101,7 @@
 </main>
 
 <footer class="site-foot">
-  <p>Dimensions &amp; limits per Cisco's Custom wallpaper and logo for 9800/8875 (Control Hub) reference.</p>
+  <p>Based on Cisco's custom wallpaper and logo requirements for Webex Calling 9800 Series and 8875 phones. Unofficial lab/reference utility.</p>
 </footer>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
