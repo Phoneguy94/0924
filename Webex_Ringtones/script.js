@@ -6,6 +6,8 @@ const audio=new Audio();
 let ringtones=[];
 let activeFilter='All';
 let playingNumber=null;
+let cadenceTimers=[];
+let playToken=0;
 
 function normalize(value){return String(value||'').toLowerCase();}
 function categoriesFor(r){return Array.isArray(r.category)?r.category:[r.category].filter(Boolean);}
@@ -29,26 +31,89 @@ function setPlaying(number){
   });
 }
 
+function clearCadenceTimers(){
+  cadenceTimers.forEach(timer=>clearTimeout(timer));
+  cadenceTimers=[];
+}
+
 function stopAudio(){
+  playToken++;
+  clearCadenceTimers();
   audio.pause();
+  audio.loop=false;
   audio.currentTime=0;
   setPlaying(null);
+}
+
+function schedule(fn,delay){
+  const timer=setTimeout(fn,delay);
+  cadenceTimers.push(timer);
+  return timer;
+}
+
+function playBellcoreCadence(r){
+  stopAudio();
+  const token=++playToken;
+  const cycles=3;
+  const onMs=2000;
+  const offMs=4000;
+  let cycle=0;
+
+  audio.src=r.file;
+  audio.loop=true;
+  setPlaying(r.number);
+
+  const ringOnce=()=>{
+    if(token!==playToken) return;
+    cycle++;
+    audio.currentTime=0;
+    audio.play().catch(err=>{
+      console.warn('Bellcore audio playback failed',err);
+      stopAudio();
+    });
+
+    schedule(()=>{
+      if(token!==playToken) return;
+      audio.pause();
+      audio.currentTime=0;
+
+      if(cycle>=cycles){
+        audio.loop=false;
+        setPlaying(null);
+        return;
+      }
+
+      schedule(ringOnce,offMs);
+    },onMs);
+  };
+
+  ringOnce();
 }
 
 function playTone(r){
   if(r.pending||!r.file) return;
   if(playingNumber===r.number){stopAudio();return;}
-  audio.pause();
-  audio.currentTime=0;
+
+  if(/^Bellcore-dr[1-5]$/i.test(r.name)){
+    playBellcoreCadence(r);
+    return;
+  }
+
+  stopAudio();
+  const token=++playToken;
   audio.src=r.file;
-  audio.play().then(()=>setPlaying(r.number)).catch(err=>{
+  audio.loop=false;
+  audio.play().then(()=>{
+    if(token===playToken)setPlaying(r.number);
+  }).catch(err=>{
     console.warn('Audio playback failed',err);
-    setPlaying(null);
+    if(token===playToken)setPlaying(null);
   });
 }
 
-audio.addEventListener('ended',()=>setPlaying(null));
-audio.addEventListener('pause',()=>{if(audio.currentTime===0)setPlaying(null);});
+audio.addEventListener('ended',()=>{
+  if(!audio.loop)setPlaying(null);
+});
 
 function makeTile(r){
   const tile=document.createElement('button');
