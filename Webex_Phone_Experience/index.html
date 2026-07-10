@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Veytec Webex Phone Experience</title>
-<link rel="stylesheet" href="style.css?v=4">
+<link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
 <header class="topbar">
@@ -18,17 +18,29 @@
 <main>
   <section class="panel controls">
     <h1>Build Your Phone Experience</h1>
-    <p>Choose a real Cisco phone, upload a wallpaper, then preview the incoming-call and ringtone experience.</p>
+    <p>Choose a real Cisco phone, set its appearance, upload a wallpaper, then preview the incoming-call and ringtone experience.</p>
     <div class="step"><label>1. Choose your phone</label><div id="models" class="model-grid"></div></div>
+    <div class="step appearance-step">
+      <label>2. Appearance</label>
+      <div class="appearance-row" role="group" aria-label="Phone appearance">
+        <button type="button" class="appearance active" data-appearance="light">☀ Light</button>
+        <button type="button" class="appearance" data-appearance="dark">🌙 Dark</button>
+        <button type="button" class="appearance" data-appearance="compare">◐ Compare</button>
+      </div>
+      <div id="compareControl" class="compare-control" hidden>
+        <div class="compare-labels"><span>☀ Light</span><strong id="compareValue">50 / 50</strong><span>Dark 🌙</span></div>
+        <input id="compareSlider" type="range" min="0" max="100" value="50" aria-label="Light and dark comparison position">
+      </div>
+    </div>
     <div class="step">
-      <label for="wallpaper">2. Upload and position wallpaper</label>
+      <label for="wallpaper">3. Upload and position wallpaper</label>
       <input id="wallpaper" type="file" accept="image/*">
       <div class="fit-row"><button data-fit="cover" class="fit active">Fill Screen</button><button data-fit="contain" class="fit">Fit Entire Image</button><button id="resetWallpaper">Reset</button></div>
       <div class="slider-grid"><label>Zoom <input id="zoom" type="range" min="100" max="240" value="100"></label><label>Horizontal <input id="posX" type="range" min="0" max="100" value="50"></label><label>Vertical <input id="posY" type="range" min="0" max="100" value="50"></label></div>
     </div>
     <div class="step two-col">
-      <div><label for="caller">3. Incoming call source</label><select id="caller"><option>Front Door</option><option>Main Lobby</option><option>Security Gate</option><option>Loading Dock</option><option>Receiving Entrance</option><option>Visitor Entrance</option></select></div>
-      <div><label for="ringtone">4. Pick ringtone</label><select id="ringtone"></select></div>
+      <div><label for="caller">4. Incoming call source</label><select id="caller"><option>Front Door</option><option>Main Lobby</option><option>Security Gate</option><option>Loading Dock</option><option>Receiving Entrance</option><option>Visitor Entrance</option></select></div>
+      <div><label for="ringtone">5. Pick ringtone</label><select id="ringtone"></select></div>
     </div>
     <div id="toneInfo" class="tone-info"><strong>Select a ringtone</strong><span></span></div>
     <div class="ring-row"><button id="prev">◀ Previous</button><button id="ring" class="primary">Ring Phone</button><button id="next">Next ▶</button></div>
@@ -46,11 +58,14 @@
           <div id="modelLabel">Cisco Desk Phone 9851</div>
           <div class="incoming"><small>Incoming Call</small><strong id="callerLabel">Front Door</strong><span id="toneLabel">Ringer</span></div>
         </div>
+        <div id="darkLayer" class="dark-layer" aria-hidden="true"></div>
+        <div id="compareDivider" class="compare-divider" aria-hidden="true"><span></span></div>
+      </div>
     </div>
     <div class="preview-meta"><strong id="selectedName">9851</strong><span id="selectedDesc">Compact PhoneOS color desk phone.</span></div>
     <div class="prototype-note">Real product-photo preview with model-specific screen mapping.</div>
   </section>
 </main>
-<script src="script.js?v=4"></script>
+<script src="script.js?v=5"></script>
 </body>
 </html>
