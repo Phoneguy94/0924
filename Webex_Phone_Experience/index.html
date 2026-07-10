@@ -84,5 +84,15 @@
   </section>
 </main>
 <script src="script.js?v=8"></script>
+<script>
+(function(){
+  const group8800=document.getElementById('models8800');
+  const group9800=document.getElementById('models9800');
+  document.querySelectorAll('#models > .model').forEach(button=>{
+    const model=button.textContent.trim();
+    (model.startsWith('88')?group8800:group9800).appendChild(button);
+  });
+})();
+</script>
 </body>
 </html>
