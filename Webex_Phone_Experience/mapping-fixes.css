@@ -1,7 +1,7 @@
-/* Screen mappings for the current straight-on product images. */
-.model-9861{--sx:48.7%;--sy:29.3%;--sw:25.6%;--sh:10.2%;--sr:0deg;--radius:1px}
+/* Screen mappings for the exact front-view product images referenced in script.js. */
+.model-9861{--sx:50.4%;--sy:18.0%;--sw:37.2%;--sh:24.2%;--sr:0deg;--radius:1px}
 .model-9861 .line-panel{display:flex}
-.model-9871{--sx:38.0%;--sy:11.4%;--sw:50.5%;--sh:23.3%;--sr:0deg;--radius:2px}
+.model-9871{--sx:50.0%;--sy:20.0%;--sw:40.7%;--sh:22.7%;--sr:0deg;--radius:2px}
 .model-9871 #time{font-size:3.1em}
-.model-8875{--sx:44.8%;--sy:18.2%;--sw:46.5%;--sh:32.4%;--sr:0deg;--radius:2px}
+.model-8875{--sx:45.0%;--sy:18.5%;--sw:46.0%;--sh:33.5%;--sr:0deg;--radius:2px}
 .model-8875 #time{font-size:2.5em}
