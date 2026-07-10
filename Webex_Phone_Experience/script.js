@@ -6,24 +6,30 @@ const phones=[
   {id:'8875',name:'Cisco Video Phone 8875',desc:'Full video phone with a 7-inch touchscreen and integrated camera.',image:'https://cdn11.bigcommerce.com/s-z2d8eutrbc/images/stencil/1280x1280/products/18497/29449/1075752247__90975.1710819922.jpg?c=1'}
 ];
 
-const models=document.querySelector('#models');
-const phone=document.querySelector('#phone');
-const devicePhoto=document.querySelector('#devicePhoto');
-const wallpaper=document.querySelector('#wallpaper');
-const wallpaperPreview=document.querySelector('#wallpaperPreview');
-const ringtone=document.querySelector('#ringtone');
-const ringBtn=document.querySelector('#ring');
-const selectedName=document.querySelector('#selectedName');
-const selectedDesc=document.querySelector('#selectedDesc');
-const modelLabel=document.querySelector('#modelLabel');
-const caller=document.querySelector('#caller');
-const callerLabel=document.querySelector('#callerLabel');
-const toneLabel=document.querySelector('#toneLabel');
-const toneInfo=document.querySelector('#toneInfo');
-const nowPlaying=document.querySelector('#nowPlaying');
-const zoom=document.querySelector('#zoom');
-const posX=document.querySelector('#posX');
-const posY=document.querySelector('#posY');
+const $=selector=>document.querySelector(selector);
+const models=$('#models');
+const phone=$('#phone');
+const devicePhoto=$('#devicePhoto');
+const wallpaper=$('#wallpaper');
+const wallpaperPreview=$('#wallpaperPreview');
+const ringtone=$('#ringtone');
+const ringBtn=$('#ring');
+const selectedName=$('#selectedName');
+const selectedDesc=$('#selectedDesc');
+const modelLabel=$('#modelLabel');
+const caller=$('#caller');
+const callerLabel=$('#callerLabel');
+const toneLabel=$('#toneLabel');
+const toneInfo=$('#toneInfo');
+const nowPlaying=$('#nowPlaying');
+const zoom=$('#zoom');
+const posX=$('#posX');
+const posY=$('#posY');
+const compareControl=$('#compareControl');
+const compareSlider=$('#compareSlider');
+const compareValue=$('#compareValue');
+const darkLayer=$('#darkLayer');
+const compareDivider=$('#compareDivider');
 const audio=new Audio();
 let tones=[];
 let activePhone=phones[1];
@@ -31,6 +37,7 @@ let wallpaperUrl='';
 let cadenceTimers=[];
 let playToken=0;
 let isRinging=false;
+let appearance='light';
 
 phones.forEach(p=>{
   const btn=document.createElement('button');
@@ -45,16 +52,14 @@ function selectPhone(p,btn){
   document.querySelectorAll('.model').forEach(b=>b.classList.remove('active'));
   if(btn)btn.classList.add('active');
   phone.className=`phone-photo model-${p.id}`;
-  phone.style.removeProperty('--sx');
-  phone.style.removeProperty('--sy');
-  phone.style.removeProperty('--sw');
-  phone.style.removeProperty('--sh');
+  phone.dataset.appearance=appearance;
   devicePhoto.src=p.image;
   devicePhoto.alt=p.name;
   if(devicePhoto.complete)applyAspectRatio();
   selectedName.textContent=p.id;
   selectedDesc.textContent=p.desc;
   modelLabel.textContent=p.name;
+  applyAppearance();
   stopRing();
 }
 
@@ -68,10 +73,38 @@ devicePhoto.addEventListener('error',()=>{
   nowPlaying.textContent=`The ${activePhone.id} product image host did not respond. Try refreshing.`;
   nowPlaying.classList.remove('live');
 });
+devicePhoto.addEventListener('load',applyAspectRatio);
 
-devicePhoto.addEventListener('load',()=>{
-  applyAspectRatio();
+function setComparePosition(){
+  const lightPercent=Number(compareSlider.value);
+  darkLayer.style.left=`${lightPercent}%`;
+  darkLayer.style.width=`${100-lightPercent}%`;
+  compareDivider.style.left=`${lightPercent}%`;
+  compareValue.textContent=`${lightPercent}% light / ${100-lightPercent}% dark`;
+}
+
+function applyAppearance(){
+  phone.dataset.appearance=appearance;
+  compareControl.hidden=appearance!=='compare';
+  document.querySelectorAll('.appearance').forEach(btn=>btn.classList.toggle('active',btn.dataset.appearance===appearance));
+  if(appearance==='light'){
+    darkLayer.style.left='100%';
+    darkLayer.style.width='0%';
+  }else if(appearance==='dark'){
+    darkLayer.style.left='0%';
+    darkLayer.style.width='100%';
+  }else{
+    setComparePosition();
+  }
+}
+
+document.querySelectorAll('.appearance').forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    appearance=btn.dataset.appearance;
+    applyAppearance();
+  });
 });
+compareSlider.addEventListener('input',setComparePosition);
 
 function updateWallpaperTransform(){
   wallpaperPreview.style.transform=`scale(${Number(zoom.value)/100})`;
@@ -97,7 +130,7 @@ document.querySelectorAll('.fit').forEach(btn=>btn.onclick=()=>{
   wallpaperPreview.style.objectFit=btn.dataset.fit;
 });
 
-document.querySelector('#resetWallpaper').onclick=()=>{
+$('#resetWallpaper').onclick=()=>{
   if(wallpaperUrl)URL.revokeObjectURL(wallpaperUrl);
   wallpaperUrl='';
   wallpaper.value='';
@@ -133,22 +166,13 @@ function shiftTone(amount){
   updateToneInfo();
 }
 
-document.querySelector('#prev').onclick=()=>shiftTone(-1);
-document.querySelector('#next').onclick=()=>shiftTone(1);
+$('#prev').onclick=()=>shiftTone(-1);
+$('#next').onclick=()=>shiftTone(1);
 ringtone.addEventListener('change',()=>{stopRing();updateToneInfo();});
 caller.addEventListener('change',()=>{callerLabel.textContent=caller.value;stopRing();});
 
-function clearCadenceTimers(){
-  cadenceTimers.forEach(timer=>clearTimeout(timer));
-  cadenceTimers=[];
-}
-
-function schedule(fn,delay){
-  const timer=setTimeout(fn,delay);
-  cadenceTimers.push(timer);
-  return timer;
-}
-
+function clearCadenceTimers(){cadenceTimers.forEach(clearTimeout);cadenceTimers=[];}
+function schedule(fn,delay){const timer=setTimeout(fn,delay);cadenceTimers.push(timer);return timer;}
 function resetRingUi(){
   isRinging=false;
   phone.classList.remove('ringing');
@@ -156,7 +180,6 @@ function resetRingUi(){
   nowPlaying.textContent='Ready to preview';
   nowPlaying.classList.remove('live');
 }
-
 function stopRing(){
   playToken++;
   clearCadenceTimers();
@@ -165,7 +188,6 @@ function stopRing(){
   audio.currentTime=0;
   resetRingUi();
 }
-
 function beginRingUi(tone){
   isRinging=true;
   phone.classList.add('ringing');
@@ -173,45 +195,29 @@ function beginRingUi(tone){
   nowPlaying.textContent=`Now playing: ${tone.name} for ${caller.value}`;
   nowPlaying.classList.add('live');
 }
-
 function playBellcoreCadence(tone){
   stopRing();
   const token=++playToken;
-  const cycles=3;
-  const onMs=2000;
-  const offMs=4000;
+  const cycles=3,onMs=2000,offMs=4000;
   let cycle=0;
-
   audio.src=`../Webex_Ringtones/${tone.file}`;
   audio.loop=true;
   beginRingUi(tone);
-
   const ringOnce=()=>{
     if(token!==playToken)return;
     cycle++;
     audio.currentTime=0;
     audio.play().catch(()=>{
-      if(token===playToken){
-        stopRing();
-        nowPlaying.textContent='Audio could not start. Tap Ring Phone again.';
-      }
+      if(token===playToken){stopRing();nowPlaying.textContent='Audio could not start. Tap Ring Phone again.';}
     });
-
     schedule(()=>{
       if(token!==playToken)return;
       audio.pause();
       audio.currentTime=0;
-
-      if(cycle>=cycles){
-        audio.loop=false;
-        resetRingUi();
-        return;
-      }
-
+      if(cycle>=cycles){audio.loop=false;resetRingUi();return;}
       schedule(ringOnce,offMs);
     },onMs);
   };
-
   ringOnce();
 }
 
@@ -221,31 +227,19 @@ ringBtn.onclick=()=>{
   if(!tone)return;
   callerLabel.textContent=caller.value;
   toneLabel.textContent=tone.name;
-
-  if(/^Bellcore-dr[1-5]$/i.test(tone.name)){
-    playBellcoreCadence(tone);
-    return;
-  }
-
+  if(/^Bellcore-dr[1-5]$/i.test(tone.name)){playBellcoreCadence(tone);return;}
   stopRing();
   const token=++playToken;
   audio.src=`../Webex_Ringtones/${tone.file}`;
   audio.loop=false;
-  audio.play().then(()=>{
-    if(token===playToken)beginRingUi(tone);
-  }).catch(()=>{
-    if(token===playToken){
-      resetRingUi();
-      nowPlaying.textContent='Audio could not start. Tap Ring Phone again.';
-    }
+  audio.play().then(()=>{if(token===playToken)beginRingUi(tone);}).catch(()=>{
+    if(token===playToken){resetRingUi();nowPlaying.textContent='Audio could not start. Tap Ring Phone again.';}
   });
 };
 
-audio.addEventListener('ended',()=>{
-  if(!audio.loop)stopRing();
-});
-function updateClock(){document.querySelector('#time').textContent=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});}
+audio.addEventListener('ended',()=>{if(!audio.loop)stopRing();});
+function updateClock(){$('#time').textContent=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});}
 updateClock();
 setInterval(updateClock,30000);
-
+applyAppearance();
 selectPhone(activePhone,document.querySelector('.model.active'));
