@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Veytec Webex Phone Experience</title>
-<link rel="stylesheet" href="style.css?v=5">
+<link rel="stylesheet" href="style.css?v=6">
 </head>
 <body>
 <header class="topbar">
@@ -28,7 +28,7 @@
         <button type="button" class="appearance" data-appearance="compare">◐ Compare</button>
       </div>
       <div id="compareControl" class="compare-control" hidden>
-        <div class="compare-labels"><span>☀ Light</span><strong id="compareValue">50 / 50</strong><span>Dark 🌙</span></div>
+        <div class="compare-labels"><span>☀ Light</span><strong id="compareValue">50% light / 50% dark</strong><span>Dark 🌙</span></div>
         <input id="compareSlider" type="range" min="0" max="100" value="50" aria-label="Light and dark comparison position">
       </div>
     </div>
@@ -48,7 +48,7 @@
   </section>
 
   <section class="preview-wrap">
-    <div id="phone" class="phone-photo model-9851">
+    <div id="phone" class="phone-photo model-9851" data-appearance="light">
       <img id="devicePhoto" class="device-photo" alt="Cisco phone model">
       <div id="screen" class="mapped-screen">
         <img id="wallpaperPreview" alt="Uploaded wallpaper preview">
@@ -66,6 +66,51 @@
     <div class="prototype-note">Real product-photo preview with model-specific screen mapping.</div>
   </section>
 </main>
-<script src="script.js?v=5"></script>
+<script src="script.js?v=6"></script>
+<script>
+(function(){
+  const phone=document.getElementById('phone');
+  const darkLayer=document.getElementById('darkLayer');
+  const divider=document.getElementById('compareDivider');
+  const control=document.getElementById('compareControl');
+  const slider=document.getElementById('compareSlider');
+  const value=document.getElementById('compareValue');
+  const buttons=[...document.querySelectorAll('.appearance')];
+  if(!phone||!darkLayer||!divider||!control||!slider||!value||!buttons.length)return;
+
+  function position(){
+    const light=Number(slider.value);
+    darkLayer.style.left=light+'%';
+    darkLayer.style.width=(100-light)+'%';
+    divider.style.left=light+'%';
+    value.textContent=light+'% light / '+(100-light)+'% dark';
+  }
+
+  function setMode(mode){
+    phone.dataset.appearance=mode;
+    control.hidden=mode!=='compare';
+    buttons.forEach(button=>button.classList.toggle('active',button.dataset.appearance===mode));
+    if(mode==='light'){
+      darkLayer.style.left='100%';
+      darkLayer.style.width='0%';
+    }else if(mode==='dark'){
+      darkLayer.style.left='0%';
+      darkLayer.style.width='100%';
+    }else{
+      position();
+    }
+  }
+
+  buttons.forEach(button=>{
+    button.onclick=function(event){
+      event.preventDefault();
+      setMode(button.dataset.appearance);
+    };
+  });
+  slider.oninput=position;
+  window.setPhoneAppearance=setMode;
+  setMode(phone.dataset.appearance||'light');
+})();
+</script>
 </body>
 </html>
