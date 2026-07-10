@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Veytec Webex Phone Experience</title>
-<link rel="stylesheet" href="style.css?v=6">
+<link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
 <header class="topbar">
@@ -21,15 +21,15 @@
     <p>Choose a real Cisco phone, set its appearance, upload a wallpaper, then preview the incoming-call and ringtone experience.</p>
     <div class="step"><label>1. Choose your phone</label><div id="models" class="model-grid"></div></div>
     <div class="step appearance-step">
-      <label>2. Appearance</label>
-      <div class="appearance-row" role="group" aria-label="Phone appearance">
-        <button type="button" class="appearance active" data-appearance="light">☀ Light</button>
-        <button type="button" class="appearance" data-appearance="dark">🌙 Dark</button>
+      <label>2. Text contrast</label>
+      <div class="appearance-row" role="group" aria-label="Phone text contrast">
+        <button type="button" class="appearance active" data-appearance="light">☀ Dark Text</button>
+        <button type="button" class="appearance" data-appearance="dark">🌙 Light Text</button>
         <button type="button" class="appearance" data-appearance="compare">◐ Compare</button>
       </div>
       <div id="compareControl" class="compare-control" hidden>
-        <div class="compare-labels"><span>☀ Light</span><strong id="compareValue">50% light / 50% dark</strong><span>Dark 🌙</span></div>
-        <input id="compareSlider" type="range" min="0" max="100" value="50" aria-label="Light and dark comparison position">
+        <div class="compare-labels"><span>Dark text</span><strong id="compareValue">50 / 50</strong><span>Light text</span></div>
+        <input id="compareSlider" type="range" min="0" max="100" value="50" aria-label="Dark and light text comparison position">
       </div>
     </div>
     <div class="step">
@@ -52,65 +52,25 @@
       <img id="devicePhoto" class="device-photo" alt="Cisco phone model">
       <div id="screen" class="mapped-screen">
         <img id="wallpaperPreview" alt="Uploaded wallpaper preview">
-        <div class="screen-overlay">
+        <div class="screen-overlay contrast-dark">
           <div id="time">10:24</div>
           <div class="line-panel"><span>Anthony Cotignola</span><span>1001</span></div>
           <div id="modelLabel">Cisco Desk Phone 9851</div>
           <div class="incoming"><small>Incoming Call</small><strong id="callerLabel">Front Door</strong><span id="toneLabel">Ringer</span></div>
         </div>
-        <div id="darkLayer" class="dark-layer" aria-hidden="true"></div>
+        <div id="lightTextLayer" class="screen-overlay contrast-light" aria-hidden="true">
+          <div class="time-copy">10:24</div>
+          <div class="line-panel"><span>Anthony Cotignola</span><span>1001</span></div>
+          <div class="model-copy">Cisco Desk Phone 9851</div>
+          <div class="incoming"><small>Incoming Call</small><strong class="caller-copy">Front Door</strong><span class="tone-copy">Ringer</span></div>
+        </div>
         <div id="compareDivider" class="compare-divider" aria-hidden="true"><span></span></div>
       </div>
     </div>
     <div class="preview-meta"><strong id="selectedName">9851</strong><span id="selectedDesc">Compact PhoneOS color desk phone.</span></div>
-    <div class="prototype-note">Real product-photo preview with model-specific screen mapping.</div>
+    <div class="prototype-note">The wallpaper stays unchanged; appearance controls only adjust text contrast.</div>
   </section>
 </main>
-<script src="script.js?v=6"></script>
-<script>
-(function(){
-  const phone=document.getElementById('phone');
-  const darkLayer=document.getElementById('darkLayer');
-  const divider=document.getElementById('compareDivider');
-  const control=document.getElementById('compareControl');
-  const slider=document.getElementById('compareSlider');
-  const value=document.getElementById('compareValue');
-  const buttons=[...document.querySelectorAll('.appearance')];
-  if(!phone||!darkLayer||!divider||!control||!slider||!value||!buttons.length)return;
-
-  function position(){
-    const light=Number(slider.value);
-    darkLayer.style.left=light+'%';
-    darkLayer.style.width=(100-light)+'%';
-    divider.style.left=light+'%';
-    value.textContent=light+'% light / '+(100-light)+'% dark';
-  }
-
-  function setMode(mode){
-    phone.dataset.appearance=mode;
-    control.hidden=mode!=='compare';
-    buttons.forEach(button=>button.classList.toggle('active',button.dataset.appearance===mode));
-    if(mode==='light'){
-      darkLayer.style.left='100%';
-      darkLayer.style.width='0%';
-    }else if(mode==='dark'){
-      darkLayer.style.left='0%';
-      darkLayer.style.width='100%';
-    }else{
-      position();
-    }
-  }
-
-  buttons.forEach(button=>{
-    button.onclick=function(event){
-      event.preventDefault();
-      setMode(button.dataset.appearance);
-    };
-  });
-  slider.oninput=position;
-  window.setPhoneAppearance=setMode;
-  setMode(phone.dataset.appearance||'light');
-})();
-</script>
+<script src="script.js?v=7"></script>
 </body>
 </html>
