@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Veytec Webex Phone Experience</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">Veytec Webex Phone Experience <span>V2</span></div>
+  <a href="../Webex_Ringtones/">Open V1 Soundboard</a>
+</header>
+<main>
+  <section class="panel controls">
+    <h1>Build Your Phone Experience</h1>
+    <p>Choose a phone, upload a wallpaper, then preview how incoming calls and ringtones feel on that device.</p>
+    <div class="step"><label>1. Choose your phone</label><div id="models" class="model-grid"></div></div>
+    <div class="step">
+      <label for="wallpaper">2. Upload wallpaper</label>
+      <input id="wallpaper" type="file" accept="image/*">
+      <div class="fit-row">
+        <button data-fit="cover" class="fit active">Fill Screen</button>
+        <button data-fit="contain" class="fit">Fit Entire Image</button>
+      </div>
+    </div>
+    <div class="step">
+      <label for="ringtone">3. Pick ringtone</label>
+      <select id="ringtone"></select>
+      <div class="ring-row">
+        <button id="prev">◀ Previous</button>
+        <button id="ring" class="primary">Ring Phone</button>
+        <button id="next">Next ▶</button>
+      </div>
+    </div>
+  </section>
+
+  <section class="preview-wrap">
+    <div id="phone" class="phone model-9851">
+      <div class="speaker"></div>
+      <div class="screen">
+        <img id="wallpaperPreview" alt="Uploaded wallpaper preview">
+        <div class="screen-overlay">
+          <div id="time">10:24</div>
+          <div id="modelLabel">Cisco Desk Phone 9851</div>
+          <div id="incoming" class="incoming">Incoming Call<br><strong>Front Door</strong></div>
+        </div>
+      </div>
+      <div class="keys"><span></span><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+    <div class="preview-meta">
+      <strong id="selectedName">9851</strong>
+      <span id="selectedDesc">Compact color desk phone preview.</span>
+    </div>
+  </section>
+</main>
+<script src="script.js"></script>
+</body>
+</html>
