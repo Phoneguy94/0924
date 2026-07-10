@@ -52,11 +52,19 @@ function selectPhone(p,btn){
   selectedDesc.textContent=p.desc;
   modelLabel.textContent=p.name;
   stopRing();
+  if(typeof calibrating!=='undefined'&&calibrating)updateCalibrateReadout();
 }
 
 devicePhoto.addEventListener('error',()=>{
   nowPlaying.textContent=`The ${activePhone.id} product image host did not respond. Try refreshing.`;
   nowPlaying.classList.remove('live');
+});
+
+devicePhoto.addEventListener('load',()=>{
+  if(devicePhoto.naturalWidth&&devicePhoto.naturalHeight){
+    phone.style.setProperty('--ar',`${devicePhoto.naturalWidth} / ${devicePhoto.naturalHeight}`);
+  }
+  if(calibrating)updateCalibrateReadout();
 });
 
 function updateWallpaperTransform(){
@@ -152,4 +160,80 @@ audio.addEventListener('ended',stopRing);
 function updateClock(){document.querySelector('#time').textContent=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});}
 updateClock();
 setInterval(updateClock,30000);
+
+/* --- Screen calibration tool --- */
+const calibrateToggle=document.querySelector('#calibrateToggle');
+const calibrateInfo=document.querySelector('#calibrateInfo');
+const calibrateValues=document.querySelector('#calibrateValues');
+const copyCalibration=document.querySelector('#copyCalibration');
+const screenEl=document.querySelector('#screen');
+const resizeHandle=document.querySelector('#resizeHandle');
+let calibrating=false;
+let drag=null;
+
+function pct(val){return Math.round(val*10)/10;}
+
+function readCurrentVars(){
+  const cs=getComputedStyle(phone);
+  return {
+    sx:parseFloat(cs.getPropertyValue('--sx'))||0,
+    sy:parseFloat(cs.getPropertyValue('--sy'))||0,
+    sw:parseFloat(cs.getPropertyValue('--sw'))||0,
+    sh:parseFloat(cs.getPropertyValue('--sh'))||0
+  };
+}
+
+function updateCalibrateReadout(){
+  const v=readCurrentVars();
+  calibrateValues.textContent=`.model-${activePhone.id}{--sx:${pct(v.sx)}%;--sy:${pct(v.sy)}%;--sw:${pct(v.sw)}%;--sh:${pct(v.sh)}%;--sr:0deg}`;
+}
+
+calibrateToggle.onclick=()=>{
+  calibrating=!calibrating;
+  phone.classList.toggle('calibrating',calibrating);
+  calibrateInfo.hidden=!calibrating;
+  calibrateToggle.textContent=calibrating?'Exit Calibration Mode':'🎯 Calibrate Screen Position';
+  if(calibrating)updateCalibrateReadout();
+};
+
+copyCalibration.onclick=()=>{
+  navigator.clipboard.writeText(calibrateValues.textContent).then(()=>{
+    copyCalibration.textContent='Copied!';
+    setTimeout(()=>copyCalibration.textContent='Copy CSS Line',1200);
+  });
+};
+
+screenEl.addEventListener('pointerdown',e=>{
+  if(!calibrating||e.target===resizeHandle)return;
+  const rect=phone.getBoundingClientRect();
+  const v=readCurrentVars();
+  drag={type:'move',startX:e.clientX,startY:e.clientY,rect,startSx:v.sx,startSy:v.sy};
+  screenEl.setPointerCapture(e.pointerId);
+});
+
+resizeHandle.addEventListener('pointerdown',e=>{
+  if(!calibrating)return;
+  e.stopPropagation();
+  const rect=phone.getBoundingClientRect();
+  const v=readCurrentVars();
+  drag={type:'resize',startX:e.clientX,startY:e.clientY,rect,startSw:v.sw,startSh:v.sh};
+  resizeHandle.setPointerCapture(e.pointerId);
+});
+
+window.addEventListener('pointermove',e=>{
+  if(!drag)return;
+  const dxPct=(e.clientX-drag.startX)/drag.rect.width*100;
+  const dyPct=(e.clientY-drag.startY)/drag.rect.height*100;
+  if(drag.type==='move'){
+    phone.style.setProperty('--sx',`${pct(drag.startSx+dxPct)}%`);
+    phone.style.setProperty('--sy',`${pct(drag.startSy+dyPct)}%`);
+  }else{
+    phone.style.setProperty('--sw',`${pct(Math.max(4,drag.startSw+dxPct))}%`);
+    phone.style.setProperty('--sh',`${pct(Math.max(4,drag.startSh+dyPct))}%`);
+  }
+  updateCalibrateReadout();
+});
+
+window.addEventListener('pointerup',()=>{drag=null;});
+
 selectPhone(activePhone,document.querySelector('.model.active'));
