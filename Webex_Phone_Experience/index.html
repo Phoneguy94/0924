@@ -21,6 +21,12 @@
     <h1>Build Your Phone Experience</h1>
     <p>Choose a real Cisco phone, upload a wallpaper, then preview the incoming-call and ringtone experience.</p>
     <div class="step"><label>1. Choose your phone</label><div id="models" class="model-grid"></div></div>
+    <button id="calibrateToggle" class="calib-btn" type="button">🎯 Calibrate Screen Position</button>
+    <div id="calibrateInfo" class="calibrate-info" hidden>
+      <span>Drag the red box onto the phone's screen. Drag its corner to resize. Then copy the line below into <code>mapping-fixes.css</code>.</span>
+      <code id="calibrateValues"></code>
+      <button id="copyCalibration" type="button">Copy CSS Line</button>
+    </div>
     <div class="step">
       <label for="wallpaper">2. Upload and position wallpaper</label>
       <input id="wallpaper" type="file" accept="image/*">
@@ -47,6 +53,7 @@
           <div id="modelLabel">Cisco Desk Phone 9851</div>
           <div class="incoming"><small>Incoming Call</small><strong id="callerLabel">Front Door</strong><span id="toneLabel">Ringer</span></div>
         </div>
+        <div id="resizeHandle" class="resize-handle"></div>
       </div>
     </div>
     <div class="preview-meta"><strong id="selectedName">9851</strong><span id="selectedDesc">Compact PhoneOS color desk phone.</span></div>
