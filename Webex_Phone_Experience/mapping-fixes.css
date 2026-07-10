@@ -1,9 +1,16 @@
-/* Screen mappings for the exact front-view product images referenced in script.js. */
-.model-9861{--sx:50.4%;--sy:18.0%;--sw:36.4%;--sh:24.2%;--sr:0deg;--radius:1px}
-.model-9861 .line-panel{display:flex}
-.model-9871{--sx:50.2%;--sy:17.2%;--sw:40.0%;--sh:25.4%;--sr:0deg;--radius:2px}
-.model-9871 #time{font-size:3.1em}
-.model-8875{--sx:44.8%;--sy:18.3%;--sw:46.3%;--sh:33.7%;--sr:0deg;--radius:2px}
-.model-8875 #time{font-size:2.5em}
+/* Fixed screen mappings for the exact product images referenced in script.js. */
 
-.calibration-launch{margin-top:16px}.calibration-launch button{width:100%;border:1px solid #58f2a6;background:rgba(88,242,166,.12);color:#eef8ff;padding:11px;border-radius:12px;font-weight:800;cursor:pointer}.calibration-panel{margin-top:12px;padding:14px;border:1px solid #58f2a6;border-radius:14px;background:#081b2b}.calibration-panel p{font-size:12px;margin:6px 0 10px}.cal-values{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}.cal-values span{padding:7px;background:#10283b;border:1px solid #294b63;border-radius:8px;text-align:center;font-size:12px}.cal-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.cal-grid button{border:1px solid #294b63;background:#10283b;color:#eef8ff;padding:8px;border-radius:8px;cursor:pointer}.calibration-panel code{display:block;margin-top:10px;padding:9px;background:#061522;border-radius:8px;color:#58f2a6;font-size:11px;overflow:auto}.calibrating .mapped-screen{outline:3px solid #ff3b30;outline-offset:2px;box-shadow:0 0 0 2px #fff,inset 0 0 0 1px rgba(255,255,255,.5)}
+.model-8851{--sx:61.9%;--sy:9.2%;--sw:20.9%;--sh:20.6%;--sr:0deg;--radius:1px}
+.model-8851 .line-panel{display:flex}
+.model-8851 #time{font-size:1.35em;margin:0}
+
+.model-9851{--sx:48.0%;--sy:19.5%;--sw:31.0%;--sh:15.8%;--sr:0deg;--radius:2px}
+
+.model-9861{--sx:50.2%;--sy:17.8%;--sw:37.7%;--sh:24.1%;--sr:0deg;--radius:1px}
+.model-9861 .line-panel{display:flex}
+
+.model-9871{--sx:50.8%;--sy:16.9%;--sw:39.6%;--sh:19.1%;--sr:0deg;--radius:2px}
+.model-9871 #time{font-size:3.1em}
+
+.model-8875{--sx:40.9%;--sy:12.9%;--sw:54.8%;--sh:43.7%;--sr:0deg;--radius:2px}
+.model-8875 #time{font-size:2.5em}
