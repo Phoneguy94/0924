@@ -1,9 +1,9 @@
 const phones=[
   {id:'8851',name:'Cisco IP Phone 8851',desc:'Classic MPP desk phone with a 5-inch display and side line appearances.',image:'https://cdn11.bigcommerce.com/s-2kqswvsy80/images/stencil/1280x1280/products/37283/2167864/2167864__10246.1689584137.jpg?c=2'},
   {id:'9851',name:'Cisco Desk Phone 9851',desc:'Compact PhoneOS color desk phone with six physical line keys.',image:'https://www.atlasphones.com/cdn/shop/files/Cisco9851Deskphone-stockphoto1_medium.jpg?v=1730129675'},
-  {id:'9861',name:'Cisco Desk Phone 9861',desc:'PhoneOS desk phone with a larger display and ten physical line keys.',image:'https://www.serversupply.com/images/WebPImage/391777.webp'},
-  {id:'9871',name:'Cisco Desk Phone 9871',desc:'Large 5-inch high-resolution touchscreen with a prominent idle clock.',image:'https://www.serversupply.com/images/WebPImage/391780.webp'},
-  {id:'8875',name:'Cisco Video Phone 8875',desc:'Full video phone with a 7-inch touchscreen and integrated camera.',image:'https://cdn11.bigcommerce.com/s-z2d8eutrbc/images/stencil/1280x1280/products/18497/29448/1075752247__06341.1710819922.jpg?c=1'}
+  {id:'9861',name:'Cisco Desk Phone 9861',desc:'PhoneOS desk phone with a larger display and ten physical line keys.',image:'https://cdn11.bigcommerce.com/s-u3uxlvxq3h/images/stencil/600x600/products/10565/43089/Cisco-9861-Black-Front__90638.1714765534.jpg?c=1'},
+  {id:'9871',name:'Cisco Desk Phone 9871',desc:'Large 5-inch high-resolution touchscreen with a prominent idle clock.',image:'https://networkdevicesinc.com/cdn/shop/files/Cisco-9871-Black-Front__96731_600x_crop_center.jpg?v=1746717305'},
+  {id:'8875',name:'Cisco Video Phone 8875',desc:'Full video phone with a 7-inch touchscreen and integrated camera.',image:'https://cdn11.bigcommerce.com/s-z2d8eutrbc/images/stencil/1280x1280/products/18497/29449/1075752247__90975.1710819922.jpg?c=1'}
 ];
 const models=document.querySelector('#models');
 const phone=document.querySelector('#phone');
