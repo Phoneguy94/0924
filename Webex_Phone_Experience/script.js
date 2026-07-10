@@ -1,12 +1,13 @@
 const phones=[
-  {id:'8851',name:'Cisco IP Phone 8851',desc:'Classic MPP desk phone with a smaller 4:3 display and side line appearances.'},
-  {id:'9851',name:'Cisco Desk Phone 9851',desc:'Compact PhoneOS color desk phone preview.'},
-  {id:'9861',name:'Cisco Desk Phone 9861',desc:'PhoneOS desk phone with more line-key capacity and a larger working area.'},
-  {id:'9871',name:'Cisco Desk Phone 9871',desc:'Large widescreen PhoneOS display with a prominent centered idle clock.'},
-  {id:'8875',name:'Cisco Video Phone 8875',desc:'Touchscreen video phone with a large 4:3 display.'}
+  {id:'8851',name:'Cisco IP Phone 8851',desc:'Classic MPP desk phone with a 5-inch display and side line appearances.',image:'https://cdn11.bigcommerce.com/s-2kqswvsy80/images/stencil/1280x1280/products/37283/2167864/2167864__10246.1689584137.jpg?c=2'},
+  {id:'9851',name:'Cisco Desk Phone 9851',desc:'Compact PhoneOS color desk phone with six physical line keys.',image:'https://www.atlasphones.com/cdn/shop/files/Cisco9851Deskphone-stockphoto1_medium.jpg?v=1730129675'},
+  {id:'9861',name:'Cisco Desk Phone 9861',desc:'PhoneOS desk phone with a larger display and ten physical line keys.',image:'https://cdn11.bigcommerce.com/s-u3uxlvxq3h/images/stencil/1280x1280/products/10565/43086/Cisco-9861-Black-Left__21510.1714765534.jpg?c=1'},
+  {id:'9871',name:'Cisco Desk Phone 9871',desc:'Large 5-inch high-resolution touchscreen with a prominent idle clock.',image:'https://serverorbit.com/images/ab__webp/detailed/64/Cisco-DP-9871-K9-Desk-Phone-9871-Carbon-Black_jpeg.webp'},
+  {id:'8875',name:'Cisco Video Phone 8875',desc:'Full video phone with a 7-inch touchscreen and integrated camera.',image:'https://service.pcconnection.com/images/inhouse/B0A1A78B-96DE-4439-B25D-8A69990E344A.jpg'}
 ];
 const models=document.querySelector('#models');
 const phone=document.querySelector('#phone');
+const devicePhoto=document.querySelector('#devicePhoto');
 const wallpaper=document.querySelector('#wallpaper');
 const wallpaperPreview=document.querySelector('#wallpaperPreview');
 const ringtone=document.querySelector('#ringtone');
@@ -38,19 +39,25 @@ phones.forEach(p=>{
 function selectPhone(p,btn){
   activePhone=p;
   document.querySelectorAll('.model').forEach(b=>b.classList.remove('active'));
-  btn.classList.add('active');
-  phone.className=`phone model-${p.id}`;
+  if(btn)btn.classList.add('active');
+  phone.className=`phone-photo model-${p.id}`;
+  devicePhoto.src=p.image;
+  devicePhoto.alt=p.name;
   selectedName.textContent=p.id;
   selectedDesc.textContent=p.desc;
   modelLabel.textContent=p.name;
   stopRing();
 }
 
+devicePhoto.addEventListener('error',()=>{
+  nowPlaying.textContent=`The ${activePhone.id} product image host did not respond. Try refreshing.`;
+  nowPlaying.classList.remove('live');
+});
+
 function updateWallpaperTransform(){
   wallpaperPreview.style.transform=`scale(${Number(zoom.value)/100})`;
   wallpaperPreview.style.objectPosition=`${posX.value}% ${posY.value}%`;
 }
-
 wallpaper.addEventListener('change',e=>{
   const file=e.target.files[0];
   if(!file)return;
@@ -61,87 +68,52 @@ wallpaper.addEventListener('change',e=>{
   zoom.value='100';posX.value='50';posY.value='50';
   updateWallpaperTransform();
 });
-
 [zoom,posX,posY].forEach(control=>control.addEventListener('input',updateWallpaperTransform));
-
 document.querySelectorAll('.fit').forEach(btn=>btn.onclick=()=>{
   document.querySelectorAll('.fit').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
   wallpaperPreview.style.objectFit=btn.dataset.fit;
 });
-
 document.querySelector('#resetWallpaper').onclick=()=>{
   if(wallpaperUrl)URL.revokeObjectURL(wallpaperUrl);
-  wallpaperUrl='';
-  wallpaper.value='';
-  wallpaperPreview.removeAttribute('src');
-  wallpaperPreview.style.display='none';
-  wallpaperPreview.style.objectFit='cover';
-  zoom.value='100';posX.value='50';posY.value='50';
-  updateWallpaperTransform();
+  wallpaperUrl='';wallpaper.value='';wallpaperPreview.removeAttribute('src');wallpaperPreview.style.display='none';wallpaperPreview.style.objectFit='cover';
+  zoom.value='100';posX.value='50';posY.value='50';updateWallpaperTransform();
   document.querySelectorAll('.fit').forEach(b=>b.classList.toggle('active',b.dataset.fit==='cover'));
 };
 
 function currentTone(){return tones.find(t=>String(t.number)===ringtone.value);}
 function updateToneInfo(){
-  const tone=currentTone();
-  if(!tone)return;
+  const tone=currentTone();if(!tone)return;
   toneInfo.querySelector('strong').textContent=`Ringtone ${tone.number} — ${tone.name}`;
   toneInfo.querySelector('span').textContent=`${tone.description} Recommended: ${tone.recommended}`;
   toneLabel.textContent=tone.name;
 }
-
-fetch('../Webex_Ringtones/ringtones.json',{cache:'no-store'})
-  .then(r=>r.json()).then(data=>{
-    tones=data.filter(t=>t.file&&!t.pending);
-    ringtone.innerHTML=tones.map(t=>`<option value="${t.number}">Ringtone ${t.number} — ${t.name}</option>`).join('');
-    ringtone.value='11';
-    updateToneInfo();
-  });
-
+fetch('../Webex_Ringtones/ringtones.json',{cache:'no-store'}).then(r=>r.json()).then(data=>{
+  tones=data.filter(t=>t.file&&!t.pending);
+  ringtone.innerHTML=tones.map(t=>`<option value="${t.number}">Ringtone ${t.number} — ${t.name}</option>`).join('');
+  ringtone.value='11';updateToneInfo();
+});
 function shiftTone(amount){
   if(!tones.length)return;
   const idx=Math.max(0,tones.findIndex(t=>String(t.number)===ringtone.value));
-  const next=(idx+amount+tones.length)%tones.length;
-  ringtone.value=tones[next].number;
-  stopRing();
-  updateToneInfo();
+  ringtone.value=tones[(idx+amount+tones.length)%tones.length].number;
+  stopRing();updateToneInfo();
 }
-
 document.querySelector('#prev').onclick=()=>shiftTone(-1);
 document.querySelector('#next').onclick=()=>shiftTone(1);
 ringtone.addEventListener('change',()=>{stopRing();updateToneInfo();});
 caller.addEventListener('change',()=>{callerLabel.textContent=caller.value;stopRing();});
-
 function stopRing(){
-  audio.pause();
-  audio.currentTime=0;
-  phone.classList.remove('ringing');
-  ringBtn.textContent='Ring Phone';
-  nowPlaying.textContent='Ready to preview';
-  nowPlaying.classList.remove('live');
+  audio.pause();audio.currentTime=0;phone.classList.remove('ringing');ringBtn.textContent='Ring Phone';nowPlaying.textContent='Ready to preview';nowPlaying.classList.remove('live');
 }
-
 ringBtn.onclick=()=>{
   if(phone.classList.contains('ringing')){stopRing();return;}
-  const tone=currentTone();
-  if(!tone)return;
-  callerLabel.textContent=caller.value;
-  toneLabel.textContent=tone.name;
+  const tone=currentTone();if(!tone)return;
+  callerLabel.textContent=caller.value;toneLabel.textContent=tone.name;
   audio.src=`../Webex_Ringtones/${tone.file}`;
-  audio.play().then(()=>{
-    phone.classList.add('ringing');
-    ringBtn.textContent='Stop Ringing';
-    nowPlaying.textContent=`Now playing: ${tone.name} for ${caller.value}`;
-    nowPlaying.classList.add('live');
-  }).catch(()=>{
-    nowPlaying.textContent='Audio could not start. Tap Ring Phone again.';
-  });
+  audio.play().then(()=>{phone.classList.add('ringing');ringBtn.textContent='Stop Ringing';nowPlaying.textContent=`Now playing: ${tone.name} for ${caller.value}`;nowPlaying.classList.add('live');}).catch(()=>{nowPlaying.textContent='Audio could not start. Tap Ring Phone again.';});
 };
 audio.addEventListener('ended',stopRing);
-
-function updateClock(){
-  const now=new Date();
-  document.querySelector('#time').textContent=now.toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
-}
+function updateClock(){document.querySelector('#time').textContent=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});}
 updateClock();setInterval(updateClock,30000);
+selectPhone(activePhone,document.querySelector('.model.active'));
