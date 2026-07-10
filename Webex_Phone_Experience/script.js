@@ -3,7 +3,7 @@ const phones=[
   {id:'9851',name:'Cisco Desk Phone 9851',desc:'Compact PhoneOS color desk phone with six physical line keys.',image:'https://www.atlasphones.com/cdn/shop/files/Cisco9851Deskphone-stockphoto1_medium.jpg?v=1730129675'},
   {id:'9861',name:'Cisco Desk Phone 9861',desc:'PhoneOS desk phone with a larger display and ten physical line keys.',image:'https://cdn11.bigcommerce.com/s-u3uxlvxq3h/images/stencil/1280x1280/products/10565/43086/Cisco-9861-Black-Left__21510.1714765534.jpg?c=1'},
   {id:'9871',name:'Cisco Desk Phone 9871',desc:'Large 5-inch high-resolution touchscreen with a prominent idle clock.',image:'https://serverorbit.com/images/ab__webp/detailed/64/Cisco-DP-9871-K9-Desk-Phone-9871-Carbon-Black_jpeg.webp'},
-  {id:'8875',name:'Cisco Video Phone 8875',desc:'Full video phone with a 7-inch touchscreen and integrated camera.',image:'https://service.pcconnection.com/images/inhouse/B0A1A78B-96DE-4439-B25D-8A69990E344A.jpg'}
+  {id:'8875',name:'Cisco Video Phone 8875',desc:'Full video phone with a 7-inch touchscreen and integrated camera.',image:'https://cdn11.bigcommerce.com/s-z2d8eutrbc/images/stencil/1280x1280/products/18497/29448/1075752247__06341.1710819922.jpg?c=1'}
 ];
 const models=document.querySelector('#models');
 const phone=document.querySelector('#phone');
