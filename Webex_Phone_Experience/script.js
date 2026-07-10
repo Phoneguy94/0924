@@ -5,8 +5,19 @@ const phones=[
   {id:'9871',name:'Cisco Desk Phone 9871',desc:'Large 5-inch high-resolution touchscreen with a prominent idle clock.',image:'https://networkdevicesinc.com/cdn/shop/files/Cisco-9871-Black-Front__96731_600x_crop_center.jpg?v=1746717305'},
   {id:'8875',name:'Cisco Video Phone 8875',desc:'Full video phone with a 7-inch touchscreen and integrated camera.',image:'https://cdn11.bigcommerce.com/s-z2d8eutrbc/images/stencil/1280x1280/products/18497/29449/1075752247__90975.1710819922.jpg?c=1'}
 ];
+
+const defaultMappings={
+  '8851':{x:61.9,y:9.2,w:20.9,h:20.6},
+  '9851':{x:48.0,y:19.5,w:31.0,h:15.8},
+  '9861':{x:50.4,y:18.0,w:36.4,h:24.2},
+  '9871':{x:50.2,y:17.2,w:40.0,h:25.4},
+  '8875':{x:44.8,y:18.3,w:46.3,h:33.7}
+};
+const mappings=JSON.parse(JSON.stringify(defaultMappings));
+
 const models=document.querySelector('#models');
 const phone=document.querySelector('#phone');
+const screen=document.querySelector('#screen');
 const devicePhoto=document.querySelector('#devicePhoto');
 const wallpaper=document.querySelector('#wallpaper');
 const wallpaperPreview=document.querySelector('#wallpaperPreview');
@@ -23,23 +34,155 @@ const nowPlaying=document.querySelector('#nowPlaying');
 const zoom=document.querySelector('#zoom');
 const posX=document.querySelector('#posX');
 const posY=document.querySelector('#posY');
+const calibrationPanel=document.querySelector('#calibrationPanel');
+const toggleCalibration=document.querySelector('#toggleCalibration');
+const calibrationCss=document.querySelector('#calibrationCss');
 const audio=new Audio();
 let tones=[];
 let activePhone=phones[1];
 let wallpaperUrl='';
-phones.forEach(p=>{const btn=document.createElement('button');btn.className='model'+(p.id===activePhone.id?' active':'');btn.textContent=p.id;btn.onclick=()=>selectPhone(p,btn);models.appendChild(btn);});
-function selectPhone(p,btn){activePhone=p;document.querySelectorAll('.model').forEach(b=>b.classList.remove('active'));if(btn)btn.classList.add('active');phone.className=`phone-photo model-${p.id}`;devicePhoto.src=p.image;devicePhoto.alt=p.name;selectedName.textContent=p.id;selectedDesc.textContent=p.desc;modelLabel.textContent=p.name;stopRing();}
-devicePhoto.addEventListener('error',()=>{nowPlaying.textContent=`The ${activePhone.id} product image host did not respond. Try refreshing.`;nowPlaying.classList.remove('live');});
-function updateWallpaperTransform(){wallpaperPreview.style.transform=`scale(${Number(zoom.value)/100})`;wallpaperPreview.style.objectPosition=`${posX.value}% ${posY.value}%`;}
-wallpaper.addEventListener('change',e=>{const file=e.target.files[0];if(!file)return;if(wallpaperUrl)URL.revokeObjectURL(wallpaperUrl);wallpaperUrl=URL.createObjectURL(file);wallpaperPreview.src=wallpaperUrl;wallpaperPreview.style.display='block';zoom.value='100';posX.value='50';posY.value='50';updateWallpaperTransform();});
+let calibrationOn=false;
+
+phones.forEach(p=>{
+  const btn=document.createElement('button');
+  btn.className='model'+(p.id===activePhone.id?' active':'');
+  btn.textContent=p.id;
+  btn.onclick=()=>selectPhone(p,btn);
+  models.appendChild(btn);
+});
+
+function applyMapping(){
+  const m=mappings[activePhone.id];
+  phone.style.setProperty('--sx',`${m.x}%`);
+  phone.style.setProperty('--sy',`${m.y}%`);
+  phone.style.setProperty('--sw',`${m.w}%`);
+  phone.style.setProperty('--sh',`${m.h}%`);
+  updateCalibrationReadout();
+}
+
+function selectPhone(p,btn){
+  activePhone=p;
+  document.querySelectorAll('.model').forEach(b=>b.classList.remove('active'));
+  if(btn)btn.classList.add('active');
+  phone.className=`phone-photo model-${p.id}${calibrationOn?' calibrating':''}`;
+  devicePhoto.src=p.image;
+  devicePhoto.alt=p.name;
+  selectedName.textContent=p.id;
+  selectedDesc.textContent=p.desc;
+  modelLabel.textContent=p.name;
+  applyMapping();
+  stopRing();
+}
+
+devicePhoto.addEventListener('error',()=>{
+  nowPlaying.textContent=`The ${activePhone.id} product image host did not respond. Try refreshing.`;
+  nowPlaying.classList.remove('live');
+});
+
+function updateWallpaperTransform(){
+  wallpaperPreview.style.transform=`scale(${Number(zoom.value)/100})`;
+  wallpaperPreview.style.objectPosition=`${posX.value}% ${posY.value}%`;
+}
+wallpaper.addEventListener('change',e=>{
+  const file=e.target.files[0];
+  if(!file)return;
+  if(wallpaperUrl)URL.revokeObjectURL(wallpaperUrl);
+  wallpaperUrl=URL.createObjectURL(file);
+  wallpaperPreview.src=wallpaperUrl;
+  wallpaperPreview.style.display='block';
+  zoom.value='100';posX.value='50';posY.value='50';
+  updateWallpaperTransform();
+});
 [zoom,posX,posY].forEach(control=>control.addEventListener('input',updateWallpaperTransform));
-document.querySelectorAll('.fit').forEach(btn=>btn.onclick=()=>{document.querySelectorAll('.fit').forEach(b=>b.classList.remove('active'));btn.classList.add('active');wallpaperPreview.style.objectFit=btn.dataset.fit;});
-document.querySelector('#resetWallpaper').onclick=()=>{if(wallpaperUrl)URL.revokeObjectURL(wallpaperUrl);wallpaperUrl='';wallpaper.value='';wallpaperPreview.removeAttribute('src');wallpaperPreview.style.display='none';wallpaperPreview.style.objectFit='cover';zoom.value='100';posX.value='50';posY.value='50';updateWallpaperTransform();document.querySelectorAll('.fit').forEach(b=>b.classList.toggle('active',b.dataset.fit==='cover'));};
+document.querySelectorAll('.fit').forEach(btn=>btn.onclick=()=>{
+  document.querySelectorAll('.fit').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  wallpaperPreview.style.objectFit=btn.dataset.fit;
+});
+document.querySelector('#resetWallpaper').onclick=()=>{
+  if(wallpaperUrl)URL.revokeObjectURL(wallpaperUrl);
+  wallpaperUrl='';wallpaper.value='';wallpaperPreview.removeAttribute('src');wallpaperPreview.style.display='none';wallpaperPreview.style.objectFit='cover';
+  zoom.value='100';posX.value='50';posY.value='50';updateWallpaperTransform();
+  document.querySelectorAll('.fit').forEach(b=>b.classList.toggle('active',b.dataset.fit==='cover'));
+};
+
 function currentTone(){return tones.find(t=>String(t.number)===ringtone.value);}
-function updateToneInfo(){const tone=currentTone();if(!tone)return;toneInfo.querySelector('strong').textContent=`Ringtone ${tone.number} — ${tone.name}`;toneInfo.querySelector('span').textContent=`${tone.description} Recommended: ${tone.recommended}`;toneLabel.textContent=tone.name;}
-fetch('../Webex_Ringtones/ringtones.json',{cache:'no-store'}).then(r=>r.json()).then(data=>{tones=data.filter(t=>t.file&&!t.pending);ringtone.innerHTML=tones.map(t=>`<option value="${t.number}">Ringtone ${t.number} — ${t.name}</option>`).join('');ringtone.value='11';updateToneInfo();});
-function shiftTone(amount){if(!tones.length)return;const idx=Math.max(0,tones.findIndex(t=>String(t.number)===ringtone.value));ringtone.value=tones[(idx+amount+tones.length)%tones.length].number;stopRing();updateToneInfo();}
-document.querySelector('#prev').onclick=()=>shiftTone(-1);document.querySelector('#next').onclick=()=>shiftTone(1);ringtone.addEventListener('change',()=>{stopRing();updateToneInfo();});caller.addEventListener('change',()=>{callerLabel.textContent=caller.value;stopRing();});
-function stopRing(){audio.pause();audio.currentTime=0;phone.classList.remove('ringing');ringBtn.textContent='Ring Phone';nowPlaying.textContent='Ready to preview';nowPlaying.classList.remove('live');}
-ringBtn.onclick=()=>{if(phone.classList.contains('ringing')){stopRing();return;}const tone=currentTone();if(!tone)return;callerLabel.textContent=caller.value;toneLabel.textContent=tone.name;audio.src=`../Webex_Ringtones/${tone.file}`;audio.play().then(()=>{phone.classList.add('ringing');ringBtn.textContent='Stop Ringing';nowPlaying.textContent=`Now playing: ${tone.name} for ${caller.value}`;nowPlaying.classList.add('live');}).catch(()=>{nowPlaying.textContent='Audio could not start. Tap Ring Phone again.';});};
-audio.addEventListener('ended',stopRing);function updateClock(){document.querySelector('#time').textContent=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});}updateClock();setInterval(updateClock,30000);selectPhone(activePhone,document.querySelector('.model.active'));
+function updateToneInfo(){
+  const tone=currentTone();if(!tone)return;
+  toneInfo.querySelector('strong').textContent=`Ringtone ${tone.number} — ${tone.name}`;
+  toneInfo.querySelector('span').textContent=`${tone.description} Recommended: ${tone.recommended}`;
+  toneLabel.textContent=tone.name;
+}
+fetch('../Webex_Ringtones/ringtones.json',{cache:'no-store'}).then(r=>r.json()).then(data=>{
+  tones=data.filter(t=>t.file&&!t.pending);
+  ringtone.innerHTML=tones.map(t=>`<option value="${t.number}">Ringtone ${t.number} — ${t.name}</option>`).join('');
+  ringtone.value='11';updateToneInfo();
+});
+function shiftTone(amount){
+  if(!tones.length)return;
+  const idx=Math.max(0,tones.findIndex(t=>String(t.number)===ringtone.value));
+  ringtone.value=tones[(idx+amount+tones.length)%tones.length].number;
+  stopRing();updateToneInfo();
+}
+document.querySelector('#prev').onclick=()=>shiftTone(-1);
+document.querySelector('#next').onclick=()=>shiftTone(1);
+ringtone.addEventListener('change',()=>{stopRing();updateToneInfo();});
+caller.addEventListener('change',()=>{callerLabel.textContent=caller.value;stopRing();});
+function stopRing(){
+  audio.pause();audio.currentTime=0;phone.classList.remove('ringing');ringBtn.textContent='Ring Phone';nowPlaying.textContent='Ready to preview';nowPlaying.classList.remove('live');
+}
+ringBtn.onclick=()=>{
+  if(phone.classList.contains('ringing')){stopRing();return;}
+  const tone=currentTone();if(!tone)return;
+  callerLabel.textContent=caller.value;toneLabel.textContent=tone.name;
+  audio.src=`../Webex_Ringtones/${tone.file}`;
+  audio.play().then(()=>{phone.classList.add('ringing');ringBtn.textContent='Stop Ringing';nowPlaying.textContent=`Now playing: ${tone.name} for ${caller.value}`;nowPlaying.classList.add('live');}).catch(()=>{nowPlaying.textContent='Audio could not start. Tap Ring Phone again.';});
+};
+audio.addEventListener('ended',stopRing);
+
+function updateCalibrationReadout(){
+  const m=mappings[activePhone.id];
+  document.querySelector('#calModel').textContent=activePhone.id;
+  document.querySelector('#calX').textContent=m.x.toFixed(1);
+  document.querySelector('#calY').textContent=m.y.toFixed(1);
+  document.querySelector('#calW').textContent=m.w.toFixed(1);
+  document.querySelector('#calH').textContent=m.h.toFixed(1);
+  calibrationCss.textContent=`.model-${activePhone.id}{--sx:${m.x.toFixed(1)}%;--sy:${m.y.toFixed(1)}%;--sw:${m.w.toFixed(1)}%;--sh:${m.h.toFixed(1)}%;}`;
+}
+function adjustCalibration(action,step=.1){
+  const m=mappings[activePhone.id];
+  if(action==='left')m.x-=step;
+  if(action==='right')m.x+=step;
+  if(action==='up')m.y-=step;
+  if(action==='down')m.y+=step;
+  if(action==='wider')m.w+=step;
+  if(action==='narrower')m.w-=step;
+  if(action==='taller')m.h+=step;
+  if(action==='shorter')m.h-=step;
+  m.x=Math.max(0,Math.min(100,m.x));m.y=Math.max(0,Math.min(100,m.y));m.w=Math.max(1,Math.min(100,m.w));m.h=Math.max(1,Math.min(100,m.h));
+  applyMapping();
+}
+toggleCalibration.onclick=()=>{
+  calibrationOn=!calibrationOn;
+  calibrationPanel.hidden=!calibrationOn;
+  phone.classList.toggle('calibrating',calibrationOn);
+  toggleCalibration.textContent=calibrationOn?'Exit Calibration':'Calibrate Screen Mapping';
+  updateCalibrationReadout();
+};
+document.querySelectorAll('[data-cal]').forEach(btn=>btn.onclick=()=>adjustCalibration(btn.dataset.cal,.1));
+document.addEventListener('keydown',e=>{
+  if(!calibrationOn)return;
+  const keyMap={ArrowLeft:'left',ArrowRight:'right',ArrowUp:'up',ArrowDown:'down'};
+  if(!keyMap[e.key])return;
+  e.preventDefault();
+  if(e.shiftKey){
+    const resizeMap={ArrowLeft:'narrower',ArrowRight:'wider',ArrowUp:'shorter',ArrowDown:'taller'};
+    adjustCalibration(resizeMap[e.key],e.altKey?1:.1);
+  }else adjustCalibration(keyMap[e.key],e.altKey?1:.1);
+});
+document.querySelector('#copyCalibration').onclick=async()=>{
+  try{await navigator.clipboard.writeText(calibrationCss.textContent);document.querySelector('#copyCalibration').textContent='Copied!';setTimeout(()=>document.querySelector('#copyCalibration').textContent='Copy CSS',1200);}catch{nowPlaying.textContent='Copy failed. Select the CSS text manually.';}
+};
+
+function updateClock(){document.querySelector('#time').textContent=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});}
+updateClock();setInterval(updateClock,30000);selectPhone(activePhone,document.querySelector('.model.active'));
