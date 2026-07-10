@@ -8,31 +8,47 @@
 </head>
 <body>
 <header class="topbar">
-  <div class="brand">Veytec Webex Phone Experience <span>V2</span></div>
-  <a href="../Webex_Ringtones/">Open V1 Soundboard</a>
+  <div class="brand-lockup">
+    <img src="../Webex_Ringtones/assets/veytec-logo.jpg" alt="Veytec">
+    <span class="divider"></span>
+    <img src="../Webex_Ringtones/assets/webex-logo.jpg" alt="Webex by Cisco">
+  </div>
+  <div class="top-actions"><span>Phone Experience <b>V2</b></span><a href="../Webex_Ringtones/">Open V1 Soundboard</a></div>
 </header>
 <main>
   <section class="panel controls">
     <h1>Build Your Phone Experience</h1>
     <p>Choose a phone, upload a wallpaper, then preview how incoming calls and ringtones feel on that device.</p>
+
     <div class="step"><label>1. Choose your phone</label><div id="models" class="model-grid"></div></div>
+
     <div class="step">
-      <label for="wallpaper">2. Upload wallpaper</label>
+      <label for="wallpaper">2. Upload and position wallpaper</label>
       <input id="wallpaper" type="file" accept="image/*">
       <div class="fit-row">
         <button data-fit="cover" class="fit active">Fill Screen</button>
         <button data-fit="contain" class="fit">Fit Entire Image</button>
+        <button id="resetWallpaper">Reset</button>
+      </div>
+      <div class="slider-grid">
+        <label>Zoom <input id="zoom" type="range" min="100" max="240" value="100"></label>
+        <label>Horizontal <input id="posX" type="range" min="0" max="100" value="50"></label>
+        <label>Vertical <input id="posY" type="range" min="0" max="100" value="50"></label>
       </div>
     </div>
-    <div class="step">
-      <label for="ringtone">3. Pick ringtone</label>
-      <select id="ringtone"></select>
-      <div class="ring-row">
-        <button id="prev">◀ Previous</button>
-        <button id="ring" class="primary">Ring Phone</button>
-        <button id="next">Next ▶</button>
-      </div>
+
+    <div class="step two-col">
+      <div><label for="caller">3. Incoming call source</label><select id="caller"><option>Front Door</option><option>Main Lobby</option><option>Security Gate</option><option>Loading Dock</option><option>Receiving Entrance</option><option>Visitor Entrance</option></select></div>
+      <div><label for="ringtone">4. Pick ringtone</label><select id="ringtone"></select></div>
     </div>
+
+    <div id="toneInfo" class="tone-info"><strong>Select a ringtone</strong><span></span></div>
+    <div class="ring-row">
+      <button id="prev">◀ Previous</button>
+      <button id="ring" class="primary">Ring Phone</button>
+      <button id="next">Next ▶</button>
+    </div>
+    <div id="nowPlaying" class="now-playing">Ready to preview</div>
   </section>
 
   <section class="preview-wrap">
@@ -42,16 +58,15 @@
         <img id="wallpaperPreview" alt="Uploaded wallpaper preview">
         <div class="screen-overlay">
           <div id="time">10:24</div>
+          <div class="line-panel"><span>Anthony Cotignola</span><span>1001</span></div>
           <div id="modelLabel">Cisco Desk Phone 9851</div>
-          <div id="incoming" class="incoming">Incoming Call<br><strong>Front Door</strong></div>
+          <div id="incoming" class="incoming"><small>Incoming Call</small><strong id="callerLabel">Front Door</strong><span id="toneLabel">Ringer</span></div>
         </div>
       </div>
       <div class="keys"><span></span><span></span><span></span><span></span><span></span><span></span></div>
     </div>
-    <div class="preview-meta">
-      <strong id="selectedName">9851</strong>
-      <span id="selectedDesc">Compact color desk phone preview.</span>
-    </div>
+    <div class="preview-meta"><strong id="selectedName">9851</strong><span id="selectedDesc">Compact color desk phone preview.</span></div>
+    <div class="prototype-note">Interactive prototype. Real straight-on Cisco device photos and exact screen mappings are the next visual layer.</div>
   </section>
 </main>
 <script src="script.js"></script>
