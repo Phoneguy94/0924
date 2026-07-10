@@ -48,11 +48,18 @@ function selectPhone(p,btn){
   phone.style.removeProperty('--sh');
   devicePhoto.src=p.image;
   devicePhoto.alt=p.name;
+  if(devicePhoto.complete)applyAspectRatio();
   selectedName.textContent=p.id;
   selectedDesc.textContent=p.desc;
   modelLabel.textContent=p.name;
   stopRing();
   if(typeof calibrating!=='undefined'&&calibrating)updateCalibrateReadout();
+}
+
+function applyAspectRatio(){
+  if(devicePhoto.naturalWidth&&devicePhoto.naturalHeight){
+    phone.style.setProperty('--ar',`${devicePhoto.naturalWidth} / ${devicePhoto.naturalHeight}`);
+  }
 }
 
 devicePhoto.addEventListener('error',()=>{
@@ -61,9 +68,7 @@ devicePhoto.addEventListener('error',()=>{
 });
 
 devicePhoto.addEventListener('load',()=>{
-  if(devicePhoto.naturalWidth&&devicePhoto.naturalHeight){
-    phone.style.setProperty('--ar',`${devicePhoto.naturalWidth} / ${devicePhoto.naturalHeight}`);
-  }
+  applyAspectRatio();
   if(calibrating)updateCalibrateReadout();
 });
 
