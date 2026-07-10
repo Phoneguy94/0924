@@ -28,6 +28,9 @@ const audio=new Audio();
 let tones=[];
 let activePhone=phones[1];
 let wallpaperUrl='';
+let cadenceTimers=[];
+let playToken=0;
+let isRinging=false;
 
 phones.forEach(p=>{
   const btn=document.createElement('button');
@@ -135,31 +138,112 @@ document.querySelector('#next').onclick=()=>shiftTone(1);
 ringtone.addEventListener('change',()=>{stopRing();updateToneInfo();});
 caller.addEventListener('change',()=>{callerLabel.textContent=caller.value;stopRing();});
 
-function stopRing(){
-  audio.pause();
-  audio.currentTime=0;
+function clearCadenceTimers(){
+  cadenceTimers.forEach(timer=>clearTimeout(timer));
+  cadenceTimers=[];
+}
+
+function schedule(fn,delay){
+  const timer=setTimeout(fn,delay);
+  cadenceTimers.push(timer);
+  return timer;
+}
+
+function resetRingUi(){
+  isRinging=false;
   phone.classList.remove('ringing');
   ringBtn.textContent='Ring Phone';
   nowPlaying.textContent='Ready to preview';
   nowPlaying.classList.remove('live');
 }
 
+function stopRing(){
+  playToken++;
+  clearCadenceTimers();
+  audio.pause();
+  audio.loop=false;
+  audio.currentTime=0;
+  resetRingUi();
+}
+
+function beginRingUi(tone){
+  isRinging=true;
+  phone.classList.add('ringing');
+  ringBtn.textContent='Stop Ringing';
+  nowPlaying.textContent=`Now playing: ${tone.name} for ${caller.value}`;
+  nowPlaying.classList.add('live');
+}
+
+function playBellcoreCadence(tone){
+  stopRing();
+  const token=++playToken;
+  const cycles=3;
+  const onMs=2000;
+  const offMs=4000;
+  let cycle=0;
+
+  audio.src=`../Webex_Ringtones/${tone.file}`;
+  audio.loop=true;
+  beginRingUi(tone);
+
+  const ringOnce=()=>{
+    if(token!==playToken)return;
+    cycle++;
+    audio.currentTime=0;
+    audio.play().catch(()=>{
+      if(token===playToken){
+        stopRing();
+        nowPlaying.textContent='Audio could not start. Tap Ring Phone again.';
+      }
+    });
+
+    schedule(()=>{
+      if(token!==playToken)return;
+      audio.pause();
+      audio.currentTime=0;
+
+      if(cycle>=cycles){
+        audio.loop=false;
+        resetRingUi();
+        return;
+      }
+
+      schedule(ringOnce,offMs);
+    },onMs);
+  };
+
+  ringOnce();
+}
+
 ringBtn.onclick=()=>{
-  if(phone.classList.contains('ringing')){stopRing();return;}
+  if(isRinging){stopRing();return;}
   const tone=currentTone();
   if(!tone)return;
   callerLabel.textContent=caller.value;
   toneLabel.textContent=tone.name;
+
+  if(/^Bellcore-dr[1-5]$/i.test(tone.name)){
+    playBellcoreCadence(tone);
+    return;
+  }
+
+  stopRing();
+  const token=++playToken;
   audio.src=`../Webex_Ringtones/${tone.file}`;
+  audio.loop=false;
   audio.play().then(()=>{
-    phone.classList.add('ringing');
-    ringBtn.textContent='Stop Ringing';
-    nowPlaying.textContent=`Now playing: ${tone.name} for ${caller.value}`;
-    nowPlaying.classList.add('live');
-  }).catch(()=>{nowPlaying.textContent='Audio could not start. Tap Ring Phone again.';});
+    if(token===playToken)beginRingUi(tone);
+  }).catch(()=>{
+    if(token===playToken){
+      resetRingUi();
+      nowPlaying.textContent='Audio could not start. Tap Ring Phone again.';
+    }
+  });
 };
 
-audio.addEventListener('ended',stopRing);
+audio.addEventListener('ended',()=>{
+  if(!audio.loop)stopRing();
+});
 function updateClock(){document.querySelector('#time').textContent=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});}
 updateClock();
 setInterval(updateClock,30000);
