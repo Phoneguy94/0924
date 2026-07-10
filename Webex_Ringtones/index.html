@@ -3,14 +3,19 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Webex Calling Ringtone Soundboard</title>
+<title>Veytec Webex Calling Ringtone Soundboard</title>
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
 <header>
+  <div class="brandbar">
+    <div class="veytec-mark" aria-label="Veytec">VEYTEC</div>
+    <img class="webex-logo" src="../VXP/overlay/assets/webex-logo.svg" alt="Webex by Cisco">
+  </div>
   <div class="head">
     <div>
-      <h1>Webex Calling Ringtone Soundboard</h1>
+      <div class="eyebrow">Veytec Webex Calling Toolkit</div>
+      <h1>Ringtone Soundboard</h1>
       <div class="sub">Preview ringtone options for Cisco 8875 and 9800 Series PhoneOS phones. Pick a tile to play it; picking another tile automatically stops the first one.</div>
     </div>
     <div class="pill">3 × 5 Soundboard</div>
@@ -21,15 +26,10 @@
     <input id="search" class="search" type="search" placeholder="Search by ringtone, user type, mood, or description..." autocomplete="off">
     <div id="filters" class="filters" aria-label="Ringtone filters"></div>
   </div>
-
-  <div class="note">Unofficial lab/reference page. Audio files are loaded from the existing <b>/audio</b> folder. Ringtone 5 is still marked pending until the exact audio mapping is verified.</div>
-
+  <div class="note">Unofficial Veytec lab/reference page. Audio files are loaded from the existing <b>/audio</b> folder. Ringtone 5 is still marked pending until the exact audio mapping is verified.</div>
   <section id="board" class="board" aria-label="Ringtone soundboard"></section>
   <div id="empty" class="empty">No ringtones match that search/filter.</div>
-
-  <footer>
-    Tip: use this page during Webex Calling demos to help users pick a ringtone by personality or work style instead of only by number.
-  </footer>
+  <footer><strong>Built by Veytec</strong><br>Helping customers get more from Webex Calling.</footer>
 </main>
 <script src="script.js"></script>
 </body>
