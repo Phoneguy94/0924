@@ -28,7 +28,7 @@ const posY=$('#posY');
 const compareControl=$('#compareControl');
 const compareSlider=$('#compareSlider');
 const compareValue=$('#compareValue');
-const darkLayer=$('#darkLayer');
+const lightTextLayer=$('#lightTextLayer');
 const compareDivider=$('#compareDivider');
 const audio=new Audio();
 let tones=[];
@@ -38,6 +38,17 @@ let cadenceTimers=[];
 let playToken=0;
 let isRinging=false;
 let appearance='light';
+
+function syncTextLayers(){
+  const timeCopy=$('.time-copy');
+  const modelCopy=$('.model-copy');
+  const callerCopy=$('.caller-copy');
+  const toneCopy=$('.tone-copy');
+  if(timeCopy)timeCopy.textContent=$('#time').textContent;
+  if(modelCopy)modelCopy.textContent=modelLabel.textContent;
+  if(callerCopy)callerCopy.textContent=callerLabel.textContent;
+  if(toneCopy)toneCopy.textContent=toneLabel.textContent;
+}
 
 phones.forEach(p=>{
   const btn=document.createElement('button');
@@ -59,6 +70,7 @@ function selectPhone(p,btn){
   selectedName.textContent=p.id;
   selectedDesc.textContent=p.desc;
   modelLabel.textContent=p.name;
+  syncTextLayers();
   applyAppearance();
   stopRing();
 }
@@ -76,26 +88,18 @@ devicePhoto.addEventListener('error',()=>{
 devicePhoto.addEventListener('load',applyAspectRatio);
 
 function setComparePosition(){
-  const lightPercent=Number(compareSlider.value);
-  darkLayer.style.left=`${lightPercent}%`;
-  darkLayer.style.width=`${100-lightPercent}%`;
-  compareDivider.style.left=`${lightPercent}%`;
-  compareValue.textContent=`${lightPercent}% light / ${100-lightPercent}% dark`;
+  const darkPercent=Number(compareSlider.value);
+  lightTextLayer.style.clipPath=`inset(0 0 0 ${darkPercent}%)`;
+  lightTextLayer.style.webkitClipPath=`inset(0 0 0 ${darkPercent}%)`;
+  compareDivider.style.left=`${darkPercent}%`;
+  compareValue.textContent=`${darkPercent}% dark text / ${100-darkPercent}% light text`;
 }
 
 function applyAppearance(){
   phone.dataset.appearance=appearance;
   compareControl.hidden=appearance!=='compare';
   document.querySelectorAll('.appearance').forEach(btn=>btn.classList.toggle('active',btn.dataset.appearance===appearance));
-  if(appearance==='light'){
-    darkLayer.style.left='100%';
-    darkLayer.style.width='0%';
-  }else if(appearance==='dark'){
-    darkLayer.style.left='0%';
-    darkLayer.style.width='100%';
-  }else{
-    setComparePosition();
-  }
+  if(appearance==='compare')setComparePosition();
 }
 
 document.querySelectorAll('.appearance').forEach(btn=>{
@@ -149,6 +153,7 @@ function updateToneInfo(){
   toneInfo.querySelector('strong').textContent=`Ringtone ${tone.number} — ${tone.name}`;
   toneInfo.querySelector('span').textContent=`${tone.description} Recommended: ${tone.recommended}`;
   toneLabel.textContent=tone.name;
+  syncTextLayers();
 }
 
 fetch('../Webex_Ringtones/ringtones.json',{cache:'no-store'}).then(r=>r.json()).then(data=>{
@@ -169,7 +174,7 @@ function shiftTone(amount){
 $('#prev').onclick=()=>shiftTone(-1);
 $('#next').onclick=()=>shiftTone(1);
 ringtone.addEventListener('change',()=>{stopRing();updateToneInfo();});
-caller.addEventListener('change',()=>{callerLabel.textContent=caller.value;stopRing();});
+caller.addEventListener('change',()=>{callerLabel.textContent=caller.value;syncTextLayers();stopRing();});
 
 function clearCadenceTimers(){cadenceTimers.forEach(clearTimeout);cadenceTimers=[];}
 function schedule(fn,delay){const timer=setTimeout(fn,delay);cadenceTimers.push(timer);return timer;}
@@ -227,6 +232,7 @@ ringBtn.onclick=()=>{
   if(!tone)return;
   callerLabel.textContent=caller.value;
   toneLabel.textContent=tone.name;
+  syncTextLayers();
   if(/^Bellcore-dr[1-5]$/i.test(tone.name)){playBellcoreCadence(tone);return;}
   stopRing();
   const token=++playToken;
@@ -238,7 +244,10 @@ ringBtn.onclick=()=>{
 };
 
 audio.addEventListener('ended',()=>{if(!audio.loop)stopRing();});
-function updateClock(){$('#time').textContent=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});}
+function updateClock(){
+  $('#time').textContent=new Date().toLocaleTimeString([],{hour:'numeric',minute:'2-digit'});
+  syncTextLayers();
+}
 updateClock();
 setInterval(updateClock,30000);
 applyAppearance();
