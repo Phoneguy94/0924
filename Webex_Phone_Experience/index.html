@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Veytec Webex Phone Experience</title>
-<link rel="stylesheet" href="style.css?v=7">
+<link rel="stylesheet" href="style.css?v=8">
 </head>
 <body>
 <header class="topbar">
@@ -19,7 +19,19 @@
   <section class="panel controls">
     <h1>Build Your Phone Experience</h1>
     <p>Choose a real Cisco phone, set its appearance, upload a wallpaper, then preview the incoming-call and ringtone experience.</p>
-    <div class="step"><label>1. Choose your phone</label><div id="models" class="model-grid"></div></div>
+    <div class="step">
+      <label>1. Choose your phone</label>
+      <div id="models" class="model-groups">
+        <div class="model-series">
+          <div class="series-label">Cisco 8800 Series</div>
+          <div id="models8800" class="model-grid"></div>
+        </div>
+        <div class="model-series">
+          <div class="series-label">Cisco 9800 Series</div>
+          <div id="models9800" class="model-grid"></div>
+        </div>
+      </div>
+    </div>
     <div class="step appearance-step">
       <label>2. Text contrast</label>
       <div class="appearance-row" role="group" aria-label="Phone text contrast">
@@ -71,6 +83,6 @@
     <div class="prototype-note">The wallpaper stays unchanged; appearance controls only adjust text contrast.</div>
   </section>
 </main>
-<script src="script.js?v=7"></script>
+<script src="script.js?v=8"></script>
 </body>
 </html>
