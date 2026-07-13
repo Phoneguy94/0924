@@ -1,1 +1,116 @@
-change me
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Home Run Derby Challenge</title>
+<style>
+:root{--red:#e81828;--navy:#002d72;--cream:#f4efe2;--gold:#f5c242;--black:#090d12;--panel:#111820;--green:#8df58a}
+*{box-sizing:border-box}body{margin:0;font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at top,#1f3348,#07101a 55%,#020407);color:white;min-height:100vh}
+button,input,select,textarea{font:inherit}.wrap{max-width:1100px;margin:auto;padding:18px}.topbar{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:18px}.topbar button{border:2px solid white;background:var(--navy);color:white;padding:10px 16px;border-radius:999px;font-weight:800;cursor:pointer}.topbar button.active,.topbar button:hover{background:var(--red)}
+.view{display:none}.view.active{display:block}.card{background:rgba(16,24,34,.96);border:1px solid #34465a;border-radius:18px;padding:20px;box-shadow:0 12px 35px #0008;margin-bottom:16px}.hero{text-align:center;padding:24px 12px}.hero h1{font-family:Georgia,serif;font-style:italic;font-size:clamp(34px,7vw,70px);margin:0;color:white;text-shadow:4px 4px 0 var(--red),7px 7px 0 var(--navy)}.hero p{color:#d8e6f5}
+label{display:block;font-weight:800;margin:12px 0 6px}.nameInput,input[type=text],input[type=number],select,textarea{width:100%;padding:13px;border-radius:10px;border:1px solid #5a6a7d;background:#f8fafc;color:#111}.btn{border:0;border-radius:12px;padding:13px 18px;font-weight:900;cursor:pointer;background:var(--red);color:white}.btn.secondary{background:var(--navy)}.btn.gold{background:var(--gold);color:#111}.btn.danger{background:#7e1119}.row{display:flex;gap:10px;flex-wrap:wrap}.row>*{flex:1;min-width:180px}
+.category{font-size:13px;letter-spacing:2px;color:var(--gold);font-weight:900;text-transform:uppercase;margin-top:22px}.question{background:#0b1119;border-left:5px solid var(--red);padding:16px;border-radius:10px;margin:10px 0}.question h3{margin:0 0 10px;font-size:18px}.points{float:right;color:var(--gold);font-size:13px}.options{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px}.option{background:#182331;padding:10px;border-radius:8px;border:1px solid #36475a}.option input{margin-right:8px}.help{font-size:12px;color:#adbed0}.notice{padding:12px;border-radius:10px;background:#352d0f;border:1px solid #806d24;color:#ffe58a;margin-bottom:14px}
+/* scoreboard */
+.scoreboard-shell{background:linear-gradient(#1b242e,#05080b);border:10px solid #222b33;border-radius:18px;box-shadow:0 0 0 5px #080a0c,0 20px 60px #000;overflow:hidden;position:relative}.steel{height:20px;background:repeating-linear-gradient(90deg,#303942 0 34px,#12171c 34px 42px)}.score-sign{text-align:center;background:#0b0f13;padding:12px;border-bottom:4px solid #343b43}.score-sign .script{font-family:Georgia,serif;font-style:italic;font-weight:900;font-size:clamp(34px,7vw,76px);text-shadow:3px 3px 0 var(--red),6px 6px 0 #153d75}.score-sign small{display:block;color:var(--gold);letter-spacing:5px;font-weight:900}.video-board{background:#030807;padding:20px;min-height:420px;box-shadow:inset 0 0 40px #000}.led-title{text-align:center;color:var(--green);font-family:"Courier New",monospace;letter-spacing:4px;font-size:clamp(22px,4vw,44px);text-shadow:0 0 10px #58ff72}.leaders{width:100%;border-collapse:collapse;font-family:"Courier New",monospace;font-weight:900;font-size:clamp(16px,2.5vw,30px);color:#f8f6cf}.leaders th,.leaders td{padding:10px;border-bottom:2px dotted #53604e;text-align:left}.leaders th:last-child,.leaders td:last-child{text-align:right;color:var(--green)}.rank{color:var(--gold)}.lower-panels{display:grid;grid-template-columns:1fr 2fr 1fr;gap:8px;background:#111820;padding:10px}.sponsor{background:#e9edf2;color:#122236;text-align:center;font-weight:900;padding:12px;border-radius:5px}.sponsor.main{background:var(--red);color:white}.score-meta{display:flex;justify-content:space-around;gap:8px;flex-wrap:wrap;color:#9bff9b;font-family:"Courier New",monospace;margin-top:18px}.score-meta div{background:#07120b;border:1px solid #275b31;padding:10px;border-radius:6px}
+.admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}.admin-q{border:1px solid #3a4958;padding:12px;border-radius:10px;background:#0b1118}.admin-q h4{margin:0 0 8px}.tiny{font-size:12px}.hidden{display:none!important}@media(max-width:650px){.wrap{padding:8px}.card{padding:14px}.lower-panels{grid-template-columns:1fr}.leaders th:nth-child(3),.leaders td:nth-child(3){display:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="hero"><h1>Home Run Derby</h1><p>Cotignola House Challenge • Philadelphia</p></div>
+  <div class="topbar">
+    <button data-view="picks" class="active">Make Picks</button>
+    <button data-view="mypicks">My Picks</button>
+    <button data-view="scoreboard">Scoreboard</button>
+    <button data-view="admin">Commissioner</button>
+  </div>
+
+  <section id="picks" class="view active">
+    <div class="card">
+      <div class="notice"><b>MVP mode:</b> This version is fully functional on one browser. Shared phone submissions will be connected to Airtable next.</div>
+      <label>Your name</label><input id="playerName" class="nameInput" type="text" placeholder="Enter your name" />
+      <div id="questionForm"></div>
+      <button class="btn" id="submitPicks">Lock In My Picks</button>
+    </div>
+  </section>
+
+  <section id="mypicks" class="view"><div class="card"><h2>My Locked Picks</h2><div id="myPicksBody">No picks submitted on this device yet.</div></div></section>
+
+  <section id="scoreboard" class="view">
+    <div class="scoreboard-shell">
+      <div class="steel"></div>
+      <div class="score-sign"><div class="script">Home Run Derby</div><small>PHILADELPHIA • LIVE LEADERBOARD</small></div>
+      <div class="video-board"><div class="led-title">DERBY STANDINGS</div><table class="leaders"><thead><tr><th>RK</th><th>PLAYER</th><th>CORRECT</th><th>PTS</th></tr></thead><tbody id="leaderRows"></tbody></table><div class="score-meta"><div id="finalCount">FINAL 0</div><div id="pendingCount">PENDING 0</div><div id="playerCount">PLAYERS 0</div></div></div>
+      <div class="lower-panels"><div class="sponsor">LIBERTY BELL</div><div class="sponsor main">COTIGNOLA DERBY CHALLENGE</div><div class="sponsor">PHILLY POWER</div></div><div class="steel"></div>
+    </div>
+  </section>
+
+  <section id="admin" class="view">
+    <div class="card"><h2>Commissioner Controls</h2><p class="help">Enter official answers as the Derby happens. Scores update automatically.</p><div class="row"><button class="btn secondary" id="addQuestion">+ Add Question</button><button class="btn gold" id="exportData">Export Data</button><button class="btn danger" id="resetAll">Reset All Local Data</button></div></div>
+    <div class="card"><h3>Questions & Master Answers</h3><div id="adminQuestions" class="admin-grid"></div></div>
+  </section>
+</div>
+<script>
+const hitters=["Bryce Harper","Kyle Schwarber","Ben Rice","Junior Caminero","Jac Caglianone","Jordan Walker","Willson Contreras","Munetaka Murakami"];
+const baseQuestions=[
+{id:'winner',cat:'Results',q:'Who wins the Home Run Derby?',type:'player',pts:15,pen:0},
+{id:'top4',cat:'Results',q:'Pick the four hitters who advance from Round 1',type:'multi4',pts:4,pen:0},
+{id:'most_r1',cat:'Round 1',q:'Who hits the most home runs in Round 1?',type:'player',pts:8,pen:0},
+{id:'least_r1',cat:'Round 1',q:'Who hits the fewest home runs in Round 1?',type:'player',pts:6,pen:0},
+{id:'longest_person',cat:'Power',q:'Who hits the longest home run?',type:'player',pts:10,pen:0},
+{id:'longest_distance',cat:'Power',q:'How far is the longest home run?',type:'number',unit:'feet',pts:10,pen:0,tolerance:true},
+{id:'most_row',cat:'Streaks',q:'Who hits the most home runs in a row?',type:'player',pts:7,pen:0},
+{id:'most_outs',cat:'Streaks',q:'Who has the most consecutive swings without a home run?',type:'player',pts:7,pen:0},
+{id:'last_ball',cat:'Streaks',q:'Who hits the most home runs after the scheduled last swing?',type:'player',pts:8,pen:0},
+{id:'five_hundred',cat:'Power',q:'Will anyone hit a 500-foot home run?',type:'yesno',pts:5,pen:-2},
+{id:'out_stadium',cat:'Stadium',q:'Will a ball completely leave the stadium?',type:'yesno',pts:8,pen:-2},
+{id:'bell',cat:'Stadium',q:'Will a ball hit the Liberty Bell?',type:'yesno',pts:10,pen:-2},
+{id:'zero',cat:'Wild Cards',q:'Will anyone hit zero home runs in a round?',type:'yesno',pts:8,pen:-2},
+{id:'rocky',cat:'Philly Broadcast',q:'Will they show the Rocky statue?',type:'yesno',pts:4,pen:-1},
+{id:'cheesesteak',cat:'Philly Broadcast',q:'Will they explain what makes a Philadelphia cheesesteak?',type:'yesno',pts:4,pen:-1},
+{id:'adam',cat:'Celebrity Watch',q:'Will Adam Sandler appear or be shown?',type:'yesno',pts:5,pen:-1},
+{id:'ferrell',cat:'Celebrity Watch',q:'Will Will Ferrell appear or be shown?',type:'yesno',pts:5,pen:-1},
+{id:'kevin',cat:'Celebrity Watch',q:'Will Kevin Hart appear or be shown?',type:'yesno',pts:6,pen:-1},
+{id:'jason',cat:'Celebrity Watch',q:'Will Jason Kelce appear or be shown?',type:'yesno',pts:5,pen:-1},
+{id:'taylor',cat:'Celebrity Watch',q:'Will Taylor Swift appear or be shown?',type:'yesno',pts:8,pen:-2},
+{id:'travis',cat:'Celebrity Watch',q:'Will Travis Kelce appear or be shown?',type:'yesno',pts:6,pen:-2},
+{id:'surprise',cat:'Celebrity Watch',q:'Will there be a surprise guest not listed above?',type:'yesno',pts:5,pen:0},
+{id:'exit_person',cat:'Statcast',q:'Who records the fastest home-run exit velocity?',type:'player',pts:8,pen:0},
+{id:'exit_speed',cat:'Statcast',q:'What is the fastest home-run exit velocity?',type:'number',unit:'mph',pts:8,pen:0,tolerance:true},
+{id:'utley',cat:'Former Phillies',q:'Will Chase Utley appear or be shown?',type:'yesno',pts:3,pen:-1},
+{id:'rollins',cat:'Former Phillies',q:'Will Jimmy Rollins appear or be shown?',type:'yesno',pts:3,pen:-1},
+{id:'howard',cat:'Former Phillies',q:'Will Ryan Howard appear or be shown?',type:'yesno',pts:3,pen:-1},
+{id:'victorino',cat:'Former Phillies',q:'Will Shane Victorino appear or be shown?',type:'yesno',pts:3,pen:-1},
+{id:'hamels',cat:'Former Phillies',q:'Will Cole Hamels appear or be shown?',type:'yesno',pts:3,pen:-1}
+];
+let questions=JSON.parse(localStorage.getItem('hrd_questions')||'null')||baseQuestions.map(q=>({...q,enabled:true,status:'pending',master:null}));
+let players=JSON.parse(localStorage.getItem('hrd_players')||'[]');
+const save=()=>{localStorage.setItem('hrd_questions',JSON.stringify(questions));localStorage.setItem('hrd_players',JSON.stringify(players));};
+function optionHTML(q,namePrefix='q'){
+ const n=`${namePrefix}_${q.id}`;
+ if(q.type==='yesno') return `<div class="options"><label class="option"><input type="radio" name="${n}" value="Yes">Yes</label><label class="option"><input type="radio" name="${n}" value="No">No</label></div>`;
+ if(q.type==='player') return `<select name="${n}"><option value="">Choose hitter...</option>${hitters.map(h=>`<option>${h}</option>`).join('')}</select>`;
+ if(q.type==='number') return `<input type="number" name="${n}" placeholder="Enter ${q.unit||'number'}" step="0.1">`;
+ if(q.type==='multi4') return `<div class="options">${hitters.map(h=>`<label class="option"><input type="checkbox" name="${n}" value="${h}">${h}</label>`).join('')}</div>`;
+ return `<input type="text" name="${n}">`;
+}
+function renderQuestions(){let html='',cat='';questions.filter(q=>q.enabled).forEach(q=>{if(q.cat!==cat){cat=q.cat;html+=`<div class="category">${cat}</div>`}html+=`<div class="question"><span class="points">${q.pts>0?'+'+q.pts:''}${q.pen?` / ${q.pen}`:''} pts</span><h3>${q.q}</h3>${optionHTML(q)}</div>`});document.getElementById('questionForm').innerHTML=html;}
+function collectAnswers(){const a={};for(const q of questions.filter(q=>q.enabled)){const n=`q_${q.id}`;if(q.type==='multi4'){a[q.id]=[...document.querySelectorAll(`[name="${n}"]:checked`)].map(x=>x.value);if(a[q.id].length!==4)throw new Error(`Pick exactly four for: ${q.q}`);}else{const el=document.querySelector(`[name="${n}"]:checked`)||document.querySelector(`[name="${n}"]`);a[q.id]=el?el.value:'';if(a[q.id]==='')throw new Error(`Answer: ${q.q}`);}}return a;}
+document.getElementById('submitPicks').onclick=()=>{try{const name=document.getElementById('playerName').value.trim();if(!name)throw new Error('Enter your name first.');const answers=collectAnswers();const id=Date.now().toString();players.push({id,name,answers,submitted:new Date().toISOString()});localStorage.setItem('hrd_myplayer',id);save();alert('Picks locked!');renderAll();showView('mypicks');}catch(e){alert(e.message)}};
+function scoreAnswer(q,ans){if(q.status!=='final'||q.master===null||q.master==='')return {pts:0,correct:false,pending:true};if(q.type==='multi4'){const official=Array.isArray(q.master)?q.master:[];const got=(ans||[]).filter(x=>official.includes(x)).length;return {pts:got*q.pts,correct:got===4,pending:false};}if(q.type==='number'&&q.tolerance){const d=Math.abs(Number(ans)-Number(q.master));let pts=d===0?q.pts:d<=1?Math.max(q.pts-2,1):d<=3?Math.max(q.pts-4,1):d<=5?Math.max(q.pts-6,1):d<=10?2:q.pen||0;return {pts,correct:d===0,pending:false};}const ok=String(ans).toLowerCase()===String(q.master).toLowerCase();return {pts:ok?q.pts:(q.pen||0),correct:ok,pending:false};}
+function playerScore(p){let total=0,correct=0;questions.filter(q=>q.enabled).forEach(q=>{const s=scoreAnswer(q,p.answers[q.id]);total+=s.pts;if(s.correct)correct++});return {total,correct};}
+function renderMyPicks(){const id=localStorage.getItem('hrd_myplayer'),p=players.find(x=>x.id===id),box=document.getElementById('myPicksBody');if(!p){box.innerHTML='No picks submitted on this device yet.';return;}let h=`<h3>${p.name}</h3>`;questions.filter(q=>q.enabled).forEach(q=>{const s=scoreAnswer(q,p.answers[q.id]);h+=`<div class="question"><b>${q.q}</b><br><span>${Array.isArray(p.answers[q.id])?p.answers[q.id].join(', '):p.answers[q.id]}</span><br><span class="help">Official: ${q.status==='final'?(Array.isArray(q.master)?q.master.join(', '):q.master):'Pending'} • ${s.pending?'—':s.pts+' pts'}</span></div>`});box.innerHTML=h;}
+function renderLeaderboard(){const sorted=players.map(p=>({...p,...playerScore(p)})).sort((a,b)=>b.total-a.total||b.correct-a.correct);document.getElementById('leaderRows').innerHTML=sorted.length?sorted.map((p,i)=>`<tr><td class="rank">${i+1}</td><td>${p.name.toUpperCase()}</td><td>${p.correct}</td><td>${p.total}</td></tr>`).join(''):`<tr><td colspan="4">NO PICKS YET</td></tr>`;const final=questions.filter(q=>q.enabled&&q.status==='final').length,pending=questions.filter(q=>q.enabled&&q.status!=='final').length;document.getElementById('finalCount').textContent=`FINAL ${final}`;document.getElementById('pendingCount').textContent=`PENDING ${pending}`;document.getElementById('playerCount').textContent=`PLAYERS ${players.length}`;}
+function masterControl(q){let control;if(q.type==='multi4')control=`<div class="options">${hitters.map(h=>`<label class="option tiny"><input type="checkbox" data-mid="${q.id}" value="${h}" ${(q.master||[]).includes(h)?'checked':''}>${h}</label>`).join('')}</div>`;else if(q.type==='player')control=`<select data-master="${q.id}"><option value="">Pending...</option>${hitters.map(h=>`<option ${q.master===h?'selected':''}>${h}</option>`).join('')}</select>`;else if(q.type==='yesno')control=`<select data-master="${q.id}"><option value="">Pending...</option><option ${q.master==='Yes'?'selected':''}>Yes</option><option ${q.master==='No'?'selected':''}>No</option></select>`;else control=`<input data-master="${q.id}" type="${q.type==='number'?'number':'text'}" value="${q.master??''}">`;return `<div class="admin-q"><h4>${q.q}</h4><div class="row"><label>Points<input type="number" data-pts="${q.id}" value="${q.pts}"></label><label>Penalty<input type="number" data-pen="${q.id}" value="${q.pen||0}"></label></div><label>Official answer</label>${control}<div class="row"><label><input type="checkbox" data-enabled="${q.id}" ${q.enabled?'checked':''}> Enabled</label><button class="btn tiny" data-final="${q.id}">${q.status==='final'?'Set Pending':'Finalize'}</button></div></div>`;}
+function renderAdmin(){document.getElementById('adminQuestions').innerHTML=questions.map(masterControl).join('');document.querySelectorAll('[data-final]').forEach(b=>b.onclick=()=>{const q=questions.find(x=>x.id===b.dataset.final);if(q.type==='multi4')q.master=[...document.querySelectorAll(`[data-mid="${q.id}"]:checked`)].map(x=>x.value);else q.master=document.querySelector(`[data-master="${q.id}"]`).value;q.pts=Number(document.querySelector(`[data-pts="${q.id}"]`).value);q.pen=Number(document.querySelector(`[data-pen="${q.id}"]`).value);q.enabled=document.querySelector(`[data-enabled="${q.id}"]`).checked;q.status=q.status==='final'?'pending':'final';save();renderAll();});}
+function renderAll(){renderQuestions();renderMyPicks();renderLeaderboard();renderAdmin();}
+function showView(id){document.querySelectorAll('.view').forEach(v=>v.classList.toggle('active',v.id===id));document.querySelectorAll('.topbar button').forEach(b=>b.classList.toggle('active',b.dataset.view===id));if(id==='scoreboard')renderLeaderboard();}
+document.querySelectorAll('.topbar button').forEach(b=>b.onclick=()=>showView(b.dataset.view));
+document.getElementById('addQuestion').onclick=()=>{const q=prompt('Question text');if(!q)return;const cat=prompt('Category','Extra Props')||'Extra Props';const type=prompt('Type: yesno, player, number, text','yesno')||'yesno';const pts=Number(prompt('Points','5')||5),pen=Number(prompt('Wrong-answer penalty','0')||0);questions.push({id:'custom_'+Date.now(),cat,q,type,pts,pen,enabled:true,status:'pending',master:null});save();renderAll();};
+document.getElementById('exportData').onclick=()=>{const blob=new Blob([JSON.stringify({questions,players},null,2)],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='home-run-derby-data.json';a.click();};
+document.getElementById('resetAll').onclick=()=>{if(confirm('Delete all local players, picks, and master answers?')){localStorage.removeItem('hrd_questions');localStorage.removeItem('hrd_players');localStorage.removeItem('hrd_myplayer');location.reload();}};
+renderAll();
+</script>
+</body>
+</html>
