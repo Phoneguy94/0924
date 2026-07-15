@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>VXP Camera Experiences</title>
+<style>
+:root{color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{min-height:100dvh;font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#fff;background:radial-gradient(circle at 50% 0%,#17365d 0,#09182b 38%,#040b14 100%);display:flex;align-items:center;justify-content:center;padding:24px}
+main{width:min(1100px,100%);text-align:center}
+.eyebrow{font-size:13px;font-weight:900;letter-spacing:.2em;text-transform:uppercase;opacity:.72;margin-bottom:10px}
+h1{font-size:clamp(34px,7vw,68px);line-height:1;margin:0;text-shadow:0 8px 30px #0008}
+.subtitle{font-size:clamp(16px,2.8vw,22px);opacity:.84;margin:14px auto 28px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:16px}
+.card{position:relative;min-height:210px;border-radius:24px;overflow:hidden;text-decoration:none;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px;border:1px solid #ffffff2b;box-shadow:0 18px 50px #0007;isolation:isolate;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.card::before{content:"";position:absolute;inset:0;background:linear-gradient(145deg,var(--c1),var(--c2));z-index:-2}
+.card::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 50% 15%,#ffffff35,transparent 45%),linear-gradient(180deg,transparent,#0008);z-index:-1}
+.card:hover,.card:focus-visible{transform:translateY(-5px) scale(1.015);box-shadow:0 24px 65px #000b;border-color:#ffffff75;outline:none}
+.icon{font-size:58px;filter:drop-shadow(0 8px 16px #0008);margin-bottom:10px}
+.name{font-size:27px;font-weight:1000;line-height:1.05}
+.desc{font-size:15px;opacity:.86;margin-top:8px}
+.open{margin-top:18px;padding:9px 15px;border-radius:999px;background:#fff;color:#07111f;font-size:14px;font-weight:950}
+footer{font-size:13px;font-weight:800;opacity:.62;margin-top:24px}
+@media(max-width:520px){body{padding:16px}.grid{grid-template-columns:1fr 1fr;gap:11px}.card{min-height:180px;padding:16px;border-radius:19px}.icon{font-size:44px}.name{font-size:21px}.desc{font-size:13px}.open{margin-top:12px;padding:8px 11px}.card:last-child:nth-child(odd){grid-column:1/-1}}
+</style>
+</head>
+<body>
+<main>
+<div class="eyebrow">Veytec Experience Platform</div>
+<h1>Choose Your Experience</h1>
+<div class="subtitle">Select a camera experience to begin.</div>
+<div class="grid" id="experienceGrid" aria-label="Camera experiences"></div>
+<footer>Powered by Veytec + Webex</footer>
+</main>
+<script>
+const experiences=[
+  {id:'usa250',name:'USA250',desc:'America 250 photo experience',icon:'🇺🇸',c1:'#b52335',c2:'#183d70'},
+  {id:'mlb',name:'Baseball',desc:'Choose your MLB team',icon:'⚾',c1:'#1767a8',c2:'#072b4e'},
+  {id:'nba',name:'Basketball',desc:'Choose your NBA team',icon:'🏀',c1:'#d94b18',c2:'#71121d'},
+  {id:'flgisa',name:'Florida Hero',desc:'Choose a Florida city or county',icon:'🌴',c1:'#168f6a',c2:'#063b54'},
+  {id:'webexone',name:'WebexOne',desc:'Austin 2026 photo experience',icon:'✨',c1:'#7557d9',c2:'#184f8c'}
+];
+const grid=document.getElementById('experienceGrid');
+grid.innerHTML=experiences.map(x=>`<a class="card" style="--c1:${x.c1};--c2:${x.c2}" href="../camera/?experience=${encodeURIComponent(x.id)}"><div class="icon" aria-hidden="true">${x.icon}</div><div class="name">${x.name}</div><div class="desc">${x.desc}</div><div class="open">Open Camera</div></a>`).join('');
+</script>
+</body>
+</html>
