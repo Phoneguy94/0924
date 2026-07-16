@@ -36,7 +36,7 @@ function render(){if(!items.length)return;hero.innerHTML=card(items[cur]);if(des
 function advance(){if(items.length>1){cur=(cur+1)%items.length;render()}}
 function restart(){clearInterval(timer);if(items.length>1)timer=setInterval(advance,ROTATE_MS)}
 function go(n){if(items.length>1){cur=idx(n);render();restart()}}
-function refresh(){const n=scrape();if(!n.length)return;const current=items[cur]?.img;items=n;if(current){const k=items.findIndex(x=>x.img===current);cur=k>=0?k:0}else cur=0;render();restart()}
+function refresh(){const n=scrape();if(!n.length)return;const changed=n.length!==items.length||n.some((x,i)=>!items[i]||items[i].img!==x.img||items[i].qr!==x.qr);if(!changed)return;const current=items[cur]?.img;items=n;if(current){const k=items.findIndex(x=>x.img===current);cur=k>=0?k:0}else cur=0;render();restart()}
 prev.onclick=()=>go(-1);next.onclick=()=>go(1);document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')go(-1);if(e.key==='ArrowRight')go(1)});window.addEventListener('resize',render);frame.addEventListener('load',()=>setTimeout(refresh,1500));setInterval(refresh,REFRESH_MS);
 </script>
 </body>
