@@ -25,7 +25,7 @@ body:before{content:"";position:fixed;left:var(--stage-left);top:var(--stage-top
 </main>
 <iframe id="sourceFrame" src="../../event-wall/?event=FLGISA&v=qr2"></iframe>
 <script>
-const ROTATE_MS=30000,REFRESH_MS=3000;let items=[],cur=0,timer=null;
+const ROTATE_MS=15000,NEW_IMAGE_HOLD_MS=30000,REFRESH_MS=3000;let items=[],cur=0,timer=null,holdTimer=null;
 const $=id=>document.getElementById(id),frame=$('sourceFrame'),hero=$('hero'),tl=$('tl'),tr=$('tr'),bl=$('bl'),br=$('br'),left=$('left'),right=$('right'),prev=$('prev'),next=$('next'),status=$('status'),badge=$('badge');
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function scrape(){try{const d=frame.contentDocument;if(!d)return[];const cards=[...d.querySelectorAll('.card')],seen=new Set,out=[];for(const c of cards){const p=c.querySelector('img.photo'),q=c.querySelector('.qr-overlay img');const img=p&&(p.currentSrc||p.src),qr=q&&(q.currentSrc||q.src);if(img&&!seen.has(img)){seen.add(img);out.push({img,qr})}}return out}catch(e){console.error(e);return[]}}
@@ -34,9 +34,10 @@ function idx(n){return((cur+n)%items.length+items.length)%items.length}
 function desktop(){return document.querySelector('.wall').getBoundingClientRect().width>=900&&items.length>=5}
 function render(){if(!items.length)return;hero.innerHTML=card(items[cur]);if(desktop()){tl.classList.remove('hidden');tr.classList.remove('hidden');bl.classList.remove('hidden');br.classList.remove('hidden');left.classList.add('hidden');right.classList.add('hidden');tl.innerHTML=card(items[idx(-1)]);tr.innerHTML=card(items[idx(1)]);bl.innerHTML=card(items[idx(-2)]);br.innerHTML=card(items[idx(2)])}else{tl.classList.add('hidden');tr.classList.add('hidden');bl.classList.add('hidden');br.classList.add('hidden');left.classList.toggle('hidden',items.length<2);right.classList.toggle('hidden',items.length<3);left.innerHTML=items.length>1?card(items[idx(-1)]):'';right.innerHTML=items.length>2?card(items[idx(1)]):''}status.classList.add('hidden');const many=items.length>1;prev.classList.toggle('hidden',!many);next.classList.toggle('hidden',!many);badge.textContent=`FLGISA Hero Wall · ${items.length} Images`}
 function advance(){if(items.length>1){cur=(cur+1)%items.length;render()}}
-function restart(){clearInterval(timer);if(items.length>1)timer=setInterval(advance,ROTATE_MS)}
+function restart(){clearInterval(timer);clearTimeout(holdTimer);holdTimer=null;if(items.length>1)timer=setInterval(advance,ROTATE_MS)}
+function spotlight(index){clearInterval(timer);clearTimeout(holdTimer);timer=null;cur=index;render();holdTimer=setTimeout(()=>{holdTimer=null;restart()},NEW_IMAGE_HOLD_MS)}
 function go(n){if(items.length>1){cur=idx(n);render();restart()}}
-function refresh(){const n=scrape();if(!n.length)return;const changed=n.length!==items.length||n.some((x,i)=>!items[i]||items[i].img!==x.img||items[i].qr!==x.qr);if(!changed)return;const current=items[cur]?.img;items=n;if(current){const k=items.findIndex(x=>x.img===current);cur=k>=0?k:0}else cur=0;render();restart()}
+function refresh(){const n=scrape();if(!n.length)return;const oldUrls=new Set(items.map(x=>x.img)),wasLoaded=items.length>0,changed=n.length!==items.length||n.some((x,i)=>!items[i]||items[i].img!==x.img||items[i].qr!==x.qr);if(!changed)return;const current=items[cur]?.img,newIndex=wasLoaded?n.findIndex(x=>!oldUrls.has(x.img)):-1;items=n;if(newIndex>=0){spotlight(newIndex);return}if(current){const k=items.findIndex(x=>x.img===current);cur=k>=0?k:0}else cur=0;render();if(!wasLoaded)restart()}
 prev.onclick=()=>go(-1);next.onclick=()=>go(1);document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')go(-1);if(e.key==='ArrowRight')go(1)});window.addEventListener('resize',render);frame.addEventListener('load',()=>setTimeout(refresh,1500));setInterval(refresh,REFRESH_MS);
 </script>
 </body>
