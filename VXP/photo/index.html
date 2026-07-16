@@ -13,14 +13,14 @@
 <div id="spin" class="spin"></div>
 <div id="grid" class="grid"></div>
 <div id="claim" class="claim"><img id="qr" alt="Claim QR"><div class="hint"><b>Claim Your Photo</b><br>Scan to receive it on your phone.</div></div>
-<div class="actions"><a id="claimBtn" href="#">📲 Claim Photo</a><a id="again" href="#">📸 Take Another</a><a id="wall" href="#">🖼️ View Wall</a><button id="refresh">Refresh</button></div>
+<div class="actions"><a id="saveBtn" href="#">💾 Save Image</a><button id="shareBtn" type="button">📤 Share</button><button id="specialBtn" type="button">🎁 Claim Special Edition</button></div>
 <div class="small" id="brand">Powered by Veytec + Webex</div>
 </div>
 <script src="../../vxp/config/experiences.js"></script>
 <script>
 const $=id=>document.getElementById(id),root=window.VXP_CONFIG,p=new URLSearchParams(location.search),AT=root.airtable,recordId=p.get('id'),ts=Number(p.get('ts')||Date.now());
 const FIELD_NAMES={fldvQvP6xGTCpB71A:'MLB',fldUDkaG8rZwL4Dk4:'NBA CARD',fldgormjiaZzb2amU:'FLGISA',fldptFIDcWfVutGRP:'FLHero',fld7W7JS6XPIZLoMp:'AIKioskv3 copy copy',fld6ejAJTGpRuztwp:'AIKioskv3 copy copy copy',fldJ4mNylPdtD8u14:'AIKioskv3 copy copy copy copy',fldjLx8XrIxda4FcV:'USA 250 Scene 1',fldoj4Im2cUcxua5D:'USA 250 Scene 2',fld2p2xcD1atuV7CM:'USA 250 Scene 3'};
-let exp=getExpFromParam();
+let exp=getExpFromParam(),currentImageUrl='';
 function norm(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'')}
 function getExpFromParam(){const raw=String(p.get('experience')||p.get('event')||'').toLowerCase();for(const e of Object.values(root.experiences)){if(e.id===raw||(e.aliases||[]).map(a=>String(a).toLowerCase()).includes(raw))return e}return null}
 function getExpFromRecord(rec){
@@ -47,7 +47,7 @@ function getExpFromRecord(rec){
 
   return root.experiences.usa250;
 }
-function applyExp(){document.title=exp.photoTitle;$('title').textContent=exp.photoTitle;$('msg').textContent=exp.waitingMessage||'Creating your image. This page will update automatically.';$('brand').textContent=exp.label+' · Powered by Veytec + Webex';$('again').href=root.baseUrl+'/VXP/camera/?experience='+encodeURIComponent(exp.id);$('wall').href=root.baseUrl+'/VXP/wall/?experience='+encodeURIComponent(exp.id);document.body.style.setProperty('--bg-img',exp.backgroundImage?`url("${exp.backgroundImage}")`:'none')}
+function applyExp(){document.title=exp.photoTitle;$('title').textContent=exp.photoTitle;$('msg').textContent=exp.waitingMessage||'Creating your image. This page will update automatically.';$('brand').textContent=exp.label+' · Powered by Veytec + Webex';document.body.style.setProperty('--bg-img',exp.backgroundImage?`url("${exp.backgroundImage}")`:'none')}
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function att(a){return a&&a.thumbnails&&a.thumbnails.large&&a.thumbnails.large.url||a&&a.url||''}
 function newest(v){return Array.isArray(v)&&v.length?att(v[v.length-1]):''}
@@ -63,9 +63,11 @@ async function byId(id){
 }
 async function latest(){let all=[],off=null;do{const d=await aget(`https://api.airtable.com/v0/${AT.baseId}/${AT.tableId}?pageSize=100`+(off?'&offset='+encodeURIComponent(off):''));all=all.concat(d.records||[]);off=d.offset||null}while(off);const after=new Date(ts-120000);all.sort((a,b)=>new Date(b.createdTime)-new Date(a.createdTime));return all.find(r=>new Date(r.createdTime)>=after&&Object.values(root.experiences).some(e=>{const old=exp;exp=e;const ok=imgs(r).length;exp=old;return ok}))}
 function claimUrl(rec){return root.baseUrl+'/claim_my_bobble/?id='+encodeURIComponent(rec.id)+'&experience='+encodeURIComponent(exp.id)}
-function render(rec,list){$('spin').classList.add('hide');$('msg').textContent='Your image is ready.';$('grid').innerHTML=list.map(x=>`<div class="card"><img src="${esc(x.url)}"><div class="caption">${esc(x.cap)}</div></div>`).join('');const u=claimUrl(rec);$('claimBtn').href=u;$('qr').src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(u);$('claim').classList.add('show')}
+function render(rec,list){$('spin').classList.add('hide');$('msg').textContent='Your image is ready.';$('grid').innerHTML=list.map(x=>`<div class="card"><img src="${esc(x.url)}"><div class="caption">${esc(x.cap)}</div></div>`).join('');currentImageUrl=list[0]?.url||'';$('saveBtn').href=currentImageUrl;$('saveBtn').setAttribute('download',(exp.id||'vxp')+'-photo.jpg');const u=claimUrl(rec);$('qr').src='https://api.qrserver.com/v1/create-qr-code/?size=220x220&data='+encodeURIComponent(u);$('claim').classList.add('show');$('specialBtn').dataset.recordId=rec.id}
+async function sharePhoto(){const data={title:document.title,text:'My '+(exp?.label||'VXP')+' photo',url:location.href};if(navigator.share){try{await navigator.share(data)}catch(e){if(e.name!=='AbortError')console.error(e)}return}try{await navigator.clipboard.writeText(location.href);alert('Photo link copied.')}catch(e){prompt('Copy this photo link:',location.href)}}
+function claimSpecialEdition(){const id=$('specialBtn').dataset.recordId||recordId||'';const url=root.baseUrl+'/claim_my_bobble/?id='+encodeURIComponent(id)+'&experience='+encodeURIComponent(exp.id)+'&special=1976';location.href=url}
 async function load(){try{const rec=recordId?await byId(recordId):await latest();if(rec){exp=getExpFromRecord(rec);applyExp();const list=imgs(rec);if(list.length){render(rec,list);return}}else{exp=exp||root.experiences.usa250;applyExp()}$('spin').classList.remove('hide');$('msg').textContent=exp.waitingMessage||'Still creating your image.'}catch(e){console.error(e);exp=exp||root.experiences.usa250;applyExp();$('msg').textContent='Still waiting for your photo. Refresh in a few seconds.'}}
-$('refresh').onclick=load;load();setInterval(load,8000);
+$('shareBtn').onclick=sharePhoto;$('specialBtn').onclick=claimSpecialEdition;load();setInterval(load,8000);
 </script>
 </body>
 </html>
