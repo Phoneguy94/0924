@@ -17,7 +17,7 @@ window.VXP_CONFIG = {
     qr: "fld2Ehe0YS7e6W6jm",
     mlb: "fldvQvP6xGTCpB71A",
     nbaCard: "fldUDkaG8rZwL4Dk4",
-    flgisa: "fldgormjiaZzb2amU",
+    flgisa: "fldptFIDcWfVutGRP",
     webexOne1: "fld7W7JS6XPIZLoMp",
     webexOne2: "fld6ejAJTGpRuztwp",
     webexOne3: "fldJ4mNylPdtD8u14",
