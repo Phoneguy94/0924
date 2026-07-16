@@ -23,7 +23,30 @@ const FIELD_NAMES={fldvQvP6xGTCpB71A:'MLB',fldUDkaG8rZwL4Dk4:'NBA CARD',fldgormj
 let exp=getExpFromParam();
 function norm(v){return String(v||'').toLowerCase().replace(/[^a-z0-9]/g,'')}
 function getExpFromParam(){const raw=String(p.get('experience')||p.get('event')||'').toLowerCase();for(const e of Object.values(root.experiences)){if(e.id===raw||(e.aliases||[]).map(a=>String(a).toLowerCase()).includes(raw))return e}return null}
-function getExpFromRecord(rec){const f=rec&&rec.fields||{},eventName=f.EventName||f.eventName||'';const n=norm(eventName);for(const e of Object.values(root.experiences)){if(n.includes(norm(e.id))||n.includes(norm(e.eventName))||(e.aliases||[]).some(a=>n.includes(norm(a))))return e}return exp||root.experiences.usa250}
+function getExpFromRecord(rec){
+  const f = rec?.fields || {};
+
+  // Use a URL experience when one was explicitly supplied.
+  if (exp) return exp;
+
+  // Otherwise determine the experience from the populated image field.
+  const priority = ['flgisa', 'nba', 'mlb', 'webexone', 'usa250'];
+
+  for (const id of priority) {
+    const candidate = root.experiences[id];
+
+    if (
+      candidate &&
+      (candidate.fields || []).some(
+        fieldId => Array.isArray(f[fieldId]) && f[fieldId].length > 0
+      )
+    ) {
+      return candidate;
+    }
+  }
+
+  return root.experiences.usa250;
+}
 function applyExp(){document.title=exp.photoTitle;$('title').textContent=exp.photoTitle;$('msg').textContent=exp.waitingMessage||'Creating your image. This page will update automatically.';$('brand').textContent=exp.label+' · Powered by Veytec + Webex';$('again').href=root.baseUrl+'/VXP/camera/?experience='+encodeURIComponent(exp.id);$('wall').href=root.baseUrl+'/VXP/wall/?experience='+encodeURIComponent(exp.id);document.body.style.setProperty('--bg-img',exp.backgroundImage?`url("${exp.backgroundImage}")`:'none')}
 function esc(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
 function att(a){return a&&a.thumbnails&&a.thumbnails.large&&a.thumbnails.large.url||a&&a.url||''}
@@ -34,7 +57,9 @@ function imgs(rec){const f=rec.fields||{};return (exp.fields||[]).map((fid,i)=>(
 function headers(){const h={};h[['Author','ization'].join('')]=['Bear','er '].join('')+AT.token;return h}
 async function aget(url){const r=await fetch(url,{headers:headers()});if(!r.ok)throw Error('airtable '+r.status);return r.json()}
 async function byId(id){
-  return aget(`https://api.airtable.com/v0/${AT.baseId}/${AT.tableId}/${encodeURIComponent(id)}`)
+  return aget(
+    `https://api.airtable.com/v0/${AT.baseId}/${AT.tableId}/${encodeURIComponent(id)}?returnFieldsByFieldId=true`
+  )
 }
 async function latest(){let all=[],off=null;do{const d=await aget(`https://api.airtable.com/v0/${AT.baseId}/${AT.tableId}?pageSize=100`+(off?'&offset='+encodeURIComponent(off):''));all=all.concat(d.records||[]);off=d.offset||null}while(off);const after=new Date(ts-120000);all.sort((a,b)=>new Date(b.createdTime)-new Date(a.createdTime));return all.find(r=>new Date(r.createdTime)>=after&&Object.values(root.experiences).some(e=>{const old=exp;exp=e;const ok=imgs(r).length;exp=old;return ok}))}
 function claimUrl(rec){return root.baseUrl+'/claim_my_bobble/?id='+encodeURIComponent(rec.id)+'&experience='+encodeURIComponent(exp.id)}
