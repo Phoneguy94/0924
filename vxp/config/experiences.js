@@ -112,7 +112,7 @@ window.VXP_CONFIG = {
       demoType: "flgisa",
       eventName: "Kiosk-FLGISA",
       layout: "single",
-      fields: ["fldgormjiaZzb2amU"],
+      fields: ["fldptFIDcWfVutGRP"],
       captions: ["Florida Hero"]
     },
     webexone: {
