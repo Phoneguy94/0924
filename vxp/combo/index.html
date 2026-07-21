@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>FLGISA Hero Experience — Camera + Wall</title>
+  <style>
+    *{box-sizing:border-box}
+    html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#061326;font-family:Inter,"Segoe UI",system-ui,sans-serif;color:#fff}
+    .combo{display:grid;grid-template-columns:minmax(330px,31vw) 1fr;width:100%;height:100%;gap:10px;padding:10px;background:linear-gradient(135deg,#061326,#0a2039)}
+    .panel{position:relative;overflow:hidden;border:1px solid rgba(88,242,166,.28);border-radius:20px;background:#07182b;box-shadow:0 18px 55px rgba(0,0,0,.35)}
+    .camera-panel:before{content:"FLGISA HERO CAMERA";position:absolute;z-index:3;left:18px;top:12px;font-size:12px;font-weight:800;letter-spacing:.18em;color:rgba(255,255,255,.72);pointer-events:none}
+    .wall-panel:before{content:"LIVE HERO WALL";position:absolute;z-index:3;left:18px;top:12px;font-size:12px;font-weight:800;letter-spacing:.18em;color:rgba(255,255,255,.72);pointer-events:none}
+    iframe{display:block;width:100%;height:100%;border:0;background:#061326}
+    @media(max-width:900px){
+      .combo{grid-template-columns:1fr;grid-template-rows:46% 54%;gap:6px;padding:6px}
+      .panel{border-radius:14px}
+    }
+  </style>
+</head>
+<body>
+  <main class="combo" aria-label="FLGISA camera and hero wall">
+    <section class="panel camera-panel">
+      <iframe id="cameraFrame" src="../camera/?experience=flgisa" allow="camera; autoplay" title="FLGISA camera"></iframe>
+    </section>
+    <section class="panel wall-panel">
+      <iframe src="../wall/?experience=flgisa" title="FLGISA hero wall"></iframe>
+    </section>
+  </main>
+  <script>
+    const cameraFrame=document.getElementById('cameraFrame');
+    cameraFrame.addEventListener('load',()=>{
+      try{
+        const d=cameraFrame.contentDocument;
+        const style=d.createElement('style');
+        style.textContent=`
+          :root{--stage-w:100vw!important;--stage-h:100vh!important;--left:0px!important;--top:0px!important}
+          html,body{background:#07182b!important}
+          body:before{display:none!important}
+          .location{left:50%!important;top:10%!important;width:90%!important;padding:12px!important;border-radius:14px!important}
+          label{font-size:clamp(14px,1.25vw,20px)!important;margin-bottom:7px!important}
+          select{font-size:clamp(14px,1.1vw,19px)!important;padding:10px!important}
+          .camera{left:50%!important;top:48%!important;width:88%!important;height:52%!important;border-width:3px!important;border-radius:16px!important}
+          .status{left:50%!important;top:78%!important;width:90%!important;font-size:clamp(13px,1.05vw,18px)!important}
+          .actions{left:50%!important;top:88%!important;width:92%!important;text-align:center!important}
+          button{width:100%!important;max-width:420px!important;font-size:clamp(16px,1.35vw,24px)!important;padding:13px 20px!important}
+          .count{font-size:clamp(80px,11vw,170px)!important}
+          @media(max-width:900px){
+            .location{top:12%!important;width:92%!important}
+            .camera{top:51%!important;width:60%!important;height:56%!important}
+            .status{top:82%!important}
+            .actions{top:91%!important;width:60%!important}
+          }
+        `;
+        d.head.appendChild(style);
+      }catch(e){
+        console.warn('Camera layout override could not be applied.',e);
+      }
+    });
+  </script>
+</body>
+</html>
