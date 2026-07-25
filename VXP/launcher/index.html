@@ -52,7 +52,8 @@ function showView(kind='combo'){
   if(!currentTheme)return;
   selector.classList.add('hidden');viewer.classList.remove('hidden');chooseTheme.classList.remove('hidden');openCombo.classList.remove('hidden');openCamera.classList.remove('hidden');openWall.classList.remove('hidden');
   const path=kind==='wall'?'wall':kind==='camera'?'camera':'combo';
-  frame.src=`${BASE}/VXP/${path}/?experience=${encodeURIComponent(currentTheme)}`;
+  const section=path==='combo'?'vxp':'VXP';
+  frame.src=`${BASE}/${section}/${path}/?experience=${encodeURIComponent(currentTheme)}`;
   history.replaceState(null,'',`?theme=${encodeURIComponent(currentTheme)}&view=${path}`);
 }
 document.querySelectorAll('[data-theme]').forEach(card=>card.addEventListener('click',()=>{currentTheme=card.dataset.theme;showView('combo')}));
