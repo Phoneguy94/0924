@@ -28,6 +28,7 @@
     </section>
   </main>
   <script>
+    const BASE='https://phoneguy94.github.io/0924';
     const allowed=['mlb','nba','flgisa','usa250'];
     const params=new URLSearchParams(location.search);
     const requested=(params.get('experience')||'flgisa').toLowerCase();
@@ -44,8 +45,11 @@
     document.getElementById('combo').setAttribute('aria-label',`${label} camera and picture wall`);
     cameraFrame.title=`${label} camera`;
     wallFrame.title=`${label} picture wall`;
-    cameraFrame.src=`../camera/?experience=${encodeURIComponent(experience)}`;
-    wallFrame.src=`../../VXP/wall/?experience=${encodeURIComponent(experience)}`;
+
+    // Always use the canonical, experience-aware pages. The uppercase VXP camera
+    // contains the MLB/NBA team selectors and the event wall applies the matching theme.
+    cameraFrame.src=`${BASE}/VXP/camera/?experience=${encodeURIComponent(experience)}`;
+    wallFrame.src=`${BASE}/event-wall/?event=${encodeURIComponent(experience)}`;
 
     cameraFrame.addEventListener('load',()=>{
       try{
