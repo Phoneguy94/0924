@@ -1,5 +1,5 @@
 window.VXP_CONFIG = {
-  version: "0.1.1",
+  version: "0.1.2",
   platformName: "Veytec Experience Platform",
   baseUrl: "https://phoneguy94.github.io/0924",
   airtable: {
@@ -19,6 +19,7 @@ window.VXP_CONFIG = {
     nbaCard: "fldUDkaG8rZwL4Dk4",
     nfl: "fldWG8jy9jpP6basa",
     flgisa: "fldptFIDcWfVutGRP",
+    adventure: "fldXfWNJ2kS16Vu7L",
     webexOne1: "fld7W7JS6XPIZLoMp",
     webexOne2: "fld6ejAJTGpRuztwp",
     webexOne3: "fldJ4mNylPdtD8u14",
@@ -75,6 +76,15 @@ window.VXP_CONFIG = {
       accent: "#2ECC71", backgroundImage: "https://phoneguy94.github.io/0924/VXP/assets/backgrounds/flgisa.png",
       source: "VXP-FLGISA", demoType: "flgisa", eventName: "Kiosk-FLGISA", layout: "single",
       fields: ["fldptFIDcWfVutGRP"], captions: ["Florida Hero"]
+    },
+    adventure: {
+      id: "adventure", aliases: ["adventure", "adventurehero", "adventure-hero", "adventurelegends", "comicbookhero"], label: "Adventure Hero",
+      cameraTitle: "Adventure Hero Photo Kiosk", cameraSubtitle: "Take your picture and become an Adventure Legend",
+      readyMessage: "Sent! Tap below to view your Adventure Hero image ⚡", photoTitle: "Your Adventure Hero",
+      waitingMessage: "Creating your Adventure Hero image. This page will update automatically.", wallTitle: "Adventure Hero Wall",
+      accent: "#F59E0B", backgroundImage: "",
+      source: "VXP-AdventureHero", demoType: "adventure", eventName: "Kiosk-AdventureHero", layout: "single",
+      fields: ["fldXfWNJ2kS16Vu7L"], captions: ["Adventure Legend"]
     },
     webexone: {
       id: "webexone", aliases: ["webexone", "webex", "austin"], label: "WebexOne Austin 2026",
