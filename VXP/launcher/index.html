@@ -15,7 +15,7 @@ button:hover,button:focus-visible{background:rgba(255,255,255,.18);outline:2px s
 .selector{height:calc(100% - 76px);overflow:auto;padding:clamp(24px,6vw,70px) 18px}.hero{max-width:960px;margin:0 auto;text-align:center}.eyebrow{text-transform:uppercase;letter-spacing:.28em;font-weight:900;color:var(--accent);font-size:13px}.hero h1{font-size:clamp(38px,8vw,76px);margin:12px 0 10px;line-height:.95}.hero p{font-size:clamp(17px,3vw,23px);opacity:.82;margin:0 auto 32px;max-width:700px}
 .grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;max-width:820px;margin:0 auto}.theme{min-height:180px;border-radius:26px;padding:24px;text-align:left;display:flex;flex-direction:column;justify-content:flex-end;position:relative;overflow:hidden;border:1px solid var(--line);box-shadow:0 20px 55px rgba(0,0,0,.3);cursor:pointer;transition:transform .2s ease,box-shadow .2s ease}.theme:hover{transform:translateY(-4px);box-shadow:0 28px 65px rgba(0,0,0,.4)}.theme:before{content:"";position:absolute;inset:0;background:linear-gradient(transparent,rgba(0,0,0,.78));z-index:0}.theme>*{position:relative;z-index:1}.theme h2{font-size:30px;margin:0}.theme span{opacity:.82;font-weight:700}.mlb{background:linear-gradient(135deg,#173f7a,#d32f2f)}.nba{background:linear-gradient(135deg,#ef6c00,#172554)}.flgisa{background:linear-gradient(135deg,#047857,#0f766e)}.usa250{background:linear-gradient(135deg,#b91c1c,#1e3a8a)}
 .viewer{height:calc(100% - 76px);background:#000}.viewer iframe{width:100%;height:100%;border:0;background:#07111f}
-@media(max-width:700px){.topbar{height:112px;align-items:flex-start}.brand{padding-top:10px}.nav-group{max-width:75%}.selector,.viewer{height:calc(100% - 112px)}button{padding:9px 12px;font-size:14px}.grid{grid-template-columns:1fr}.theme{min-height:145px}}
+@media(max-width:700px){.topbar{height:112px;align-items:flex-start}.brand{padding-top:10px}.nav-group{max-width:78%}.selector,.viewer{height:calc(100% - 112px)}button{padding:9px 12px;font-size:14px}.grid{grid-template-columns:1fr}.theme{min-height:145px}}
 </style>
 </head>
 <body>
@@ -23,6 +23,7 @@ button:hover,button:focus-visible{background:rgba(255,255,255,.18);outline:2px s
   <div class="brand">VXP Experience</div>
   <nav class="nav-group">
     <button id="chooseTheme" class="primary hidden">✨ Choose Another Theme</button>
+    <button id="openCombo" class="hidden">🪄 Camera + Wall</button>
     <button id="openCamera" class="hidden">📸 Camera</button>
     <button id="openWall" class="hidden">🖼️ Picture Wall</button>
   </nav>
@@ -31,12 +32,12 @@ button:hover,button:focus-visible{background:rgba(255,255,255,.18);outline:2px s
   <section class="hero">
     <div class="eyebrow">Choose your experience</div>
     <h1>Pick a Theme</h1>
-    <p>Select an event to open its camera. You can move between the camera, picture wall, and this theme selector at any time.</p>
+    <p>Select an event to open its camera and live picture wall together. You can also switch to either screen by itself.</p>
     <div class="grid">
-      <article class="theme mlb" data-theme="mlb"><h2>MLB</h2><span>Baseball experience</span></article>
-      <article class="theme nba" data-theme="nba"><h2>NBA</h2><span>Basketball experience</span></article>
-      <article class="theme flgisa" data-theme="flgisa"><h2>FLGISA</h2><span>Florida technology heroes</span></article>
-      <article class="theme usa250" data-theme="usa250"><h2>USA250</h2><span>America 250 experience</span></article>
+      <article class="theme mlb" data-theme="mlb"><h2>MLB</h2><span>Baseball camera + live wall</span></article>
+      <article class="theme nba" data-theme="nba"><h2>NBA</h2><span>Basketball camera + live wall</span></article>
+      <article class="theme flgisa" data-theme="flgisa"><h2>FLGISA</h2><span>Florida heroes camera + live wall</span></article>
+      <article class="theme usa250" data-theme="usa250"><h2>USA250</h2><span>America 250 camera + live wall</span></article>
     </div>
   </section>
 </main>
@@ -44,13 +45,19 @@ button:hover,button:focus-visible{background:rgba(255,255,255,.18);outline:2px s
 <script>
 const BASE='https://phoneguy94.github.io/0924';
 const selector=document.getElementById('selector'),viewer=document.getElementById('viewer'),frame=document.getElementById('frame');
-const chooseTheme=document.getElementById('chooseTheme'),openCamera=document.getElementById('openCamera'),openWall=document.getElementById('openWall');
+const chooseTheme=document.getElementById('chooseTheme'),openCombo=document.getElementById('openCombo'),openCamera=document.getElementById('openCamera'),openWall=document.getElementById('openWall');
 let currentTheme='';
-function showSelector(){frame.src='about:blank';viewer.classList.add('hidden');selector.classList.remove('hidden');chooseTheme.classList.add('hidden');openCamera.classList.add('hidden');openWall.classList.add('hidden');history.replaceState(null,'',location.pathname)}
-function showView(kind){if(!currentTheme)return;selector.classList.add('hidden');viewer.classList.remove('hidden');chooseTheme.classList.remove('hidden');openCamera.classList.remove('hidden');openWall.classList.remove('hidden');frame.src=kind==='wall'?`${BASE}/VXP/wall/?experience=${encodeURIComponent(currentTheme)}`:`${BASE}/VXP/camera/?experience=${encodeURIComponent(currentTheme)}`;history.replaceState(null,'',`?theme=${encodeURIComponent(currentTheme)}&view=${kind}`)}
-document.querySelectorAll('[data-theme]').forEach(card=>card.addEventListener('click',()=>{currentTheme=card.dataset.theme;showView('camera')}));
-chooseTheme.addEventListener('click',showSelector);openCamera.addEventListener('click',()=>showView('camera'));openWall.addEventListener('click',()=>showView('wall'));
-const q=new URLSearchParams(location.search),theme=(q.get('theme')||'').toLowerCase(),view=q.get('view')==='wall'?'wall':'camera';
+function showSelector(){frame.src='about:blank';viewer.classList.add('hidden');selector.classList.remove('hidden');chooseTheme.classList.add('hidden');openCombo.classList.add('hidden');openCamera.classList.add('hidden');openWall.classList.add('hidden');history.replaceState(null,'',location.pathname)}
+function showView(kind='combo'){
+  if(!currentTheme)return;
+  selector.classList.add('hidden');viewer.classList.remove('hidden');chooseTheme.classList.remove('hidden');openCombo.classList.remove('hidden');openCamera.classList.remove('hidden');openWall.classList.remove('hidden');
+  const path=kind==='wall'?'wall':kind==='camera'?'camera':'combo';
+  frame.src=`${BASE}/VXP/${path}/?experience=${encodeURIComponent(currentTheme)}`;
+  history.replaceState(null,'',`?theme=${encodeURIComponent(currentTheme)}&view=${path}`);
+}
+document.querySelectorAll('[data-theme]').forEach(card=>card.addEventListener('click',()=>{currentTheme=card.dataset.theme;showView('combo')}));
+chooseTheme.addEventListener('click',showSelector);openCombo.addEventListener('click',()=>showView('combo'));openCamera.addEventListener('click',()=>showView('camera'));openWall.addEventListener('click',()=>showView('wall'));
+const q=new URLSearchParams(location.search),theme=(q.get('theme')||'').toLowerCase(),requestedView=(q.get('view')||'combo').toLowerCase(),view=['camera','wall','combo'].includes(requestedView)?requestedView:'combo';
 if(['mlb','nba','flgisa','usa250'].includes(theme)){currentTheme=theme;showView(view)}
 </script>
 </body>
