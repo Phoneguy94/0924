@@ -29,11 +29,11 @@
   </main>
   <script>
     const BASE='https://phoneguy94.github.io/0924';
-    const allowed=['mlb','nba','nfl','flgisa','usa250'];
+    const allowed=['adventure','mlb','nba','nfl','flgisa','usa250'];
     const params=new URLSearchParams(location.search);
     const requested=(params.get('experience')||'flgisa').toLowerCase();
     const experience=allowed.includes(requested)?requested:'flgisa';
-    const names={mlb:'MLB',nba:'NBA',nfl:'NFL',flgisa:'FLGISA',usa250:'USA250'};
+    const names={adventure:'Adventure Hero',mlb:'MLB',nba:'NBA',nfl:'NFL',flgisa:'FLGISA',usa250:'USA250'};
     const label=names[experience]||'VXP';
     const cameraFrame=document.getElementById('cameraFrame');
     const wallFrame=document.getElementById('wallFrame');
