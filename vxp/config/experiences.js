@@ -1,5 +1,5 @@
 window.VXP_CONFIG = {
-  version: "0.1.2",
+  version: "0.1.3",
   platformName: "Veytec Experience Platform",
   baseUrl: "https://phoneguy94.github.io/0924",
   airtable: {
@@ -20,6 +20,7 @@ window.VXP_CONFIG = {
     nfl: "fldWG8jy9jpP6basa",
     flgisa: "fldptFIDcWfVutGRP",
     adventure: "fldXfWNJ2kS16Vu7L",
+    curling: "fldgHqBtzd9ujy4oB",
     webexOne1: "fld7W7JS6XPIZLoMp",
     webexOne2: "fld6ejAJTGpRuztwp",
     webexOne3: "fldJ4mNylPdtD8u14",
@@ -63,7 +64,7 @@ window.VXP_CONFIG = {
       id: "nfl", aliases: ["nfl", "football", "profootball"], label: "NFL",
       cameraTitle: "Football Photo Kiosk", cameraSubtitle: "Choose your NFL team, then take your picture",
       readyMessage: "Sent! Tap below to view your football photo 🏈", photoTitle: "Your Football Moment",
-      waitingMessage: "Creating your NFL moment. This page will update automatically.", wallTitle: "NFL Wall",
+      waitingMessage: "Creating your football moment. This page will update automatically.", wallTitle: "NFL Wall",
       accent: "#34D399", backgroundImage: "",
       source: "VXP-NFL", demoType: "nfl", eventName: "Kiosk-NFL", layout: "single",
       fields: ["fldWG8jy9jpP6basa"], captions: ["Legendary Moment"]
@@ -85,6 +86,15 @@ window.VXP_CONFIG = {
       accent: "#F59E0B", backgroundImage: "",
       source: "VXP-AdventureHero", demoType: "adventure", eventName: "Kiosk-AdventureHero", layout: "single",
       fields: ["fldXfWNJ2kS16Vu7L"], captions: ["Adventure Legend"]
+    },
+    curling: {
+      id: "curling", aliases: ["curling", "curl", "curl-ribbean", "orlando-curling"], label: "Pirates of the Curl-Ribbean",
+      cameraTitle: "Pirates of the Curl-Ribbean Photo Kiosk", cameraSubtitle: "Take your picture and become a Curl-Ribbean pirate",
+      readyMessage: "Sent! Tap below to view your Curl-Ribbean photo 🏴‍☠️", photoTitle: "Your Curl-Ribbean Photo",
+      waitingMessage: "Creating your Curl-Ribbean image. This page will update automatically.", wallTitle: "Pirates of the Curl-Ribbean Wall",
+      accent: "#D6A541", backgroundImage: "",
+      source: "VXP-Curling", demoType: "curling", eventName: "Kiosk-Curling", layout: "single",
+      fields: ["fldgHqBtzd9ujy4oB"], captions: ["Pirates of the Curl-Ribbean"]
     },
     webexone: {
       id: "webexone", aliases: ["webexone", "webex", "austin"], label: "WebexOne Austin 2026",
