@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07111f">
+  <title>Pirates of the Curl-Ribbean Photo</title>
+  <link rel="stylesheet" href="./css/curling.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="hero">
+      <div class="eyebrow">VXP Branded Photo</div>
+      <h1 data-event-name>Pirates of the Curl-Ribbean</h1>
+      <div class="meta" data-event-meta></div>
+    </header>
+
+    <section class="panel" aria-live="polite">
+      <div class="canvas-wrap">
+        <!-- The raw AI image is never inserted into the DOM. Only this composite canvas is shown. -->
+        <canvas id="brandedImage" hidden aria-label="Branded event photo"></canvas>
+      </div>
+      <p class="status" id="status">Preparing your image…</p>
+      <div class="actions">
+        <button id="downloadButton" disabled>Save Branded Image</button>
+        <button id="shareButton" class="secondary" disabled>Share Branded Image</button>
+        <a class="button secondary" href="./">Curling Home</a>
+      </div>
+    </section>
+  </main>
+  <script type="module" src="./js/photoPage.js"></script>
+</body>
+</html>
