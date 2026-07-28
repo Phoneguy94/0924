@@ -9,7 +9,7 @@ const params = new URLSearchParams(window.location.search);
 const source = params.get('image') || params.get('src');
 
 const engine = new VXPBrandingEngine({
-  overlay: EventConfig.overlay,
+  overlays: EventConfig.overlays,
   ...EventConfig.branding,
 });
 
@@ -28,7 +28,7 @@ async function initialize() {
     canvas.hidden = false;
     downloadButton.disabled = false;
     shareButton.disabled = false;
-    status.textContent = 'Your branded image is ready.';
+    status.textContent = `Your ${canvas.dataset.orientation} branded image is ready.`;
   } catch (error) {
     console.error(error);
     showError(error.message);
