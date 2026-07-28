@@ -19,7 +19,7 @@ import { EventConfig } from '../js/eventConfig.js';
 
 const cfg=window.VXP_CONFIG,FIELD='fldgHqBtzd9ujy4oB',track=document.getElementById('track'),loading=document.getElementById('loading'),empty=document.getElementById('empty'),prev=document.getElementById('prev'),next=document.getElementById('next');
 const engine=new VXPBrandingEngine({overlays:EventConfig.overlays,...EventConfig.branding});
-let photos=[],cur=0,timer,loadGeneration=0;
+let photos=[],cur=0,timer,loadGeneration=0,initialized=false;
 const rendered=new Set(),rendering=new Set();
 
 function attachmentUrl(a){return a?.thumbnails?.full?.url||a?.thumbnails?.large?.url||a?.url||''}
@@ -30,7 +30,7 @@ function renderNearby(){if(!photos.length)return;[cur,cur-1,cur+1,cur-2,cur+2].f
 function layout(){const nodes=[...track.children],n=nodes.length,mobile=matchMedia('(max-width:700px)').matches;nodes.forEach((node,i)=>{let d=i-cur;if(n>2){if(d>n/2)d-=n;if(d<-n/2)d+=n}const ad=Math.abs(d);node.className='entry '+(d===0?'focus':ad===1?'side':'far');if(mobile){const x=d*96,scale=d===0?1:ad===1?.30:.16;node.style.transform=`translate(-50%,-50%) translateX(${x}vw) scale(${scale})`;node.style.opacity=ad>1?0:d===0?1:.78}else{const x=d*23,scale=d===0?1:ad===1?.90:.75;node.style.transform=`translate(-50%,-50%) translateX(${x}vw) scale(${scale})`;node.style.opacity=ad>2?0:1}});renderNearby()}
 function render(){++loadGeneration;rendered.clear();rendering.clear();track.innerHTML=photos.map((p,i)=>`<div class="entry"><div class="card"><div class="composite"><canvas class="branded" data-index="${i}" aria-label="Branded Curl-Ribbean photo"></canvas></div></div></div>`).join('');[...track.children].forEach((n,i)=>n.onclick=()=>{cur=i;layout();restart()});layout();loading.classList.add('hidden');empty.classList.toggle('hidden',photos.length>0);prev.classList.toggle('hidden',photos.length<2);next.classList.toggle('hidden',photos.length<2)}
 function go(d){if(photos.length<2)return;cur=(cur+d+photos.length)%photos.length;layout();restart()}function restart(){clearInterval(timer);if(photos.length>1)timer=setInterval(()=>go(1),10000)}prev.onclick=()=>go(-1);next.onclick=()=>go(1);document.addEventListener('keydown',e=>{if(e.key==='ArrowLeft')go(-1);if(e.key==='ArrowRight')go(1)});let sx=0;document.getElementById('stage').addEventListener('touchstart',e=>sx=e.changedTouches[0].clientX,{passive:true});document.getElementById('stage').addEventListener('touchend',e=>{const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>45)go(dx<0?1:-1)},{passive:true});addEventListener('resize',layout);
-async function load(){try{photos=await fetchPhotos();cur=0;render();restart()}catch(e){console.error(e);loading.textContent=`Unable to load Airtable: ${e.message}`}}load();setInterval(load,cfg.airtable.refreshMs||30000);
+async function load(){try{const nextPhotos=await fetchPhotos();const currentUrl=photos[cur]?.url;const changed=!initialized||nextPhotos.length!==photos.length||nextPhotos.some((p,i)=>p.url!==photos[i]?.url);if(!changed)return;photos=nextPhotos;initialized=true;const preservedIndex=currentUrl?photos.findIndex(p=>p.url===currentUrl):-1;cur=preservedIndex>=0?preservedIndex:0;render();restart()}catch(e){console.error(e);loading.textContent=`Unable to load Airtable: ${e.message}`}}load();setInterval(load,cfg.airtable.refreshMs||30000);
 </script>
 </body>
 </html>
