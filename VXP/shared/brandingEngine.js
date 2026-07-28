@@ -6,6 +6,7 @@ export class VXPBrandingEngine {
   constructor(config = {}) {
     this.config = {
       overlay: '',
+      overlays: null,
       outputType: 'image/png',
       outputQuality: 0.95,
       fit: 'cover',
@@ -19,14 +20,12 @@ export class VXPBrandingEngine {
       throw new TypeError('A canvas element is required.');
     }
     if (!source) throw new Error('A source image URL is required.');
-    if (!this.config.overlay) throw new Error('No overlay is configured.');
 
-    // Both images must be CORS-readable for canvas export.
-    const [photo, overlay] = await Promise.all([
-      this.#loadImage(source),
-      this.#loadImage(this.config.overlay),
-    ]);
+    const photo = await this.#loadImage(source);
+    const overlayUrl = this.#selectOverlay(photo);
+    if (!overlayUrl) throw new Error('No overlay is configured.');
 
+    const overlay = await this.#loadImage(overlayUrl);
     const width = overlay.naturalWidth || photo.naturalWidth;
     const height = overlay.naturalHeight || photo.naturalHeight;
     canvas.width = width;
@@ -37,6 +36,8 @@ export class VXPBrandingEngine {
     this.#drawFitted(context, photo, width, height, this.config.fit);
     context.drawImage(overlay, 0, 0, width, height);
 
+    canvas.dataset.orientation = photo.naturalHeight > photo.naturalWidth ? 'portrait' : 'landscape';
+    canvas.dataset.overlay = overlayUrl;
     return canvas;
   }
 
@@ -76,6 +77,15 @@ export class VXPBrandingEngine {
       files: [file],
     });
     return true;
+  }
+
+  #selectOverlay(photo) {
+    const overlays = this.config.overlays;
+    if (overlays && typeof overlays === 'object') {
+      const orientation = photo.naturalHeight > photo.naturalWidth ? 'portrait' : 'landscape';
+      return overlays[orientation] || overlays.landscape || overlays.portrait || this.config.overlay;
+    }
+    return this.config.overlay;
   }
 
   #loadImage(url) {
