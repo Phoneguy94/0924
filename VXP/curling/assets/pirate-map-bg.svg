@@ -1,0 +1,62 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1000" preserveAspectRatio="xMidYMid slice">
+  <defs>
+    <linearGradient id="paper" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b9935a"/>
+      <stop offset="0.45" stop-color="#8c673d"/>
+      <stop offset="1" stop-color="#5c422c"/>
+    </linearGradient>
+    <radialGradient id="vignette" cx="50%" cy="45%" r="72%">
+      <stop offset="45%" stop-color="#000" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#120b06" stop-opacity="0.78"/>
+    </radialGradient>
+    <filter id="grain">
+      <feTurbulence type="fractalNoise" baseFrequency="0.75" numOctaves="3" seed="7"/>
+      <feColorMatrix type="saturate" values="0"/>
+      <feComponentTransfer><feFuncA type="table" tableValues="0 0.14"/></feComponentTransfer>
+    </filter>
+  </defs>
+  <rect width="1600" height="1000" fill="url(#paper)"/>
+  <rect width="1600" height="1000" filter="url(#grain)" opacity=".46"/>
+
+  <g fill="none" stroke="#3c291c" stroke-width="3" opacity=".38">
+    <path d="M70 205 C220 80 390 120 475 230 S695 345 805 210 S1080 72 1230 185 S1450 310 1540 170"/>
+    <path d="M35 760 C210 620 390 650 515 770 S810 880 920 730 S1220 585 1545 730"/>
+    <path d="M285 165 C410 250 420 360 335 455 S215 665 355 765" stroke-dasharray="14 16"/>
+    <path d="M1120 220 C995 335 1025 465 1180 520 S1370 690 1265 830" stroke-dasharray="14 16"/>
+  </g>
+
+  <g opacity=".24" stroke="#2b1b12" fill="none">
+    <circle cx="1365" cy="170" r="78" stroke-width="4"/>
+    <circle cx="1365" cy="170" r="12" stroke-width="3"/>
+    <path d="M1365 74v192M1269 170h192M1297 102l136 136M1433 102l-136 136" stroke-width="3"/>
+    <path d="M1365 82l18 67-18 21-18-21z" fill="#2b1b12"/>
+  </g>
+
+  <g opacity=".20" transform="translate(120 480)">
+    <path d="M20 105h245l-42 42H62z" fill="#27170e"/>
+    <path d="M110 20v87M165 8v99M210 35v72" stroke="#27170e" stroke-width="6"/>
+    <path d="M112 28Q70 58 44 90h68zM167 18q-28 33-48 74h48zM211 44q34 22 54 50h-54z" fill="#27170e"/>
+  </g>
+
+  <g opacity=".20" transform="translate(1265 685)">
+    <circle cx="80" cy="80" r="74" fill="#243241"/>
+    <circle cx="80" cy="80" r="49" fill="#9f4c36"/>
+    <circle cx="80" cy="80" r="22" fill="#d7c4a0"/>
+    <path d="M25 80h110M80 25v110" stroke="#2b1b12" stroke-width="3"/>
+  </g>
+
+  <g opacity=".22" transform="translate(55 705)">
+    <ellipse cx="100" cy="92" rx="86" ry="48" fill="#20140e"/>
+    <path d="M42 81h116v38H42z" fill="#20140e"/>
+    <path d="M72 50h56c18 0 30 12 30 28v9h-24v-8c0-7-5-12-13-12H79c-8 0-13 5-13 12v8H42v-9c0-16 12-28 30-28z" fill="#20140e"/>
+  </g>
+
+  <g opacity=".18" fill="#2d1d13">
+    <circle cx="810" cy="495" r="9"/>
+    <path d="M803 488l14 14M817 488l-14 14" stroke="#2d1d13" stroke-width="7"/>
+    <path d="M575 330c55 30 102 74 134 128" fill="none" stroke="#2d1d13" stroke-width="4" stroke-dasharray="10 14"/>
+    <path d="M1008 565c-48 25-90 64-122 114" fill="none" stroke="#2d1d13" stroke-width="4" stroke-dasharray="10 14"/>
+  </g>
+
+  <rect width="1600" height="1000" fill="url(#vignette)"/>
+</svg>
