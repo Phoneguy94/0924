@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>All Photos | Pirates of the Curl-Ribbean</title>
+<style>
+:root{--gold:#d6a541;--paper:#f4ead1;--ink:#090d18}*{box-sizing:border-box}html{min-height:100%;background:#050711}body{margin:0;min-height:100vh;font-family:Inter,system-ui,sans-serif;color:#fff;background:radial-gradient(circle at top,#26324d 0,#0a1020 42%,#050711 100%)}header{text-align:center;padding:18px 16px 12px}.eyebrow{color:#f3c65d;text-transform:uppercase;letter-spacing:.35em;font-weight:900;font-size:12px}h1{margin:5px 0 2px;font-family:Georgia,serif;font-size:clamp(30px,4vw,54px)}.sub{opacity:.82;font-size:15px}.count{margin-top:9px;color:#f3c65d;font-weight:800}.gallery{width:min(1500px,96vw);margin:0 auto;padding:14px 0 40px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:14px}.photo{position:relative;display:block;width:100%;min-width:0;padding:0;border:6px solid var(--paper);border-radius:12px;overflow:hidden;background:#101522;box-shadow:0 12px 30px #0008;cursor:pointer;transition:transform .18s ease,box-shadow .18s ease}.photo:hover,.photo:focus-visible{transform:translateY(-3px);box-shadow:0 18px 38px #000b;outline:2px solid var(--gold);outline-offset:3px}.photo.portrait{aspect-ratio:2/3}.photo.landscape{aspect-ratio:3/2}.photo:not(.portrait):not(.landscape){aspect-ratio:2/3}.photo canvas,.photo img{display:block;width:100%;height:100%;object-fit:contain;background:#080a12}.status{text-align:center;padding:60px 20px;font-size:20px;color:#ffffffc7}.hidden{display:none!important}.lightbox{position:fixed;inset:0;z-index:1000;background:#02040aed;display:grid;grid-template-rows:auto 1fr;place-items:center;padding:12px}.lightbox-bar{width:100%;display:flex;justify-content:flex-end}.close{border:1px solid #ffffff55;background:#000b;color:#fff;border-radius:999px;width:48px;height:48px;font-size:30px;line-height:1;cursor:pointer}.lightbox-image{display:block;max-width:min(96vw,1500px);max-height:calc(100vh - 82px);object-fit:contain;border:7px solid var(--paper);border-radius:12px;box-shadow:0 25px 80px #000}.back{display:inline-flex;margin-top:11px;color:#f3c65d;text-decoration:none;font-weight:800}.back:hover{text-decoration:underline}@media(max-width:1050px){.gallery{grid-template-columns:repeat(4,minmax(0,1fr))}}@media(max-width:780px){.gallery{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}.photo{border-width:4px}}@media(max-width:560px){header{padding-top:12px}.eyebrow{font-size:10px;letter-spacing:.24em}h1{font-size:27px}.sub{font-size:13px}.gallery{width:94vw;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding-top:8px}.photo{border-radius:8px}.lightbox{padding:8px}.lightbox-image{border-width:4px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Orlando Curling Club · All Photos</div>
+  <h1>Pirates of the Curl-Ribbean</h1>
+  <div class="sub">July 31 – August 2, 2026</div>
+  <div class="count" id="count"></div>
+  <a class="back" href="../">← Back to Curl-Ribbean Home</a>
+</header>
+<main>
+  <div class="status" id="loading">Loading all Curl-Ribbean photos…</div>
+  <div class="status hidden" id="empty">No Curling photos are in the selected Airtable field yet.</div>
+  <section class="gallery hidden" id="gallery" aria-label="All Curl-Ribbean photos"></section>
+</main>
+<div class="lightbox hidden" id="lightbox" role="dialog" aria-modal="true" aria-label="Full-size photo">
+  <div class="lightbox-bar"><button class="close" id="close" aria-label="Close full-size photo">×</button></div>
+  <img class="lightbox-image" id="lightboxImage" alt="Full-size branded Curl-Ribbean photo">
+</div>
+<script src="../../../vxp/config/experiences.js"></script>
+<script type="module">
+import { VXPBrandingEngine } from '../../shared/brandingEngine.js';
+import { EventConfig } from '../js/eventConfig.js';
+
+const cfg=window.VXP_CONFIG;
+const FIELD='fldIDTYqG9IExHWZ9';
+const gallery=document.getElementById('gallery');
+const loading=document.getElementById('loading');
+const empty=document.getElementById('empty');
+const count=document.getElementById('count');
+const lightbox=document.getElementById('lightbox');
+const lightboxImage=document.getElementById('lightboxImage');
+const close=document.getElementById('close');
+const engine=new VXPBrandingEngine({overlays:EventConfig.overlays,...EventConfig.branding});
+let photos=[];
+
+function attachmentUrl(a){return a?.thumbnails?.full?.url||a?.thumbnails?.large?.url||a?.url||''}
+
+async function fetchPhotos(){
+  let records=[],offset='';
+  do{
+    const url=`https://api.airtable.com/v0/${cfg.airtable.baseId}/${cfg.airtable.tableId}?pageSize=100&returnFieldsByFieldId=true${offset?`&offset=${encodeURIComponent(offset)}`:''}`;
+    const r=await fetch(url,{headers:{Authorization:`Bearer ${cfg.airtable.token}`}});
+    if(!r.ok)throw new Error(`Airtable returned ${r.status}`);
+    const d=await r.json();
+    records.push(...(d.records||[]));
+    offset=d.offset||'';
+  }while(offset);
+  records.sort((a,b)=>new Date(b.createdTime)-new Date(a.createdTime));
+  return records.flatMap(r=>{
+    const v=r.fields?.[FIELD];
+    return Array.isArray(v)?v.map(a=>({url:attachmentUrl(a),created:r.createdTime})).filter(x=>x.url):[];
+  });
+}
+
+async function renderPhoto(canvas,index){
+  if(canvas.dataset.rendered)return;
+  canvas.dataset.rendered='true';
+  try{
+    await engine.render({source:photos[index].url,canvas});
+    const card=canvas.closest('.photo');
+    card.classList.add(canvas.dataset.orientation||'portrait');
+    const img=document.createElement('img');
+    img.alt=`Branded Curl-Ribbean photo ${index+1}`;
+    img.loading='lazy';
+    img.src=canvas.toDataURL('image/png');
+    img.draggable=true;
+    img.title='Tap to enlarge. Press and hold to save.';
+    canvas.replaceWith(img);
+    card.onclick=()=>openLightbox(img.src,img.alt);
+  }catch(e){
+    console.error(e);
+    canvas.dataset.rendered='';
+  }
+}
+
+function openLightbox(src,alt){
+  lightboxImage.src=src;
+  lightboxImage.alt=alt;
+  lightbox.classList.remove('hidden');
+  document.body.style.overflow='hidden';
+  close.focus();
+}
+function closeLightbox(){
+  lightbox.classList.add('hidden');
+  lightboxImage.src='';
+  document.body.style.overflow='';
+}
+close.onclick=closeLightbox;
+lightbox.addEventListener('click',e=>{if(e.target===lightbox)closeLightbox()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!lightbox.classList.contains('hidden'))closeLightbox()});
+
+function buildGallery(){
+  gallery.innerHTML=photos.map((_,i)=>`<button class="photo" type="button" aria-label="Open photo ${i+1}"><canvas data-index="${i}" aria-label="Loading branded photo ${i+1}"></canvas></button>`).join('');
+  const observer=new IntersectionObserver(entries=>{
+    entries.forEach(entry=>{
+      if(entry.isIntersecting){
+        const canvas=entry.target;
+        observer.unobserve(canvas);
+        renderPhoto(canvas,Number(canvas.dataset.index));
+      }
+    });
+  },{rootMargin:'500px 0px'});
+  gallery.querySelectorAll('canvas').forEach(canvas=>observer.observe(canvas));
+}
+
+async function load(){
+  try{
+    photos=await fetchPhotos();
+    loading.classList.add('hidden');
+    count.textContent=photos.length?`${photos.length} photo${photos.length===1?'':'s'}`:'';
+    empty.classList.toggle('hidden',photos.length>0);
+    gallery.classList.toggle('hidden',photos.length===0);
+    if(photos.length)buildGallery();
+  }catch(e){
+    console.error(e);
+    loading.textContent=`Unable to load Airtable: ${e.message}`;
+  }
+}
+load();
+</script>
+</body>
+</html>
