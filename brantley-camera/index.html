@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+<title>Marching Patriots Photo Kiosk</title>
+<style>
+  html,body{margin:0;height:100%}
+  body{font-family:Arial,sans-serif;background:linear-gradient(160deg,#061a38 0%,#0b2f63 55%,#8d1625 100%);color:#fff;text-align:center;min-height:100dvh;display:flex;flex-direction:column;align-items:center;overflow:hidden;padding:env(safe-area-inset-top) 0 env(safe-area-inset-bottom);box-sizing:border-box}
+  .header{padding:14px 16px 2px;font-size:clamp(25px,6vw,44px);font-weight:900;letter-spacing:.5px;text-shadow:0 3px 18px rgba(0,0,0,.45)}
+  .subheader{font-size:clamp(15px,3.5vw,23px);margin:0 16px 10px;opacity:.92}
+  .instrument-row{width:min(520px,90vw);margin:0 auto 10px}
+  .instrument-row label{display:block;font-size:clamp(15px,3.5vw,20px);font-weight:800;margin-bottom:5px}
+  select{width:100%;font-size:clamp(17px,4vw,23px);font-weight:800;padding:10px 14px;border:3px solid #fff;border-radius:14px;background:#fff;color:#071b3a;box-shadow:0 7px 20px rgba(0,0,0,.25)}
+  .camera-wrap{position:relative;flex:1 1 auto;min-height:0;aspect-ratio:3/4;max-height:55vh;max-width:90vw;border:8px solid #fff;border-radius:24px;overflow:hidden;background:#000;box-shadow:0 18px 60px rgba(0,0,0,.42)}
+  video,canvas,img{width:100%;height:100%;display:block;object-fit:cover;pointer-events:none;user-select:none}video{transform:scaleX(-1)}
+  .countdown{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(120px,30vw,220px);font-weight:900;text-shadow:0 0 30px #000;background:rgba(0,0,0,.25)}
+  .button-row{margin-top:10px;flex:0 0 auto}
+  button{font-size:clamp(19px,5vw,29px);font-weight:900;padding:clamp(12px,3vw,19px) clamp(22px,6vw,40px);margin:6px;border:0;border-radius:16px;background:#fff;color:#071b3a;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+  button.secondary{background:#dce8f7}button:disabled{opacity:.5}.hidden{display:none!important}
+  .status{font-size:clamp(16px,4vw,22px);min-height:25px;padding:2px 14px 0}
+  .watermark{margin-top:auto;padding:7px 16px;font-size:clamp(12px,3vw,17px);opacity:.7;font-weight:700}
+</style>
+</head>
+<body>
+  <div class="header">🎺 Donate to Join the Band</div>
+  <div class="subheader">Become an Honorary Marching Patriot</div>
+  <div class="instrument-row">
+    <label for="instrument">Choose your instrument</label>
+    <select id="instrument">
+      <option value="">Select an instrument…</option>
+      <option>Trumpet</option><option>Trombone</option><option>Mellophone</option><option>French Horn</option>
+      <option>Saxophone</option><option>Clarinet</option><option>Flute</option><option>Piccolo</option>
+      <option>Tuba</option><option>Sousaphone</option><option>Drum</option><option>Snare Drum</option>
+      <option>Bass Drum</option><option>Tenor Drums</option><option>Cymbals</option><option>Triangle</option>
+      <option>Color Guard</option><option>Drum Major</option>
+    </select>
+  </div>
+  <div class="camera-wrap">
+    <video id="video" autoplay playsinline></video>
+    <canvas id="canvas" class="hidden"></canvas>
+    <img id="photo" class="hidden" alt="Captured photo" />
+    <div id="countdown" class="countdown hidden"></div>
+  </div>
+  <div class="button-row">
+    <button id="takePhoto">📸 Take Picture</button>
+    <button id="retake" class="secondary hidden">↩ Retake</button>
+    <button id="submit" class="hidden">✅ Join the Band</button>
+  </div>
+  <div class="status" id="status"></div>
+  <div class="watermark">Powered by Veytec + Webex</div>
+
+<script src="../vxp/config/experiences.js"></script>
+<script>
+const video=document.getElementById('video'),canvas=document.getElementById('canvas'),photo=document.getElementById('photo'),takePhotoBtn=document.getElementById('takePhoto'),retakeBtn=document.getElementById('retake'),submitBtn=document.getElementById('submit'),statusEl=document.getElementById('status'),countdownEl=document.getElementById('countdown'),instrument=document.getElementById('instrument');
+const WEBHOOK_URL=window.VXP_CONFIG.webexConnect.captureWebhookUrl;
+const OUT_WIDTH=768,OUT_HEIGHT=1024,JPEG_QUALITY=.7,IDLE_TIMEOUT_MS=45000;
+let capturedBase64='',idleTimer=null;
+function slug(v){return String(v).trim().replace(/\s+/g,'-').replace(/[^A-Za-z0-9-]/g,'');}
+function startIdleTimer(){clearTimeout(idleTimer);idleTimer=setTimeout(resetToCamera,IDLE_TIMEOUT_MS)}
+function stopIdleTimer(){clearTimeout(idleTimer)}
+async function startCamera(){try{const stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'user',width:{ideal:1080},height:{ideal:1440}},audio:false});video.srcObject=stream}catch(err){console.error(err);statusEl.textContent='Camera could not start. Check camera permissions.'}}
+function captureToBase64(){const sw=video.videoWidth,sh=video.videoHeight,targetAR=OUT_WIDTH/OUT_HEIGHT,srcAR=sw/sh;let cropW,cropH;if(srcAR>targetAR){cropH=sh;cropW=sh*targetAR}else{cropW=sw;cropH=sw/targetAR}const cropX=(sw-cropW)/2,cropY=(sh-cropH)/2;canvas.width=OUT_WIDTH;canvas.height=OUT_HEIGHT;const ctx=canvas.getContext('2d');ctx.save();ctx.translate(OUT_WIDTH,0);ctx.scale(-1,1);ctx.drawImage(video,cropX,cropY,cropW,cropH,0,0,OUT_WIDTH,OUT_HEIGHT);ctx.restore();return canvas.toDataURL('image/jpeg',JPEG_QUALITY).split(',')[1]}
+takePhotoBtn.addEventListener('click',()=>{if(!instrument.value){statusEl.textContent='Choose your instrument first.';instrument.focus();return}takePhotoBtn.disabled=true;let n=3;countdownEl.textContent=n;countdownEl.classList.remove('hidden');const tick=setInterval(()=>{n--;if(n>0)countdownEl.textContent=n;else{clearInterval(tick);countdownEl.classList.add('hidden');takePhotoBtn.disabled=false;captureNow()}},1000)});
+function captureNow(){capturedBase64=captureToBase64();photo.src='data:image/jpeg;base64,'+capturedBase64;video.classList.add('hidden');photo.classList.remove('hidden');takePhotoBtn.classList.add('hidden');retakeBtn.classList.remove('hidden');submitBtn.classList.remove('hidden');statusEl.textContent='Looking good — ready to join the band!';startIdleTimer()}
+submitBtn.addEventListener('click',async()=>{if(!capturedBase64||!instrument.value)return;stopIdleTimer();submitBtn.disabled=true;retakeBtn.disabled=true;statusEl.textContent='Sending…';const eventName='Kiosk-Brantley-'+slug(instrument.value);const payload={automation:'bobblehead_kiosk',custname:'Veytec',demo_type:'brantley',Name:'Kiosk',MobileNumber:'0000000000',EventName:eventName,imageB64:capturedBase64};try{const res=await fetch(WEBHOOK_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});statusEl.textContent=res.ok?'Sent! Welcome to the Marching Patriots 🎺':'Hmm, let’s try that again.';setTimeout(resetToCamera,4000)}catch(err){console.error(err);statusEl.textContent='Let’s try that again.';setTimeout(resetToCamera,4000)}});
+retakeBtn.addEventListener('click',()=>{stopIdleTimer();resetToCamera()});
+function resetToCamera(){stopIdleTimer();countdownEl.classList.add('hidden');capturedBase64='';statusEl.textContent='';photo.classList.add('hidden');video.classList.remove('hidden');retakeBtn.classList.add('hidden');submitBtn.classList.add('hidden');takePhotoBtn.classList.remove('hidden');takePhotoBtn.disabled=false;submitBtn.disabled=false;retakeBtn.disabled=false}
+startCamera();
+</script>
+</body>
+</html>
