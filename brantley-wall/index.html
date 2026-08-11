@@ -43,7 +43,6 @@ const TABLE_ID=cfg.airtable.tableId;
 const AIRTABLE_TOKEN=cfg.airtable.token;
 const REFRESH_MS=15000;
 const ROTATE_MS=30000;
-const PAGE_SIZE=6;
 
 const FILTER_FIELD='fldQHpUL1ZnjJwLDl';
 const BRANTLEY_FIELDS=[
@@ -58,7 +57,7 @@ const scatterEl=document.getElementById('scatter');
 const loadingEl=document.getElementById('loading');
 const emptyEl=document.getElementById('empty');
 const pageIndicator=document.getElementById('pageIndicator');
-let allImages=[],currentPage=0,currentSignature='',rotateTimer=null;
+let sets=[],currentSet=0,currentSignature='',rotateTimer=null;
 
 function attUrl(a){return (a&&a.thumbnails&&a.thumbnails.large&&a.thumbnails.large.url)||a.url}
 
@@ -72,7 +71,7 @@ function apiUrl(offset){
   return `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}?${p.toString()}`;
 }
 
-async function fetchImages(){
+async function fetchSets(){
   try{
     let records=[],offset=null;
     do{
@@ -85,20 +84,24 @@ async function fetchImages(){
 
     records.sort((a,b)=>new Date(b.createdTime)-new Date(a.createdTime));
 
-    const images=[];
+    const out=[];
     for(const rec of records){
       const f=rec.fields||{};
       const marker=String(f[FILTER_FIELD]??'');
       if(!marker.toLowerCase().includes('brantley'))continue;
+
+      const imgs=[];
       for(const fieldId of BRANTLEY_FIELDS){
         const attachments=f[fieldId];
         if(!Array.isArray(attachments))continue;
         for(const a of attachments){
-          if(a&&a.url)images.push({url:attUrl(a),recordId:rec.id,fieldId,createdTime:rec.createdTime});
+          if(a&&a.url)imgs.push({url:attUrl(a),recordId:rec.id,fieldId,createdTime:rec.createdTime});
         }
       }
+
+      if(imgs.length)out.push({recordId:rec.id,createdTime:rec.createdTime,imgs});
     }
-    return images;
+    return out;
   }catch(e){console.error(e);return null}
 }
 
@@ -106,50 +109,55 @@ function card(img,label){
   return `<div class="photo"><img src="${img.url}" alt="Honorary Marching Patriot" loading="eager"><div class="badge">${label}</div></div>`;
 }
 
-function pageCount(){return Math.max(1,Math.ceil(allImages.length/PAGE_SIZE))}
-
 function render(){
-  if(!allImages.length)return;
-  const pages=pageCount();
-  currentPage=((currentPage%pages)+pages)%pages;
-  const start=currentPage*PAGE_SIZE;
-  const images=allImages.slice(start,start+PAGE_SIZE);
-  const featured=images.slice(0,3);
-  const others=images.slice(3,6);
-  featuredEl.innerHTML=featured.map((img,i)=>card(img,currentPage===0&&i===0?'Newest Patriot':'Honorary Patriot')).join('');
-  scatterEl.innerHTML=others.map(img=>card(img,'Marching Patriot')).join('');
-  pageIndicator.textContent=pages>1?`${currentPage+1} / ${pages}`:'';
+  if(!sets.length)return;
+  currentSet=((currentSet%sets.length)+sets.length)%sets.length;
+  const active=sets[currentSet];
+  const featured=active.imgs.slice(0,3);
+
+  const previews=[];
+  if(sets.length>1){
+    for(let step=1;step<sets.length&&previews.length<3;step++){
+      const other=sets[(currentSet+step)%sets.length];
+      if(other.imgs.length)previews.push(other.imgs[0]);
+    }
+  }
+
+  featuredEl.innerHTML=featured.map((img,i)=>card(img,currentSet===0&&i===0?'Newest Patriot':'Honorary Patriot')).join('');
+  scatterEl.innerHTML=previews.map(img=>card(img,'Marching Patriot')).join('');
+  pageIndicator.textContent=`${currentSet+1} / ${sets.length}`;
+
   requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.photo').forEach((el,i)=>setTimeout(()=>el.classList.add('show'),i*70))));
 }
 
 function go(dir){
-  if(pageCount()<=1)return;
-  currentPage=(currentPage+dir+pageCount())%pageCount();
+  if(sets.length<=1)return;
+  currentSet=(currentSet+dir+sets.length)%sets.length;
   render();
   startRotation();
 }
 
 function startRotation(){
   clearInterval(rotateTimer);
-  if(pageCount()>1)rotateTimer=setInterval(()=>go(1),ROTATE_MS);
+  if(sets.length>1)rotateTimer=setInterval(()=>go(1),ROTATE_MS);
 }
 
 async function load(initial=false){
-  const images=await fetchImages();
-  if(images===null){
+  const next=await fetchSets();
+  if(next===null){
     if(initial)loadingEl.innerHTML='<div class="big">Can’t reach Airtable</div><div>Check the network and refresh.</div>';
     return;
   }
-  const sig=images.map(x=>x.url).join('|');
+  const sig=next.map(s=>s.recordId+':'+s.imgs.map(x=>x.url).join(',')).join('|');
   if(sig!==currentSignature){
     currentSignature=sig;
-    allImages=images;
-    if(currentPage>=pageCount())currentPage=0;
-    if(allImages.length)render();
+    sets=next;
+    if(currentSet>=sets.length)currentSet=0;
+    if(sets.length)render();
     startRotation();
   }
   loadingEl.classList.add('hidden');
-  emptyEl.classList.toggle('hidden',images.length>0);
+  emptyEl.classList.toggle('hidden',sets.length>0);
 }
 
 document.addEventListener('keydown',e=>{
