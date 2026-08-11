@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Marching Patriots — Honorary Members</title>
+<style>
+:root{--blue:#092d63;--blue2:#061a38;--red:#a71f2b;--white:#f7f9fc;--gold:#e9c46a}
+*{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;overflow:hidden}body{font-family:Inter,"Segoe UI",Arial,sans-serif;color:#fff;background:radial-gradient(circle at 50% 15%,rgba(255,255,255,.08),transparent 28%),linear-gradient(145deg,var(--blue2),var(--blue) 58%,#3f1020);display:flex;flex-direction:column;user-select:none}
+header{text-align:center;padding:2.4vh 2vw 1vh;flex:0 0 auto}.eyebrow{font-size:1.5vh;letter-spacing:.34em;text-transform:uppercase;color:#dfe9f8;font-weight:800;margin-bottom:.5vh}h1{font-family:Georgia,"Times New Roman",serif;font-size:5.2vh;line-height:1;font-style:italic;text-shadow:0 3px 20px rgba(0,0,0,.35)}h1 span{color:#ff5262}.sub{font-size:1.7vh;opacity:.75;margin-top:.9vh}
+.stage{flex:1 1 auto;display:flex;align-items:center;justify-content:center;position:relative;padding:1vh 3vw 2vh;overflow:hidden}.person{width:100%;height:100%;display:flex;align-items:center;justify-content:center;gap:2.2vw;opacity:0;transform:scale(.985);transition:opacity .5s ease,transform .5s ease}.person.show{opacity:1;transform:none}
+.card{height:min(72vh,76vw);aspect-ratio:3/4;background:#fff;border-radius:18px;padding:1vh;box-shadow:0 22px 58px rgba(0,0,0,.5);position:relative;overflow:hidden}.card img{width:100%;height:100%;object-fit:cover;border-radius:12px;background:#101b2b}.badge{position:absolute;left:2.2vh;bottom:2.2vh;background:rgba(5,18,39,.82);backdrop-filter:blur(6px);padding:.7vh 1.2vh;border-radius:999px;font-size:1.65vh;font-weight:900;letter-spacing:.04em;border:1px solid rgba(255,255,255,.25)}
+.single .card{height:min(76vh,56vw)}.msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1vh;text-align:center;color:rgba(255,255,255,.72);font-size:2vh}.msg .big{font-family:Georgia,serif;font-size:3.5vh;color:#fff;font-style:italic}.hidden{display:none!important}
+footer{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:1.5vw;padding:1vh 2vw 2vh}.dots{display:flex;gap:.7vh;max-width:55vw;flex-wrap:wrap;justify-content:center}.dots i{width:1vh;height:1vh;border-radius:50%;background:rgba(255,255,255,.18);transition:.3s}.dots i.on{background:#fff;transform:scale(1.35)}.brand{font-size:1.3vh;letter-spacing:.22em;text-transform:uppercase;opacity:.45;font-weight:700}
+@media(max-aspect-ratio:1/1){.person{gap:1.4vw}.card{height:min(62vh,47vw)}}
+</style>
+</head>
+<body>
+<header>
+  <div class="eyebrow">Lake Brantley Marching Patriots</div>
+  <h1>Honorary <span>Marching Patriots</span></h1>
+  <div class="sub">Donate to join the band.</div>
+</header>
+<div class="stage">
+  <div class="person" id="person"></div>
+  <div class="msg" id="loading"><div class="big">Loading…</div><div>Fetching the newest Honorary Patriots</div></div>
+  <div class="msg hidden" id="empty"><div class="big">Who’s joining the band next?</div><div>Step up to the camera and choose your instrument.</div></div>
+</div>
+<footer><div class="dots" id="dots"></div><div class="brand">Powered by Veytec + Webex</div></footer>
+<script src="../vxp/config/experiences.js"></script>
+<script>
+const cfg=window.VXP_CONFIG,BASE_ID=cfg.airtable.baseId,TABLE_ID=cfg.airtable.tableId,AIRTABLE_TOKEN=cfg.airtable.token,ROTATE_MS=12000,REFRESH_MS=30000;
+const personEl=document.getElementById('person'),dotsEl=document.getElementById('dots'),loadingEl=document.getElementById('loading'),emptyEl=document.getElementById('empty');
+let people=[],cur=0,timer=null;
+const API=`https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}?pageSize=100`;
+function attUrl(a){return (a.thumbnails&&a.thumbnails.large&&a.thumbnails.large.url)||a.url}
+function eventValue(fields){const key=Object.keys(fields).find(k=>/^event\s*name$/i.test(k)||/^eventname$/i.test(k));return key?String(fields[key]||''):''}
+function labelFromEvent(ev){return ev.replace(/^Kiosk-Brantley-/i,'').replace(/-/g,' ')||'Marching Patriot'}
+function attachmentFields(fields){return Object.keys(fields).filter(k=>Array.isArray(fields[k])&&fields[k].some(a=>a&&a.url)&&!/(original|source|input|qr)/i.test(k));}
+async function fetchPeople(){try{let records=[],offset=null;do{const url=API+(offset?`&offset=${encodeURIComponent(offset)}`:'');const res=await fetch(url,{headers:{Authorization:`Bearer ${AIRTABLE_TOKEN}`}});if(!res.ok){console.error('Airtable error',res.status);return null}const data=await res.json();records=records.concat(data.records||[]);offset=data.offset||null}while(offset);records.sort((a,b)=>new Date(b.createdTime)-new Date(a.createdTime));const out=[];for(const rec of records){const f=rec.fields||{},ev=eventValue(f);if(!/^Kiosk-Brantley-/i.test(ev))continue;const keys=attachmentFields(f);const imgs=[];for(const k of keys){for(const a of f[k])if(a&&a.url)imgs.push({url:attUrl(a),field:k})}if(imgs.length)out.push({event:ev,instrument:labelFromEvent(ev),imgs:imgs.slice(0,2)})}return out}catch(e){console.error(e);return null}}
+function buildDots(){dotsEl.innerHTML='';people.forEach(()=>dotsEl.appendChild(document.createElement('i')))}
+function render(){const p=people[cur];if(!p)return;personEl.classList.remove('show');setTimeout(()=>{personEl.classList.toggle('single',p.imgs.length===1);personEl.innerHTML=p.imgs.map((img,i)=>`<div class="card"><img src="${img.url}" alt="${p.instrument}" loading="eager"><div class="badge">${i===0?'Honorary Patriot · ':''}${p.instrument}</div></div>`).join('');void personEl.offsetWidth;personEl.classList.add('show')},220);[...dotsEl.children].forEach((d,i)=>d.classList.toggle('on',i===cur))}
+function advance(){if(people.length<=1)return;cur=(cur+1)%people.length;render()}
+function startRotation(){clearInterval(timer);if(people.length>1)timer=setInterval(advance,ROTATE_MS)}
+function changed(next){if(next.length!==people.length)return true;for(let i=0;i<next.length;i++){if(next[i].event!==people[i].event||next[i].imgs.length!==people[i].imgs.length)return true;for(let j=0;j<next[i].imgs.length;j++)if(next[i].imgs[j].url!==people[i].imgs[j].url)return true}return false}
+async function load(initial){const next=await fetchPeople();if(next===null){if(initial)loadingEl.innerHTML='<div class="big">Can’t reach Airtable</div><div>Check the network and refresh.</div>';return}if(changed(next)){people=next;buildDots();if(cur>=people.length)cur=0;if(people.length)render();startRotation()}loadingEl.classList.add('hidden');emptyEl.classList.toggle('hidden',people.length>0)}
+document.addEventListener('keydown',e=>{if(e.key==='ArrowRight'&&people.length>1){cur=(cur+1)%people.length;render();startRotation()}else if(e.key==='ArrowLeft'&&people.length>1){cur=(cur-1+people.length)%people.length;render();startRotation()}});
+load(true);setInterval(()=>load(false),REFRESH_MS);
+</script>
+</body>
+</html>
