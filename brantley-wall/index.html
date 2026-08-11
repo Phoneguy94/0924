@@ -45,6 +45,7 @@ const REFRESH_MS=15000;
 const ROTATE_MS=30000;
 const PAGE_SIZE=6;
 
+const FILTER_FIELD='fldQHpUL1ZnjJwLDl';
 const BRANTLEY_FIELDS=[
   'fldL8t8WtpjfPwmRc',
   'fldD1C67p0bmoZwsl',
@@ -65,6 +66,7 @@ function apiUrl(offset){
   const p=new URLSearchParams();
   p.set('pageSize','100');
   p.set('returnFieldsByFieldId','true');
+  p.append('fields[]',FILTER_FIELD);
   BRANTLEY_FIELDS.forEach(id=>p.append('fields[]',id));
   if(offset)p.set('offset',offset);
   return `https://api.airtable.com/v0/${BASE_ID}/${TABLE_ID}?${p.toString()}`;
@@ -86,6 +88,8 @@ async function fetchImages(){
     const images=[];
     for(const rec of records){
       const f=rec.fields||{};
+      const marker=String(f[FILTER_FIELD]??'');
+      if(!marker.toLowerCase().includes('brantley'))continue;
       for(const fieldId of BRANTLEY_FIELDS){
         const attachments=f[fieldId];
         if(!Array.isArray(attachments))continue;
