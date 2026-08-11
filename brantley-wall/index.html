@@ -7,7 +7,7 @@
 <style>
 :root{--blue:#092d63;--blue2:#061a38;--red:#a71f2b;--white:#f7f9fc;--gold:#e9c46a}
 *{box-sizing:border-box;margin:0;padding:0}html,body{height:100%;overflow:hidden}
-body{font-family:Inter,"Segoe UI",Arial,sans-serif;color:#fff;background:radial-gradient(circle at 50% 15%,rgba(255,255,255,.09),transparent 28%),linear-gradient(145deg,var(--blue2),var(--blue) 58%,#3f1020);user-select:none}
+body{font-family:Inter,"Segoe UI",Arial,sans-serif;color:#fff;background:radial-gradient(circle at 50% 15%,rgba(255,255,255,.09),transparent 28%),linear-gradient(145deg,var(--blue2),var(--blue) 58%,#3f1020);user-select:none;touch-action:pan-y}
 body:before{content:"";position:fixed;inset:0;background:radial-gradient(circle at 10% 45%,rgba(255,82,98,.12),transparent 24%),radial-gradient(circle at 90% 55%,rgba(233,196,106,.10),transparent 25%);pointer-events:none}
 header{position:absolute;left:0;right:0;top:0;z-index:20;text-align:center;padding:2vh 2vw 0;pointer-events:none}.eyebrow{font-size:1.35vh;letter-spacing:.34em;text-transform:uppercase;color:#dfe9f8;font-weight:800;margin-bottom:.4vh}h1{font-family:Georgia,"Times New Roman",serif;font-size:4.8vh;line-height:1;font-style:italic;text-shadow:0 3px 20px rgba(0,0,0,.45)}h1 span{color:#ff5262}.sub{font-size:1.55vh;opacity:.78;margin-top:.7vh}
 .wall{position:fixed;inset:0;padding:11vh 2vw 4vh;overflow:hidden}
@@ -16,7 +16,7 @@ header{position:absolute;left:0;right:0;top:0;z-index:20;text-align:center;paddi
 .scatter{position:absolute;inset:0;z-index:4;pointer-events:none}.scatter .photo{position:absolute;width:min(16vw,285px);height:min(33vh,420px);padding:.45vh;border-radius:15px;filter:saturate(.95)}.scatter .photo:nth-child(1){left:1.6vw;top:18vh;transform:rotate(-5deg) scale(.96)}.scatter .photo:nth-child(1).show{transform:rotate(-5deg)}.scatter .photo:nth-child(2){right:1.6vw;top:15vh;transform:rotate(5deg) scale(.96)}.scatter .photo:nth-child(2).show{transform:rotate(5deg)}.scatter .photo:nth-child(3){right:3.2vw;bottom:3.5vh;transform:rotate(-3deg) scale(.96)}.scatter .photo:nth-child(3).show{transform:rotate(-3deg)}
 .badge{position:absolute;left:1.2vh;bottom:1.2vh;background:rgba(5,18,39,.84);backdrop-filter:blur(7px);padding:.55vh .95vh;border-radius:999px;font-size:1.25vh;font-weight:900;letter-spacing:.04em;border:1px solid rgba(255,255,255,.22);text-transform:uppercase}
 .msg{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1vh;text-align:center;color:rgba(255,255,255,.72);font-size:2vh;z-index:40}.msg .big{font-family:Georgia,serif;font-size:3.5vh;color:#fff;font-style:italic}.hidden{display:none!important}
-.brand{position:fixed;left:0;right:0;bottom:1.15vh;text-align:center;font-size:1.15vh;letter-spacing:.22em;text-transform:uppercase;opacity:.38;font-weight:700;z-index:20}
+.brand{position:fixed;left:0;right:0;bottom:1.15vh;text-align:center;font-size:1.15vh;letter-spacing:.22em;text-transform:uppercase;opacity:.38;font-weight:700;z-index:20;pointer-events:none}.page-indicator{position:fixed;right:1.5vw;bottom:1.1vh;font-size:1.2vh;opacity:.45;font-weight:700;z-index:21;letter-spacing:.08em}.nav-hint{position:fixed;left:1.5vw;bottom:1.05vh;font-size:1.15vh;opacity:.38;z-index:21}
 @media(max-width:1100px){.featured{width:74vw;height:65vh;gap:1vw}.scatter .photo{width:17vw;height:27vh}.scatter .photo:nth-child(1){top:20vh}.scatter .photo:nth-child(2){top:18vh}}
 </style>
 </head>
@@ -26,13 +26,15 @@ header{position:absolute;left:0;right:0;top:0;z-index:20;text-align:center;paddi
   <h1>Honorary <span>Marching Patriots</span></h1>
   <div class="sub">Donate to join the band.</div>
 </header>
-<div class="wall">
+<div class="wall" id="wall">
   <div class="scatter" id="scatter"></div>
   <div class="featured" id="featured"></div>
   <div class="msg" id="loading"><div class="big">Loading…</div><div>Fetching the newest Honorary Patriots</div></div>
   <div class="msg hidden" id="empty"><div class="big">Who’s joining the band next?</div><div>Step up to the camera and choose your instrument.</div></div>
 </div>
+<div class="nav-hint">← → or swipe</div>
 <div class="brand">Powered by Veytec + Webex</div>
+<div class="page-indicator" id="pageIndicator"></div>
 <script src="../vxp/config/experiences.js"></script>
 <script>
 const cfg=window.VXP_CONFIG;
@@ -40,19 +42,22 @@ const BASE_ID=cfg.airtable.baseId;
 const TABLE_ID=cfg.airtable.tableId;
 const AIRTABLE_TOKEN=cfg.airtable.token;
 const REFRESH_MS=15000;
+const ROTATE_MS=30000;
+const PAGE_SIZE=6;
 
-// ONLY these three Brantley generated-image columns.
 const BRANTLEY_FIELDS=[
   'fldL8t8WtpjfPwmRc',
   'fldD1C67p0bmoZwsl',
   'fldqsOhfVcyX66aQd'
 ];
 
+const wallEl=document.getElementById('wall');
 const featuredEl=document.getElementById('featured');
 const scatterEl=document.getElementById('scatter');
 const loadingEl=document.getElementById('loading');
 const emptyEl=document.getElementById('empty');
-let currentSignature='';
+const pageIndicator=document.getElementById('pageIndicator');
+let allImages=[],currentPage=0,currentSignature='',rotateTimer=null;
 
 function attUrl(a){return (a&&a.thumbnails&&a.thumbnails.large&&a.thumbnails.large.url)||a.url}
 
@@ -88,9 +93,8 @@ async function fetchImages(){
           if(a&&a.url)images.push({url:attUrl(a),recordId:rec.id,fieldId,createdTime:rec.createdTime});
         }
       }
-      if(images.length>=6)break;
     }
-    return images.slice(0,6);
+    return images;
   }catch(e){console.error(e);return null}
 }
 
@@ -98,12 +102,32 @@ function card(img,label){
   return `<div class="photo"><img src="${img.url}" alt="Honorary Marching Patriot" loading="eager"><div class="badge">${label}</div></div>`;
 }
 
-function render(images){
+function pageCount(){return Math.max(1,Math.ceil(allImages.length/PAGE_SIZE))}
+
+function render(){
+  if(!allImages.length)return;
+  const pages=pageCount();
+  currentPage=((currentPage%pages)+pages)%pages;
+  const start=currentPage*PAGE_SIZE;
+  const images=allImages.slice(start,start+PAGE_SIZE);
   const featured=images.slice(0,3);
   const others=images.slice(3,6);
-  featuredEl.innerHTML=featured.map((img,i)=>card(img,i===1?'Newest Patriot':'Honorary Patriot')).join('');
+  featuredEl.innerHTML=featured.map((img,i)=>card(img,currentPage===0&&i===0?'Newest Patriot':'Honorary Patriot')).join('');
   scatterEl.innerHTML=others.map(img=>card(img,'Marching Patriot')).join('');
+  pageIndicator.textContent=pages>1?`${currentPage+1} / ${pages}`:'';
   requestAnimationFrame(()=>requestAnimationFrame(()=>document.querySelectorAll('.photo').forEach((el,i)=>setTimeout(()=>el.classList.add('show'),i*70))));
+}
+
+function go(dir){
+  if(pageCount()<=1)return;
+  currentPage=(currentPage+dir+pageCount())%pageCount();
+  render();
+  startRotation();
+}
+
+function startRotation(){
+  clearInterval(rotateTimer);
+  if(pageCount()>1)rotateTimer=setInterval(()=>go(1),ROTATE_MS);
 }
 
 async function load(initial=false){
@@ -113,10 +137,32 @@ async function load(initial=false){
     return;
   }
   const sig=images.map(x=>x.url).join('|');
-  if(sig!==currentSignature){currentSignature=sig;render(images)}
+  if(sig!==currentSignature){
+    currentSignature=sig;
+    allImages=images;
+    if(currentPage>=pageCount())currentPage=0;
+    if(allImages.length)render();
+    startRotation();
+  }
   loadingEl.classList.add('hidden');
   emptyEl.classList.toggle('hidden',images.length>0);
 }
+
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'){go(1);e.preventDefault()}
+  else if(e.key==='ArrowLeft'){go(-1);e.preventDefault()}
+});
+
+let touchX=null,touchY=null;
+wallEl.addEventListener('touchstart',e=>{
+  const t=e.changedTouches[0];touchX=t.clientX;touchY=t.clientY;
+},{passive:true});
+wallEl.addEventListener('touchend',e=>{
+  if(touchX===null)return;
+  const t=e.changedTouches[0],dx=t.clientX-touchX,dy=t.clientY-touchY;
+  if(Math.abs(dx)>45&&Math.abs(dx)>Math.abs(dy))go(dx<0?1:-1);
+  touchX=touchY=null;
+},{passive:true});
 
 load(true);
 setInterval(()=>load(false),REFRESH_MS);
