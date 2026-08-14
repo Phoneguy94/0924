@@ -20,7 +20,7 @@ function fillVoices(select,selected){
 }
 
 function formatTime(seconds){
-  if(!Number.isFinite(seconds) || seconds<0) seconds=0;
+  if(!Number.isFinite(seconds)||seconds<0) seconds=0;
   const m=Math.floor(seconds/60);
   const s=Math.floor(seconds%60).toString().padStart(2,'0');
   return `${m}:${s}`;
@@ -33,12 +33,12 @@ function setupDeck(letter){
   const out=byId('rateOut'+letter);
   const play=byId('play'+letter);
   const restart=byId('restart'+letter);
-  const progress=byId('progress'+letter);
-  const progressTrack=byId('progressTrack'+letter);
+  const seek=byId('seek'+letter);
   const time=byId('time'+letter);
   const voice=byId('voice'+letter);
   const voiceName=byId('voiceName'+letter);
   const status=byId('status'+letter);
+  let userSeeking=false;
 
   audio.preservesPitch=true;
   audio.mozPreservesPitch=true;
@@ -73,17 +73,9 @@ function setupDeck(letter){
     audio.load();
     audio.playbackRate=state[key].rate;
     play.textContent='▶ Play';
-    progress.style.width='0%';
+    seek.value='0';
     time.textContent='0:00 / 0:00';
     setStatus(`Loading ${voice.value}_100.mp3…`);
-  }
-
-  function seekToRatio(ratio){
-    if(!Number.isFinite(audio.duration) || audio.duration<=0) return;
-    ratio=Math.max(0,Math.min(1,ratio));
-    audio.currentTime=ratio*audio.duration;
-    progress.style.width=`${ratio*100}%`;
-    updateTime();
   }
 
   voice.addEventListener('change',loadVoice);
@@ -100,17 +92,24 @@ function setupDeck(letter){
 
   restart.addEventListener('click',()=>{
     audio.currentTime=0;
-    progress.style.width='0%';
+    seek.value='0';
     updateTime();
     audio.play().then(()=>play.textContent='⏸ Pause').catch(()=>{});
   });
 
-  // Known-good seek behavior: clicking the progress bar changes only currentTime.
-  progressTrack.addEventListener('click',event=>{
-    const rect=progressTrack.getBoundingClientRect();
-    if(rect.width<=0) return;
-    seekToRatio((event.clientX-rect.left)/rect.width);
+  // v7 seek: the range slider only changes currentTime.
+  // It does not reload, restart, pause, or play the file.
+  seek.addEventListener('pointerdown',()=>{userSeeking=true;});
+  seek.addEventListener('input',()=>{
+    if(!Number.isFinite(audio.duration)||audio.duration<=0) return;
+    const ratio=Number(seek.value)/1000;
+    audio.currentTime=ratio*audio.duration;
+    updateTime();
   });
+  const finishSeeking=()=>{userSeeking=false;};
+  seek.addEventListener('pointerup',finishSeeking);
+  seek.addEventListener('pointercancel',finishSeeking);
+  seek.addEventListener('change',finishSeeking);
 
   audio.addEventListener('loadedmetadata',()=>{
     updateTime();
@@ -119,14 +118,14 @@ function setupDeck(letter){
   audio.addEventListener('canplay',()=>setStatus(`${state[key].voice}_100.mp3 ready`,'ready'));
   audio.addEventListener('error',()=>setStatus(`${state[key].voice}_100.mp3 is not in the GitHub voice folder yet`,'missing'));
   audio.addEventListener('timeupdate',()=>{
-    if(Number.isFinite(audio.duration) && audio.duration>0){
-      progress.style.width=`${(audio.currentTime/audio.duration)*100}%`;
+    if(!userSeeking && Number.isFinite(audio.duration) && audio.duration>0){
+      seek.value=String(Math.round((audio.currentTime/audio.duration)*1000));
     }
     updateTime();
   });
   audio.addEventListener('ended',()=>{
     play.textContent='▶ Play';
-    progress.style.width='100%';
+    seek.value='1000';
     updateTime();
   });
 
@@ -150,7 +149,6 @@ function applyCrossfade(){
   byId('meterA').style.width=`${Math.round(deckA.audio.volume*100)}%`;
   byId('meterB').style.width=`${Math.round(deckB.audio.volume*100)}%`;
 }
-
 byId('crossfader').addEventListener('input',applyCrossfade);
 applyCrossfade();
 
