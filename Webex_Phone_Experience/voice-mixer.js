@@ -28,6 +28,7 @@ function setupDeck(letter){
   const play=byId('play'+letter);
   const restart=byId('restart'+letter);
   const progress=byId('progress'+letter);
+  const progressTrack=progress.parentElement;
   const voice=byId('voice'+letter);
   const voiceName=byId('voiceName'+letter);
   const status=byId('status'+letter);
@@ -82,6 +83,13 @@ function setupDeck(letter){
   restart.addEventListener('click',()=>{
     audio.currentTime=0;
     audio.play().then(()=>play.textContent='⏸ Pause').catch(()=>{});
+  });
+  progressTrack.addEventListener('click',event=>{
+    if(!Number.isFinite(audio.duration) || audio.duration<=0) return;
+    const rect=progressTrack.getBoundingClientRect();
+    const ratio=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width));
+    audio.currentTime=ratio*audio.duration;
+    progress.style.width=`${ratio*100}%`;
   });
   audio.addEventListener('canplay',()=>setStatus(`${state[key].voice}_100.mp3 ready`,'ready'));
   audio.addEventListener('error',()=>setStatus(`${state[key].voice}_100.mp3 is not in the GitHub voice folder yet`,'missing'));
