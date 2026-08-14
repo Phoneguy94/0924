@@ -1,6 +1,5 @@
 const VOICES=[
-  'Maria','Daniel','Jennifer','Henry','Sophia','Ezra','Hazel','Oliver','Clara',
-  'Jess','Lisa','Frank','Mia','Chris','Aaron'
+  'Maria','Daniel','Jennifer','Henry','Sophia','Ezra','Hazel','Oliver','Clara'
 ];
 const byId=id=>document.getElementById(id);
 const state={a:{voice:'Jennifer',rate:1},b:{voice:'Henry',rate:1}};
@@ -102,8 +101,6 @@ function setupDeck(letter){
     audio.play().then(()=>play.textContent='⏸ Pause').catch(()=>{});
   });
 
-  // Native playback slider. Moving it only changes currentTime.
-  // It never calls load(), play(), pause(), or restart.
   seek.addEventListener('pointerdown',()=>{seeking=true;});
   seek.addEventListener('input',()=>{
     if(!Number.isFinite(audio.duration) || audio.duration<=0) return;
