@@ -20,6 +20,13 @@ function fillVoices(select,selected){
   });
 }
 
+function formatTime(seconds){
+  if(!Number.isFinite(seconds) || seconds<0) seconds=0;
+  const m=Math.floor(seconds/60);
+  const s=Math.floor(seconds%60).toString().padStart(2,'0');
+  return `${m}:${s}`;
+}
+
 function setupDeck(letter){
   const key=letter.toLowerCase();
   const audio=byId('audio'+letter);
@@ -27,12 +34,12 @@ function setupDeck(letter){
   const out=byId('rateOut'+letter);
   const play=byId('play'+letter);
   const restart=byId('restart'+letter);
-  const progress=byId('progress'+letter);
-  const progressTrack=progress.parentElement;
+  const seek=byId('seek'+letter);
+  const time=byId('time'+letter);
   const voice=byId('voice'+letter);
   const voiceName=byId('voiceName'+letter);
   const status=byId('status'+letter);
-  let scrubbing=false;
+  let seeking=false;
 
   audio.preservesPitch=true;
   audio.mozPreservesPitch=true;
@@ -42,6 +49,10 @@ function setupDeck(letter){
   function setStatus(text,kind=''){
     status.textContent=text;
     status.dataset.kind=kind;
+  }
+
+  function updateTime(){
+    time.textContent=`${formatTime(audio.currentTime)} / ${formatTime(audio.duration)}`;
   }
 
   function setRate(v){
@@ -64,24 +75,17 @@ function setupDeck(letter){
     audio.load();
     audio.playbackRate=state[key].rate;
     play.textContent='▶ Play';
-    progress.style.width='0%';
+    seek.value='0';
+    time.textContent='0:00 / 0:00';
     setStatus(`Loading ${voice.value}_100.mp3…`);
     if(wasPlaying){
       audio.play().then(()=>play.textContent='⏸ Pause').catch(()=>{});
     }
   }
 
-  function seekFromPointer(event){
-    if(!Number.isFinite(audio.duration) || audio.duration<=0) return;
-    const rect=progressTrack.getBoundingClientRect();
-    if(rect.width<=0) return;
-    const ratio=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width));
-    audio.currentTime=ratio*audio.duration;
-    progress.style.width=`${ratio*100}%`;
-  }
-
   voice.addEventListener('change',loadVoice);
   rate.addEventListener('input',()=>setRate(rate.value));
+
   play.addEventListener('click',()=>{
     if(audio.paused){
       audio.play().then(()=>play.textContent='⏸ Pause').catch(()=>{});
@@ -90,50 +94,52 @@ function setupDeck(letter){
       play.textContent='▶ Play';
     }
   });
+
   restart.addEventListener('click',()=>{
     audio.currentTime=0;
+    seek.value='0';
+    updateTime();
     audio.play().then(()=>play.textContent='⏸ Pause').catch(()=>{});
   });
 
-  // Real scrubber: click or drag anywhere on the progress bar.
-  // Seeking never starts, stops, or restarts playback.
-  progressTrack.addEventListener('pointerdown',event=>{
-    scrubbing=true;
-    progressTrack.setPointerCapture(event.pointerId);
-    seekFromPointer(event);
+  // Native playback slider. Moving it only changes currentTime.
+  // It never calls load(), play(), pause(), or restart.
+  seek.addEventListener('pointerdown',()=>{seeking=true;});
+  seek.addEventListener('input',()=>{
+    if(!Number.isFinite(audio.duration) || audio.duration<=0) return;
+    const ratio=Number(seek.value)/1000;
+    audio.currentTime=ratio*audio.duration;
+    updateTime();
   });
-  progressTrack.addEventListener('pointermove',event=>{
-    if(!scrubbing) return;
-    seekFromPointer(event);
-  });
-  progressTrack.addEventListener('pointerup',event=>{
-    if(!scrubbing) return;
-    seekFromPointer(event);
-    scrubbing=false;
-    if(progressTrack.hasPointerCapture(event.pointerId)) progressTrack.releasePointerCapture(event.pointerId);
-  });
-  progressTrack.addEventListener('pointercancel',event=>{
-    scrubbing=false;
-    if(progressTrack.hasPointerCapture(event.pointerId)) progressTrack.releasePointerCapture(event.pointerId);
-  });
+  seek.addEventListener('change',()=>{seeking=false;});
+  seek.addEventListener('pointerup',()=>{seeking=false;});
+  seek.addEventListener('pointercancel',()=>{seeking=false;});
 
+  audio.addEventListener('loadedmetadata',()=>{
+    updateTime();
+    setStatus(`${state[key].voice}_100.mp3 ready`,'ready');
+  });
   audio.addEventListener('canplay',()=>setStatus(`${state[key].voice}_100.mp3 ready`,'ready'));
   audio.addEventListener('error',()=>setStatus(`${state[key].voice}_100.mp3 is not in the GitHub voice folder yet`,'missing'));
   audio.addEventListener('timeupdate',()=>{
-    if(scrubbing) return;
-    progress.style.width=audio.duration?`${audio.currentTime/audio.duration*100}%`:'0%';
+    if(!seeking && Number.isFinite(audio.duration) && audio.duration>0){
+      seek.value=String(Math.round((audio.currentTime/audio.duration)*1000));
+    }
+    updateTime();
   });
   audio.addEventListener('ended',()=>{
     play.textContent='▶ Play';
-    progress.style.width='100%';
+    seek.value='1000';
+    updateTime();
   });
+
   document.querySelectorAll(`.rate-pads[data-target="${letter}"] button`).forEach(btn=>{
     btn.addEventListener('click',()=>setRate(btn.dataset.rate));
   });
 
   setRate(1);
   loadVoice();
-  return {audio,setRate};
+  return {audio,setRate,seek};
 }
 
 const deckA=setupDeck('A');
@@ -173,4 +179,6 @@ byId('syncPlayback').addEventListener('click',()=>{
   targetProgress=Math.max(0,Math.min(1,targetProgress));
   a.currentTime=targetProgress*a.duration;
   b.currentTime=targetProgress*b.duration;
+  deckA.seek.value=String(Math.round(targetProgress*1000));
+  deckB.seek.value=String(Math.round(targetProgress*1000));
 });
