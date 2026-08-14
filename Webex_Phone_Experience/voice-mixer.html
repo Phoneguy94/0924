@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Veytec Webex AI Voice Mixer</title>
-<link rel="stylesheet" href="voice-mixer.css?v=3">
+<link rel="stylesheet" href="voice-mixer.css?v=4">
 </head>
 <body>
 <header class="topbar">
@@ -29,11 +29,12 @@
       <div class="transport"><button id="playA" class="primary">▶ Play</button><button id="restartA">↺ Restart</button></div>
       <label>Speaking rate <output id="rateOutA">1.00</output><input id="rateA" type="range" min="0.70" max="1.20" step="0.01" value="1.00"></label>
       <div class="rate-pads" data-target="A"><button data-rate="0.90">.90</button><button data-rate="0.95">.95</button><button data-rate="1.00" class="active">1.00</button><button data-rate="1.05">1.05</button><button data-rate="1.10">1.10</button></div>
-      <div class="progress"><span id="progressA"></span></div><audio id="audioA" preload="metadata"></audio>
+      <div class="progress" id="progressTrackA" title="Click to seek"><span id="progressA"></span></div><audio id="audioA" preload="metadata"></audio>
     </article>
     <section class="center-strip">
       <div class="meter-block"><span>A</span><div class="meter"><i id="meterA"></i></div></div>
       <button id="syncRate" class="sync">SYNC RATE</button>
+      <button id="syncPlayback" class="sync">SYNC PLAYBACK</button>
       <label class="xfade">Crossfader<input id="crossfader" type="range" min="0" max="100" value="50"><div><span>A</span><strong id="xfadeOut">50 / 50</strong><span>B</span></div></label>
       <div class="meter-block"><span>B</span><div class="meter"><i id="meterB"></i></div></div>
     </section>
@@ -44,12 +45,12 @@
       <div class="transport"><button id="playB" class="primary">▶ Play</button><button id="restartB">↺ Restart</button></div>
       <label>Speaking rate <output id="rateOutB">1.00</output><input id="rateB" type="range" min="0.70" max="1.20" step="0.01" value="1.00"></label>
       <div class="rate-pads" data-target="B"><button data-rate="0.90">.90</button><button data-rate="0.95">.95</button><button data-rate="1.00" class="active">1.00</button><button data-rate="1.05">1.05</button><button data-rate="1.10">1.10</button></div>
-      <div class="progress"><span id="progressB"></span></div><audio id="audioB" preload="metadata"></audio>
+      <div class="progress" id="progressTrackB" title="Click to seek"><span id="progressB"></span></div><audio id="audioB" preload="metadata"></audio>
     </article>
   </section>
   <section class="script-panel"><div><p class="eyebrow">Standard comparison script</p><h2>Use the same words every time.</h2></div><textarea rows="5" readonly>Thank you for calling My Company Name or City Name Here. I'm an AI assistant. This call may be recorded and transcribed for quality and troubleshooting purposes. I can help you find information, answer questions, check hours and locations, or connect you with the right department. What can I help you with today?</textarea><p class="note">Browser rate is simulated from the Webex 1.00 master. Jennifer/Henry calibration showed the Webex rate setting tracks browser playback rate extremely closely. Verify the final choice in AI Agent Studio.</p></section>
   <section class="coming-soon"><strong>🎛 Night Club Mode</strong><span>Scratch decks, beats, lasers, smoke, Mardi Gras beads and Auto-Tune.</span><em>Release date: TBD 😂</em></section>
 </main>
-<script src="voice-mixer.js?v=3"></script>
+<script src="voice-mixer.js?v=4"></script>
 </body>
 </html>
