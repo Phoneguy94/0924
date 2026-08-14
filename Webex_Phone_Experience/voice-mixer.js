@@ -2,7 +2,7 @@ const VOICES=[
   'Maria','Daniel','Jennifer','Henry','Sophia','Ezra','Hazel','Oliver','Clara'
 ];
 const byId=id=>document.getElementById(id);
-const state={a:{voice:'Jennifer',rate:1},b:{voice:'Henry',rate:1}};
+const state={a:{voice:'Jennifer',rate:1,objectUrl:null},b:{voice:'Henry',rate:1,objectUrl:null}};
 
 function voicePath(name){
   return `assets/voices/${name}_100.mp3`;
@@ -26,19 +26,6 @@ function formatTime(seconds){
   return `${m}:${s}`;
 }
 
-function getSeekWindow(audio){
-  if(audio.seekable && audio.seekable.length){
-    return {
-      start: audio.seekable.start(0),
-      end: audio.seekable.end(audio.seekable.length-1)
-    };
-  }
-  if(Number.isFinite(audio.duration) && audio.duration>0){
-    return {start:0,end:audio.duration};
-  }
-  return null;
-}
-
 function setupDeck(letter){
   const key=letter.toLowerCase();
   const audio=byId('audio'+letter);
@@ -52,6 +39,7 @@ function setupDeck(letter){
   const voiceName=byId('voiceName'+letter);
   const status=byId('status'+letter);
   let userSeeking=false;
+  let loadToken=0;
 
   audio.preservesPitch=true;
   audio.mozPreservesPitch=true;
@@ -78,26 +66,33 @@ function setupDeck(letter){
     });
   }
 
-  function loadVoice(){
+  async function loadVoice(){
+    const token=++loadToken;
     state[key].voice=voice.value;
     voiceName.textContent=voice.value;
     audio.pause();
-    audio.src=voicePath(voice.value);
-    audio.load();
-    audio.playbackRate=state[key].rate;
     play.textContent='▶ Play';
     seek.value='0';
     time.textContent='0:00 / 0:00';
-    setStatus(`Loading ${voice.value}_100.mp3…`);
-  }
+    setStatus(`Loading ${voice.value}_100.mp3 into memory…`);
 
-  function seekToSlider(){
-    const window=getSeekWindow(audio);
-    if(!window || window.end<=window.start) return;
-    const ratio=Math.max(0,Math.min(1,Number(seek.value)/1000));
-    const target=window.start + ratio*(window.end-window.start);
-    audio.currentTime=target;
-    updateTime();
+    try{
+      const response=await fetch(voicePath(voice.value),{cache:'no-store'});
+      if(!response.ok) throw new Error(`HTTP ${response.status}`);
+      const blob=await response.blob();
+      if(token!==loadToken) return;
+
+      if(state[key].objectUrl) URL.revokeObjectURL(state[key].objectUrl);
+      state[key].objectUrl=URL.createObjectURL(blob);
+      audio.src=state[key].objectUrl;
+      audio.load();
+      audio.playbackRate=state[key].rate;
+      setStatus(`${voice.value}_100.mp3 loaded locally`,'ready');
+    }catch(error){
+      if(token!==loadToken) return;
+      setStatus(`${voice.value}_100.mp3 failed to load`,'missing');
+      console.error('Voice load failed',voice.value,error);
+    }
   }
 
   voice.addEventListener('change',loadVoice);
@@ -113,12 +108,18 @@ function setupDeck(letter){
   });
 
   restart.addEventListener('click',()=>{
-    const window=getSeekWindow(audio);
-    audio.currentTime=window ? window.start : 0;
+    audio.currentTime=0;
     seek.value='0';
     updateTime();
     audio.play().then(()=>play.textContent='⏸ Pause').catch(()=>{});
   });
+
+  function seekToSlider(){
+    if(!Number.isFinite(audio.duration)||audio.duration<=0) return;
+    const ratio=Math.max(0,Math.min(1,Number(seek.value)/1000));
+    audio.currentTime=ratio*audio.duration;
+    updateTime();
+  }
 
   seek.addEventListener('pointerdown',()=>{userSeeking=true;});
   seek.addEventListener('input',seekToSlider);
@@ -129,19 +130,12 @@ function setupDeck(letter){
 
   audio.addEventListener('loadedmetadata',()=>{
     updateTime();
-    setStatus(`${state[key].voice}_100.mp3 ready`,'ready');
+    setStatus(`${state[key].voice}_100.mp3 loaded locally`,'ready');
   });
-  audio.addEventListener('progress',()=>{
-    const window=getSeekWindow(audio);
-    if(window) setStatus(`${state[key].voice}_100.mp3 ready`,'ready');
-  });
-  audio.addEventListener('canplay',()=>setStatus(`${state[key].voice}_100.mp3 ready`,'ready'));
-  audio.addEventListener('error',()=>setStatus(`${state[key].voice}_100.mp3 is not in the GitHub voice folder yet`,'missing'));
+  audio.addEventListener('error',()=>setStatus(`${state[key].voice}_100.mp3 could not be decoded`,'missing'));
   audio.addEventListener('timeupdate',()=>{
-    const window=getSeekWindow(audio);
-    if(!userSeeking && window && window.end>window.start){
-      const ratio=(audio.currentTime-window.start)/(window.end-window.start);
-      seek.value=String(Math.round(Math.max(0,Math.min(1,ratio))*1000));
+    if(!userSeeking && Number.isFinite(audio.duration) && audio.duration>0){
+      seek.value=String(Math.round((audio.currentTime/audio.duration)*1000));
     }
     updateTime();
   });
