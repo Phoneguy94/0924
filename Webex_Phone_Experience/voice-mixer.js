@@ -33,12 +33,12 @@ function setupDeck(letter){
   const out=byId('rateOut'+letter);
   const play=byId('play'+letter);
   const restart=byId('restart'+letter);
-  const seek=byId('seek'+letter);
+  const progress=byId('progress'+letter);
+  const progressTrack=byId('progressTrack'+letter);
   const time=byId('time'+letter);
   const voice=byId('voice'+letter);
   const voiceName=byId('voiceName'+letter);
   const status=byId('status'+letter);
-  let seeking=false;
 
   audio.preservesPitch=true;
   audio.mozPreservesPitch=true;
@@ -68,18 +68,22 @@ function setupDeck(letter){
   function loadVoice(){
     state[key].voice=voice.value;
     voiceName.textContent=voice.value;
-    const wasPlaying=!audio.paused;
     audio.pause();
     audio.src=voicePath(voice.value);
     audio.load();
     audio.playbackRate=state[key].rate;
     play.textContent='▶ Play';
-    seek.value='0';
+    progress.style.width='0%';
     time.textContent='0:00 / 0:00';
     setStatus(`Loading ${voice.value}_100.mp3…`);
-    if(wasPlaying){
-      audio.play().then(()=>play.textContent='⏸ Pause').catch(()=>{});
-    }
+  }
+
+  function seekToRatio(ratio){
+    if(!Number.isFinite(audio.duration) || audio.duration<=0) return;
+    ratio=Math.max(0,Math.min(1,ratio));
+    audio.currentTime=ratio*audio.duration;
+    progress.style.width=`${ratio*100}%`;
+    updateTime();
   }
 
   voice.addEventListener('change',loadVoice);
@@ -96,21 +100,17 @@ function setupDeck(letter){
 
   restart.addEventListener('click',()=>{
     audio.currentTime=0;
-    seek.value='0';
+    progress.style.width='0%';
     updateTime();
     audio.play().then(()=>play.textContent='⏸ Pause').catch(()=>{});
   });
 
-  seek.addEventListener('pointerdown',()=>{seeking=true;});
-  seek.addEventListener('input',()=>{
-    if(!Number.isFinite(audio.duration) || audio.duration<=0) return;
-    const ratio=Number(seek.value)/1000;
-    audio.currentTime=ratio*audio.duration;
-    updateTime();
+  // Known-good seek behavior: clicking the progress bar changes only currentTime.
+  progressTrack.addEventListener('click',event=>{
+    const rect=progressTrack.getBoundingClientRect();
+    if(rect.width<=0) return;
+    seekToRatio((event.clientX-rect.left)/rect.width);
   });
-  seek.addEventListener('change',()=>{seeking=false;});
-  seek.addEventListener('pointerup',()=>{seeking=false;});
-  seek.addEventListener('pointercancel',()=>{seeking=false;});
 
   audio.addEventListener('loadedmetadata',()=>{
     updateTime();
@@ -119,14 +119,14 @@ function setupDeck(letter){
   audio.addEventListener('canplay',()=>setStatus(`${state[key].voice}_100.mp3 ready`,'ready'));
   audio.addEventListener('error',()=>setStatus(`${state[key].voice}_100.mp3 is not in the GitHub voice folder yet`,'missing'));
   audio.addEventListener('timeupdate',()=>{
-    if(!seeking && Number.isFinite(audio.duration) && audio.duration>0){
-      seek.value=String(Math.round((audio.currentTime/audio.duration)*1000));
+    if(Number.isFinite(audio.duration) && audio.duration>0){
+      progress.style.width=`${(audio.currentTime/audio.duration)*100}%`;
     }
     updateTime();
   });
   audio.addEventListener('ended',()=>{
     play.textContent='▶ Play';
-    seek.value='1000';
+    progress.style.width='100%';
     updateTime();
   });
 
@@ -136,7 +136,7 @@ function setupDeck(letter){
 
   setRate(1);
   loadVoice();
-  return {audio,setRate,seek};
+  return {audio,setRate};
 }
 
 const deckA=setupDeck('A');
@@ -158,24 +158,4 @@ byId('syncRate').addEventListener('click',()=>{
   const target=(state.a.rate+state.b.rate)/2;
   deckA.setRate(target);
   deckB.setRate(target);
-});
-
-byId('syncPlayback').addEventListener('click',()=>{
-  const a=deckA.audio;
-  const b=deckB.audio;
-  if(!Number.isFinite(a.duration) || !Number.isFinite(b.duration) || a.duration<=0 || b.duration<=0) return;
-
-  const aProgress=a.currentTime/a.duration;
-  const bProgress=b.currentTime/b.duration;
-  let targetProgress;
-
-  if(!a.paused && b.paused) targetProgress=aProgress;
-  else if(a.paused && !b.paused) targetProgress=bProgress;
-  else targetProgress=(aProgress+bProgress)/2;
-
-  targetProgress=Math.max(0,Math.min(1,targetProgress));
-  a.currentTime=targetProgress*a.duration;
-  b.currentTime=targetProgress*b.duration;
-  deckA.seek.value=String(Math.round(targetProgress*1000));
-  deckB.seek.value=String(Math.round(targetProgress*1000));
 });
