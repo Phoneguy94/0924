@@ -32,6 +32,7 @@ function setupDeck(letter){
   const voice=byId('voice'+letter);
   const voiceName=byId('voiceName'+letter);
   const status=byId('status'+letter);
+  let scrubbing=false;
 
   audio.preservesPitch=true;
   audio.mozPreservesPitch=true;
@@ -70,6 +71,15 @@ function setupDeck(letter){
     }
   }
 
+  function seekFromPointer(event){
+    if(!Number.isFinite(audio.duration) || audio.duration<=0) return;
+    const rect=progressTrack.getBoundingClientRect();
+    if(rect.width<=0) return;
+    const ratio=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width));
+    audio.currentTime=ratio*audio.duration;
+    progress.style.width=`${ratio*100}%`;
+  }
+
   voice.addEventListener('change',loadVoice);
   rate.addEventListener('input',()=>setRate(rate.value));
   play.addEventListener('click',()=>{
@@ -84,21 +94,38 @@ function setupDeck(letter){
     audio.currentTime=0;
     audio.play().then(()=>play.textContent='⏸ Pause').catch(()=>{});
   });
-  progressTrack.addEventListener('click',event=>{
-    if(!Number.isFinite(audio.duration) || audio.duration<=0) return;
-    const rect=progressTrack.getBoundingClientRect();
-    const ratio=Math.max(0,Math.min(1,(event.clientX-rect.left)/rect.width));
-    audio.currentTime=ratio*audio.duration;
-    progress.style.width=`${ratio*100}%`;
+
+  // Real scrubber: click or drag anywhere on the progress bar.
+  // Seeking never starts, stops, or restarts playback.
+  progressTrack.addEventListener('pointerdown',event=>{
+    scrubbing=true;
+    progressTrack.setPointerCapture(event.pointerId);
+    seekFromPointer(event);
   });
+  progressTrack.addEventListener('pointermove',event=>{
+    if(!scrubbing) return;
+    seekFromPointer(event);
+  });
+  progressTrack.addEventListener('pointerup',event=>{
+    if(!scrubbing) return;
+    seekFromPointer(event);
+    scrubbing=false;
+    if(progressTrack.hasPointerCapture(event.pointerId)) progressTrack.releasePointerCapture(event.pointerId);
+  });
+  progressTrack.addEventListener('pointercancel',event=>{
+    scrubbing=false;
+    if(progressTrack.hasPointerCapture(event.pointerId)) progressTrack.releasePointerCapture(event.pointerId);
+  });
+
   audio.addEventListener('canplay',()=>setStatus(`${state[key].voice}_100.mp3 ready`,'ready'));
   audio.addEventListener('error',()=>setStatus(`${state[key].voice}_100.mp3 is not in the GitHub voice folder yet`,'missing'));
   audio.addEventListener('timeupdate',()=>{
+    if(scrubbing) return;
     progress.style.width=audio.duration?`${audio.currentTime/audio.duration*100}%`:'0%';
   });
   audio.addEventListener('ended',()=>{
     play.textContent='▶ Play';
-    progress.style.width='0%';
+    progress.style.width='100%';
   });
   document.querySelectorAll(`.rate-pads[data-target="${letter}"] button`).forEach(btn=>{
     btn.addEventListener('click',()=>setRate(btn.dataset.rate));
@@ -135,9 +162,9 @@ byId('syncPlayback').addEventListener('click',()=>{
   const b=deckB.audio;
   if(!Number.isFinite(a.duration) || !Number.isFinite(b.duration) || a.duration<=0 || b.duration<=0) return;
 
-  const aProgress=a.duration ? a.currentTime/a.duration : 0;
-  const bProgress=b.duration ? b.currentTime/b.duration : 0;
-  let targetProgress=0;
+  const aProgress=a.currentTime/a.duration;
+  const bProgress=b.currentTime/b.duration;
+  let targetProgress;
 
   if(!a.paused && b.paused) targetProgress=aProgress;
   else if(a.paused && !b.paused) targetProgress=bProgress;
