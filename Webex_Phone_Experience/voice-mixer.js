@@ -26,6 +26,19 @@ function formatTime(seconds){
   return `${m}:${s}`;
 }
 
+function getSeekWindow(audio){
+  if(audio.seekable && audio.seekable.length){
+    return {
+      start: audio.seekable.start(0),
+      end: audio.seekable.end(audio.seekable.length-1)
+    };
+  }
+  if(Number.isFinite(audio.duration) && audio.duration>0){
+    return {start:0,end:audio.duration};
+  }
+  return null;
+}
+
 function setupDeck(letter){
   const key=letter.toLowerCase();
   const audio=byId('audio'+letter);
@@ -78,6 +91,15 @@ function setupDeck(letter){
     setStatus(`Loading ${voice.value}_100.mp3…`);
   }
 
+  function seekToSlider(){
+    const window=getSeekWindow(audio);
+    if(!window || window.end<=window.start) return;
+    const ratio=Math.max(0,Math.min(1,Number(seek.value)/1000));
+    const target=window.start + ratio*(window.end-window.start);
+    audio.currentTime=target;
+    updateTime();
+  }
+
   voice.addEventListener('change',loadVoice);
   rate.addEventListener('input',()=>setRate(rate.value));
 
@@ -91,35 +113,35 @@ function setupDeck(letter){
   });
 
   restart.addEventListener('click',()=>{
-    audio.currentTime=0;
+    const window=getSeekWindow(audio);
+    audio.currentTime=window ? window.start : 0;
     seek.value='0';
     updateTime();
     audio.play().then(()=>play.textContent='⏸ Pause').catch(()=>{});
   });
 
-  // v7 seek: the range slider only changes currentTime.
-  // It does not reload, restart, pause, or play the file.
   seek.addEventListener('pointerdown',()=>{userSeeking=true;});
-  seek.addEventListener('input',()=>{
-    if(!Number.isFinite(audio.duration)||audio.duration<=0) return;
-    const ratio=Number(seek.value)/1000;
-    audio.currentTime=ratio*audio.duration;
-    updateTime();
-  });
+  seek.addEventListener('input',seekToSlider);
   const finishSeeking=()=>{userSeeking=false;};
   seek.addEventListener('pointerup',finishSeeking);
   seek.addEventListener('pointercancel',finishSeeking);
-  seek.addEventListener('change',finishSeeking);
+  seek.addEventListener('change',()=>{seekToSlider();finishSeeking();});
 
   audio.addEventListener('loadedmetadata',()=>{
     updateTime();
     setStatus(`${state[key].voice}_100.mp3 ready`,'ready');
   });
+  audio.addEventListener('progress',()=>{
+    const window=getSeekWindow(audio);
+    if(window) setStatus(`${state[key].voice}_100.mp3 ready`,'ready');
+  });
   audio.addEventListener('canplay',()=>setStatus(`${state[key].voice}_100.mp3 ready`,'ready'));
   audio.addEventListener('error',()=>setStatus(`${state[key].voice}_100.mp3 is not in the GitHub voice folder yet`,'missing'));
   audio.addEventListener('timeupdate',()=>{
-    if(!userSeeking && Number.isFinite(audio.duration) && audio.duration>0){
-      seek.value=String(Math.round((audio.currentTime/audio.duration)*1000));
+    const window=getSeekWindow(audio);
+    if(!userSeeking && window && window.end>window.start){
+      const ratio=(audio.currentTime-window.start)/(window.end-window.start);
+      seek.value=String(Math.round(Math.max(0,Math.min(1,ratio))*1000));
     }
     updateTime();
   });
