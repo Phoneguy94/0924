@@ -129,3 +129,21 @@ byId('syncRate').addEventListener('click',()=>{
   deckA.setRate(target);
   deckB.setRate(target);
 });
+
+byId('syncPlayback').addEventListener('click',()=>{
+  const a=deckA.audio;
+  const b=deckB.audio;
+  if(!Number.isFinite(a.duration) || !Number.isFinite(b.duration) || a.duration<=0 || b.duration<=0) return;
+
+  const aProgress=a.duration ? a.currentTime/a.duration : 0;
+  const bProgress=b.duration ? b.currentTime/b.duration : 0;
+  let targetProgress=0;
+
+  if(!a.paused && b.paused) targetProgress=aProgress;
+  else if(a.paused && !b.paused) targetProgress=bProgress;
+  else targetProgress=(aProgress+bProgress)/2;
+
+  targetProgress=Math.max(0,Math.min(1,targetProgress));
+  a.currentTime=targetProgress*a.duration;
+  b.currentTime=targetProgress*b.duration;
+});
