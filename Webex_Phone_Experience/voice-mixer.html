@@ -4,23 +4,42 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Veytec Webex AI Voice Mixer</title>
-<link rel="stylesheet" href="voice-mixer.css?v=9">
+<link rel="stylesheet" href="voice-mixer.css?v=10">
 </head>
 <body>
+<div id="partyFx" class="party-fx" aria-hidden="true"><div class="laser l1"></div><div class="laser l2"></div><div class="laser l3"></div><div class="smoke s1"></div><div class="smoke s2"></div><div id="beadLayer" class="bead-layer"></div></div>
 <header class="topbar">
   <div class="brand-lockup">
     <img src="../Webex_Ringtones/assets/veytec-logo.png" alt="Veytec">
     <span class="divider"></span>
     <img src="../Webex_Ringtones/assets/webex-logo.jpg" alt="Webex by Cisco">
   </div>
-  <div class="top-actions"><span>AI Voice Mixer <b>PRO</b> · Build v9</span><a href="./">Back to Phone Experience</a></div>
+  <div class="top-actions"><span>AI Voice Mixer <b>PRO</b> · Build v10</span><a href="./">Back to Phone Experience</a></div>
 </header>
 <main>
   <section class="hero">
-    <div><p class="eyebrow">Webex AI Agent Voice Lab</p><h1>Compare two voices side by side.</h1><p>Pick any two Webex AI Agent voices, play them independently, adjust speaking rate live, and crossfade between them. Each voice uses its GitHub-hosted 1.00 master recording.</p></div>
-    <div class="mode-pill">Professional Mode</div>
+    <div><p class="eyebrow">Webex AI Agent Voice Lab</p><h1 id="heroTitle">Compare two voices side by side.</h1><p id="heroText">Pick any two Webex AI Agent voices, play them independently, adjust speaking rate live, and crossfade between them. Each voice uses its GitHub-hosted 1.00 master recording.</p></div>
+    <div class="mode-switch" role="group" aria-label="Mixer mode"><button id="proMode" class="mode-btn active">Professional</button><button id="djMode" class="mode-btn">🎧 DJ MODE</button></div>
   </section>
-  <section class="setup-note"><strong>Voice library:</strong> The mixer looks for <code>assets/voices/NAME_100.mp3</code>. Build v9 loads each selected MP3 fully into the browser before playback for reliable seeking.</section>
+  <section class="setup-note"><strong>Voice library:</strong> The mixer looks for <code>assets/voices/NAME_100.mp3</code>. Build v10 keeps the proven v9 local-Blob playback engine and layers DJ controls on top.</section>
+
+  <section id="djStage" class="dj-stage" hidden>
+    <div class="club-sign"><span>VEY·TEC</span><strong>AI VOICE CLUB</strong><em>Professional judgment temporarily suspended.</em></div>
+    <div class="dj-controls">
+      <button id="beatBtn" class="club-btn">🥁 START BEAT</button>
+      <button id="lightsBtn" class="club-btn active">⚡ LIGHTS ON</button>
+      <button id="beadsBtn" class="club-btn">📿 THROW BEADS</button>
+      <button id="dropBtn" class="club-btn drop">🔥 DROP</button>
+      <button class="club-btn disabled" disabled>🎤 AUTO-TUNE · TBD</button>
+    </div>
+    <div class="platter-row">
+      <div class="platter-wrap"><span>DECK A · SCRATCH ME</span><div id="platterA" class="platter" data-deck="A"><div class="record-label">A</div></div></div>
+      <div class="crowd"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="platter-wrap"><span>DECK B · SCRATCH ME</span><div id="platterB" class="platter" data-deck="B"><div class="record-label">B</div></div></div>
+    </div>
+    <p class="dj-hint">Drag either record left/right while it plays to scrub through the voice. The original v9 playback engine remains underneath.</p>
+  </section>
+
   <section class="mixer-grid">
     <article class="deck" data-deck="a">
       <div class="deck-head"><span>PLAYER A</span><strong id="voiceNameA">Jennifer</strong></div>
@@ -29,9 +48,7 @@
       <div class="transport"><button id="playA" class="primary">▶ Play</button><button id="restartA">↺ Restart</button></div>
       <label>Speaking rate <output id="rateOutA">1.00</output><input id="rateA" type="range" min="0.70" max="1.20" step="0.01" value="1.00"></label>
       <div class="rate-pads" data-target="A"><button data-rate="0.90">.90</button><button data-rate="0.95">.95</button><button data-rate="1.00" class="active">1.00</button><button data-rate="1.05">1.05</button><button data-rate="1.10">1.10</button></div>
-      <label class="seek-label">Playback <output id="timeA">0:00 / 0:00</output>
-        <input id="seekA" class="seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Player A playback position">
-      </label>
+      <label class="seek-label">Playback <output id="timeA">0:00 / 0:00</output><input id="seekA" class="seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Player A playback position"></label>
       <audio id="audioA" preload="auto"></audio>
     </article>
     <section class="center-strip">
@@ -47,16 +64,13 @@
       <div class="transport"><button id="playB" class="primary">▶ Play</button><button id="restartB">↺ Restart</button></div>
       <label>Speaking rate <output id="rateOutB">1.00</output><input id="rateB" type="range" min="0.70" max="1.20" step="0.01" value="1.00"></label>
       <div class="rate-pads" data-target="B"><button data-rate="0.90">.90</button><button data-rate="0.95">.95</button><button data-rate="1.00" class="active">1.00</button><button data-rate="1.05">1.05</button><button data-rate="1.10">1.10</button></div>
-      <label class="seek-label">Playback <output id="timeB">0:00 / 0:00</output>
-        <input id="seekB" class="seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Player B playback position">
-      </label>
+      <label class="seek-label">Playback <output id="timeB">0:00 / 0:00</output><input id="seekB" class="seek" type="range" min="0" max="1000" step="1" value="0" aria-label="Player B playback position"></label>
       <audio id="audioB" preload="auto"></audio>
     </article>
   </section>
   <section class="script-panel"><div><p class="eyebrow">Standard comparison script</p><h2>Use the same words every time.</h2></div><textarea rows="5" readonly>Thank you for calling My Company Name or City Name Here. I'm an AI assistant. This call may be recorded and transcribed for quality and troubleshooting purposes. I can help you find information, answer questions, check hours and locations, or connect you with the right department. What can I help you with today?</textarea><p class="note">Browser rate is simulated from the Webex 1.00 master. Verify the final choice in AI Agent Studio.</p></section>
-  <section class="coming-soon"><strong>🎛 Night Club Mode</strong><span>Scratch decks, beats, lasers, smoke, Mardi Gras beads and Auto-Tune.</span><em>Release date: TBD 😂</em></section>
-  <footer class="build-version">Voice Mixer Build <strong>v9</strong></footer>
+  <footer class="build-version">Voice Mixer Build <strong>v10</strong> · DJ Mode Beta</footer>
 </main>
-<script src="voice-mixer.js?v=9"></script>
+<script src="voice-mixer.js?v=10"></script>
 </body>
 </html>
