@@ -151,7 +151,7 @@ function setupDeck(letter){
 
   setRate(1);
   loadVoice();
-  return {audio,setRate};
+  return {audio,setRate,seek};
 }
 
 const deckA=setupDeck('A');
@@ -173,3 +173,114 @@ byId('syncRate').addEventListener('click',()=>{
   deckA.setRate(target);
   deckB.setRate(target);
 });
+
+// ---- DJ MODE LAYER ----
+const proMode=byId('proMode');
+const djMode=byId('djMode');
+const djStage=byId('djStage');
+const partyFx=byId('partyFx');
+const lightsBtn=byId('lightsBtn');
+const beatBtn=byId('beatBtn');
+const beadsBtn=byId('beadsBtn');
+const dropBtn=byId('dropBtn');
+const heroTitle=byId('heroTitle');
+const heroText=byId('heroText');
+let beatTimer=null;
+let audioCtx=null;
+
+function setMode(mode){
+  const dj=mode==='dj';
+  document.body.classList.toggle('dj-mode-active',dj);
+  djStage.hidden=!dj;
+  proMode.classList.toggle('active',!dj);
+  djMode.classList.toggle('active',dj);
+  partyFx.classList.toggle('on',dj && lightsBtn.classList.contains('active'));
+  heroTitle.textContent=dj?'Compare voices like a completely unnecessary nightclub DJ.':'Compare two voices side by side.';
+  heroText.textContent=dj?'Same Webex voice masters. Same working v9 playback core. Now with records, scratching, beats, lasers, smoke and questionable judgment.':'Pick any two Webex AI Agent voices, play them independently, adjust speaking rate live, and crossfade between them. Each voice uses its GitHub-hosted 1.00 master recording.';
+}
+proMode.addEventListener('click',()=>setMode('pro'));
+djMode.addEventListener('click',()=>setMode('dj'));
+
+function syncPlatterSpin(){
+  byId('platterA').classList.toggle('spinning',!deckA.audio.paused);
+  byId('platterB').classList.toggle('spinning',!deckB.audio.paused);
+}
+['play','pause','ended'].forEach(evt=>{
+  deckA.audio.addEventListener(evt,syncPlatterSpin);
+  deckB.audio.addEventListener(evt,syncPlatterSpin);
+});
+
+function setupScratch(platter,deck){
+  let dragging=false;
+  let startX=0;
+  let startTime=0;
+  platter.addEventListener('pointerdown',e=>{
+    if(!Number.isFinite(deck.audio.duration)||deck.audio.duration<=0) return;
+    dragging=true;
+    startX=e.clientX;
+    startTime=deck.audio.currentTime;
+    platter.setPointerCapture(e.pointerId);
+    platter.style.animationPlayState='paused';
+  });
+  platter.addEventListener('pointermove',e=>{
+    if(!dragging) return;
+    const delta=(e.clientX-startX)/160;
+    deck.audio.currentTime=Math.max(0,Math.min(deck.audio.duration,startTime+delta*deck.audio.duration*.18));
+  });
+  const stop=e=>{
+    dragging=false;
+    platter.style.animationPlayState='running';
+    if(platter.hasPointerCapture?.(e.pointerId)) platter.releasePointerCapture(e.pointerId);
+  };
+  platter.addEventListener('pointerup',stop);
+  platter.addEventListener('pointercancel',stop);
+}
+setupScratch(byId('platterA'),deckA);
+setupScratch(byId('platterB'),deckB);
+
+function kick(){
+  if(!audioCtx) audioCtx=new (window.AudioContext||window.webkitAudioContext)();
+  const osc=audioCtx.createOscillator();
+  const gain=audioCtx.createGain();
+  osc.frequency.setValueAtTime(120,audioCtx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(45,audioCtx.currentTime+.12);
+  gain.gain.setValueAtTime(.32,audioCtx.currentTime);
+  gain.gain.exponentialRampToValueAtTime(.001,audioCtx.currentTime+.14);
+  osc.connect(gain).connect(audioCtx.destination);
+  osc.start();osc.stop(audioCtx.currentTime+.15);
+}
+beatBtn.addEventListener('click',()=>{
+  if(beatTimer){clearInterval(beatTimer);beatTimer=null;beatBtn.textContent='🥁 START BEAT';beatBtn.classList.remove('active');return;}
+  kick();beatTimer=setInterval(kick,500);beatBtn.textContent='⏹ STOP BEAT';beatBtn.classList.add('active');
+});
+
+lightsBtn.addEventListener('click',()=>{
+  lightsBtn.classList.toggle('active');
+  const on=lightsBtn.classList.contains('active');
+  lightsBtn.textContent=on?'⚡ LIGHTS ON':'🌑 LIGHTS OFF';
+  partyFx.classList.toggle('on',on && !djStage.hidden);
+});
+
+function throwBeads(count=18){
+  const layer=byId('beadLayer');
+  for(let i=0;i<count;i++){
+    const bead=document.createElement('span');
+    bead.className='bead';
+    bead.textContent=['📿','🟣','🟢','🟡'][Math.floor(Math.random()*4)];
+    bead.style.left=`${Math.random()*100}%`;
+    bead.style.setProperty('--drift',`${(Math.random()-.5)*280}px`);
+    bead.style.animationDelay=`${Math.random()*.35}s`;
+    layer.appendChild(bead);
+    setTimeout(()=>bead.remove(),3000);
+  }
+}
+beadsBtn.addEventListener('click',()=>throwBeads(24));
+
+dropBtn.addEventListener('click',()=>{
+  throwBeads(42);
+  partyFx.classList.add('on');
+  document.body.animate([{filter:'brightness(1)'},{filter:'brightness(1.65)'},{filter:'brightness(.75)'},{filter:'brightness(1)'}],{duration:520});
+  if(!beatTimer){kick();setTimeout(kick,180);setTimeout(kick,360);}
+});
+
+setMode('pro');
