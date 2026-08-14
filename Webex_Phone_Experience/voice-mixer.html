@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Veytec Webex AI Voice Mixer</title>
-<link rel="stylesheet" href="voice-mixer.css?v=2">
+<link rel="stylesheet" href="voice-mixer.css?v=3">
 </head>
 <body>
 <header class="topbar">
@@ -17,16 +17,15 @@
 </header>
 <main>
   <section class="hero">
-    <div><p class="eyebrow">Webex AI Agent Voice Lab</p><h1>Compare voices like a mixer.</h1><p>Load two Webex voice recordings, adjust speaking rate live, and crossfade between them. The 1.00 recordings are the master source.</p></div>
+    <div><p class="eyebrow">Webex AI Agent Voice Lab</p><h1>Compare two voices side by side.</h1><p>Pick any two Webex AI Agent voices, play them independently, adjust speaking rate live, and crossfade between them. Each voice uses its GitHub-hosted 1.00 master recording.</p></div>
     <div class="mode-pill">Professional Mode</div>
   </section>
-  <section class="setup-note"><strong>Prototype audio:</strong> Load your Jennifer_100 and Henry_100 recordings below. Files stay local in your browser and are not uploaded anywhere.</section>
+  <section class="setup-note"><strong>Voice library:</strong> The mixer looks for <code>assets/voices/NAME_100.mp3</code>. Jennifer and Henry are the first masters; the remaining English voices can be dropped into the same folder as they are recorded.</section>
   <section class="mixer-grid">
     <article class="deck" data-deck="a">
-      <div class="deck-head"><span>DECK A</span><strong id="voiceNameA">Jennifer</strong></div>
-      <label>Voice<select id="voiceA"><option>Jennifer</option><option>Henry</option></select></label>
-      <label class="file-label">Load 1.00 master<input id="fileA" type="file" accept="audio/*,video/mp4,.mp4,.wav,.mp3,.m4a"></label>
-      <div id="fileNameA" class="file-name">No local file loaded</div>
+      <div class="deck-head"><span>PLAYER A</span><strong id="voiceNameA">Jennifer</strong></div>
+      <label>Voice<select id="voiceA"></select></label>
+      <div id="statusA" class="file-name">Loading Jennifer_100.mp3…</div>
       <div class="transport"><button id="playA" class="primary">▶ Play</button><button id="restartA">↺ Restart</button></div>
       <label>Speaking rate <output id="rateOutA">1.00</output><input id="rateA" type="range" min="0.70" max="1.20" step="0.01" value="1.00"></label>
       <div class="rate-pads" data-target="A"><button data-rate="0.90">.90</button><button data-rate="0.95">.95</button><button data-rate="1.00" class="active">1.00</button><button data-rate="1.05">1.05</button><button data-rate="1.10">1.10</button></div>
@@ -39,19 +38,18 @@
       <div class="meter-block"><span>B</span><div class="meter"><i id="meterB"></i></div></div>
     </section>
     <article class="deck" data-deck="b">
-      <div class="deck-head"><span>DECK B</span><strong id="voiceNameB">Henry</strong></div>
-      <label>Voice<select id="voiceB"><option>Henry</option><option>Jennifer</option></select></label>
-      <label class="file-label">Load 1.00 master<input id="fileB" type="file" accept="audio/*,video/mp4,.mp4,.wav,.mp3,.m4a"></label>
-      <div id="fileNameB" class="file-name">No local file loaded</div>
+      <div class="deck-head"><span>PLAYER B</span><strong id="voiceNameB">Henry</strong></div>
+      <label>Voice<select id="voiceB"></select></label>
+      <div id="statusB" class="file-name">Loading Henry_100.mp3…</div>
       <div class="transport"><button id="playB" class="primary">▶ Play</button><button id="restartB">↺ Restart</button></div>
       <label>Speaking rate <output id="rateOutB">1.00</output><input id="rateB" type="range" min="0.70" max="1.20" step="0.01" value="1.00"></label>
       <div class="rate-pads" data-target="B"><button data-rate="0.90">.90</button><button data-rate="0.95">.95</button><button data-rate="1.00" class="active">1.00</button><button data-rate="1.05">1.05</button><button data-rate="1.10">1.10</button></div>
       <div class="progress"><span id="progressB"></span></div><audio id="audioB" preload="metadata"></audio>
     </article>
   </section>
-  <section class="script-panel"><div><p class="eyebrow">Standard comparison script</p><h2>Use the same words every time.</h2></div><textarea rows="5" readonly>Thank you for calling My Company Name or City Name Here. I'm an AI assistant. This call may be recorded and transcribed for quality and troubleshooting purposes. I can help you find information, answer questions, check hours and locations, or connect you with the right department. What can I help you with today?</textarea><p class="note">Browser rate is a simulation from the Webex 1.00 master. Our Jennifer/Henry calibration showed the Webex rate setting tracks playback rate extremely closely. Verify the final choice in AI Agent Studio.</p></section>
+  <section class="script-panel"><div><p class="eyebrow">Standard comparison script</p><h2>Use the same words every time.</h2></div><textarea rows="5" readonly>Thank you for calling My Company Name or City Name Here. I'm an AI assistant. This call may be recorded and transcribed for quality and troubleshooting purposes. I can help you find information, answer questions, check hours and locations, or connect you with the right department. What can I help you with today?</textarea><p class="note">Browser rate is simulated from the Webex 1.00 master. Jennifer/Henry calibration showed the Webex rate setting tracks browser playback rate extremely closely. Verify the final choice in AI Agent Studio.</p></section>
   <section class="coming-soon"><strong>🎛 Night Club Mode</strong><span>Scratch decks, beats, lasers, smoke, Mardi Gras beads and Auto-Tune.</span><em>Release date: TBD 😂</em></section>
 </main>
-<script src="voice-mixer.js?v=2"></script>
+<script src="voice-mixer.js?v=3"></script>
 </body>
 </html>
