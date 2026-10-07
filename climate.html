@@ -1,0 +1,348 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Room Climate</title>
+<link href="https://fonts.googleapis.com/css2?family=Oxanium:wght@500;600;700;800&display=swap" rel="stylesheet">
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; }
+  body {
+    font-family: 'Oxanium', 'Arial Narrow', 'Helvetica Neue', Arial, sans-serif;
+    color: #16191c;
+    background:
+      repeating-linear-gradient(0deg, rgba(255,255,255,.06) 0 1px, rgba(0,0,0,.05) 1px 2px, transparent 2px 4px),
+      linear-gradient(100deg, #7b8187 0%, #aeb3b8 24%, #8b9197 48%, #b6bbc0 72%, #80868c 100%);
+  }
+  #brush { position: fixed; left: 0; top: 0; width: 100%; height: 100%; mix-blend-mode: overlay; opacity: .6; pointer-events: none; }
+
+  /* the whole display is laid out at 1280x720 and scaled to fit the screen */
+  #stage {
+    position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px; box-sizing: border-box;
+    padding: 20px 30px 18px; display: flex; flex-direction: column; gap: 14px;
+    transform-origin: center; transform: translate(-50%, -50%);
+  }
+
+  .titlebar { height: 76px; display: flex; align-items: center; justify-content: center; gap: 40px; }
+  .vents { width: 150px; display: flex; flex-direction: column; gap: 10px; }
+  .vents i { display: block; height: 5px; border-radius: 3px; background: #1c2126; box-shadow: 0 1px 0 rgba(140,185,230,.7); }
+  .plate {
+    width: 640px; height: 76px; box-sizing: border-box; display: flex; align-items: center; justify-content: center;
+    border-radius: 10px; border: 1px solid #555a60;
+    background: linear-gradient(180deg, #d3d7da 0%, #a2a8ad 55%, #8c9298 100%);
+    box-shadow: 0 3px 8px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.75), inset 0 -2px 3px rgba(0,0,0,.25);
+    font-size: 52px; font-weight: 800; letter-spacing: .12em; line-height: 1; color: #17191c;
+    text-shadow: 0 1px 0 rgba(255,255,255,.45), 0 3px 12px rgba(255,130,20,.75);
+  }
+
+  .panels { flex: 1; min-height: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 26px; }
+  .panel {
+    position: relative; display: flex; flex-direction: column; gap: 10px; padding: 12px;
+    border-radius: 16px; border: 1px solid #50555b;
+    background: linear-gradient(180deg, #c6cace 0%, #969ca2 50%, #7f858b 100%);
+    box-shadow: 0 4px 10px rgba(0,0,0,.45), inset 0 1px 0 rgba(255,255,255,.75);
+    /* panel colour: set from the reading for temperature, fixed blue for humidity */
+    --c: #5cc8ff; --glow: rgba(40,160,255,.9); --off: rgba(92,200,255,.09); --area: rgba(40,150,255,.26);
+  }
+  .window {
+    box-sizing: border-box; border-radius: 14px; border: 2px solid #22252a;
+    background: linear-gradient(180deg, #17191c 0%, #090a0b 100%);
+    box-shadow: inset 0 3px 12px rgba(0,0,0,.9), 0 1px 0 rgba(255,255,255,.5);
+  }
+  .readout { height: 212px; display: flex; align-items: center; gap: 12px; padding: 16px 22px; }
+  .icon { width: 86px; flex: none; display: flex; justify-content: center; filter: drop-shadow(0 0 6px var(--glow)); }
+  .icon .line { fill: none; stroke: var(--c); stroke-linecap: round; stroke-linejoin: round; }
+  .icon .tint { fill: var(--off); }
+  .icon .solid { fill: var(--c); }
+  .readout .body { flex: 1; display: flex; flex-direction: column; gap: 10px; }
+  .label { font-size: 32px; font-weight: 700; letter-spacing: .08em; line-height: 1; color: var(--c); text-shadow: 0 0 10px var(--glow); }
+  .value { display: flex; align-items: flex-end; justify-content: center; gap: 14px; }
+  .digits { flex: none; transform: skewX(-5deg); }
+  .digits .off { fill: var(--off); }
+  .digits .on { fill: var(--c); filter: drop-shadow(0 0 6px var(--glow)); }
+  .unit { font-size: 40px; font-weight: 700; line-height: 1; color: var(--c); text-shadow: 0 0 10px var(--glow); padding-bottom: 4px; }
+  .unit.pct { font-size: 48px; padding-bottom: 2px; }
+
+  .trend { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 4px; padding: 12px 20px 8px; }
+  .trend .span { font-size: 18px; font-weight: 600; letter-spacing: .1em; color: #aab4be; }
+  .chart { overflow: visible; }
+  .chart .grid { fill: none; stroke: rgba(255,255,255,.1); stroke-width: 1; }
+  .chart .axis { fill: none; stroke: #8b949d; stroke-width: 1.5; }
+  .chart .area { fill: var(--area); }
+  .chart .curve { fill: none; stroke: var(--c); stroke-width: 3; stroke-linejoin: round; stroke-linecap: round; filter: drop-shadow(0 0 4px var(--glow)); }
+  .chart .now { fill: #101214; stroke: var(--c); stroke-width: 2.5; }
+  .chart .y { fill: var(--c); font-size: 16px; font-weight: 600; text-anchor: end; }
+  .chart .x { fill: #aab4be; font-size: 15px; font-weight: 500; text-anchor: middle; }
+  .chart .x.day { fill: #e3e8ec; font-weight: 700; }
+  .chart .empty { fill: #aab4be; font-size: 20px; font-weight: 600; letter-spacing: .1em; text-anchor: middle; }
+
+  .screw { position: absolute; width: 22px; height: 22px; }
+  #screw circle { fill: #8d9399; stroke: #2b2e32; stroke-width: 1.5; }
+  #screw path { stroke: #2b2e32; stroke-width: 2.5; stroke-linecap: round; }
+  .screw.tl { left: 5px; top: 5px; } .screw.tr { right: 5px; top: 5px; }
+  .screw.bl { left: 5px; bottom: 5px; } .screw.br { right: 5px; bottom: 5px; }
+
+  .status {
+    height: 40px; display: flex; align-items: center; justify-content: center; gap: 44px;
+    border-top: 1px solid rgba(0,0,0,.35); box-shadow: inset 0 1px 0 rgba(255,255,255,.35);
+    font-size: 19px; font-weight: 700; letter-spacing: .12em; text-shadow: 0 1px 0 rgba(255,255,255,.35);
+  }
+  .status .item { display: flex; align-items: center; gap: 14px; }
+  .status .sep { width: 2px; height: 22px; background: #2a2d31; }
+  .status svg { fill: none; stroke: #16191c; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+  .led { width: 14px; height: 14px; border-radius: 50%; background: #3fe05a; box-shadow: 0 0 8px rgba(40,230,80,.9), inset 0 0 0 1px rgba(0,0,0,.3); }
+  .led.stale { background: #ffb020; box-shadow: 0 0 8px rgba(255,170,20,.9), inset 0 0 0 1px rgba(0,0,0,.3); }
+</style>
+</head>
+<body>
+<svg id="brush" aria-hidden="true">
+  <filter id="brushFilter" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency="0.002 0.75" numOctaves="2" seed="7"/>
+    <feColorMatrix type="saturate" values="0"/>
+  </filter>
+  <rect width="100%" height="100%" filter="url(#brushFilter)"/>
+</svg>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <symbol id="screw" viewBox="0 0 22 22"><circle cx="11" cy="11" r="10"/><path d="M6 6L16 16M16 6L6 16"/></symbol>
+</svg>
+
+<div id="stage">
+  <div class="titlebar">
+    <div class="vents" aria-hidden="true"><i></i><i></i><i></i></div>
+    <div class="plate">ROOM CLIMATE</div>
+    <div class="vents" aria-hidden="true"><i></i><i></i><i></i></div>
+  </div>
+
+  <div class="panels">
+    <section class="panel" id="tempPanel">
+      <div class="window readout">
+        <div class="icon">
+          <svg width="52" height="100" viewBox="0 0 24 46" aria-hidden="true">
+            <path class="tint" d="M9 4a3 3 0 0 1 6 0v22.5a7.5 7.5 0 1 1-6 0Z"/>
+            <path class="line" stroke-width="1.6" d="M9 4a3 3 0 0 1 6 0v22.5a7.5 7.5 0 1 1-6 0Z"/>
+            <path class="line" stroke-width="2.6" d="M12 14V30"/>
+            <circle class="solid" cx="12" cy="33.4" r="4.6"/>
+            <path class="line" stroke-width="1.4" d="M18 8h3M18 13h3M18 18h3"/>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="label">TEMPERATURE</div>
+          <div class="value"><svg class="digits" id="tempDigits" role="img"></svg><div class="unit">°F</div></div>
+        </div>
+      </div>
+      <div class="window trend">
+        <div class="span" id="tempSpan">&nbsp;</div>
+        <svg class="chart" id="tempChart" width="527" height="240" viewBox="0 0 527 240" role="img" aria-label="Temperature history"></svg>
+      </div>
+      <svg class="screw tl" aria-hidden="true"><use href="#screw"/></svg><svg class="screw tr" aria-hidden="true"><use href="#screw"/></svg>
+      <svg class="screw bl" aria-hidden="true"><use href="#screw"/></svg><svg class="screw br" aria-hidden="true"><use href="#screw"/></svg>
+    </section>
+
+    <section class="panel" id="humPanel">
+      <div class="window readout">
+        <div class="icon">
+          <svg width="66" height="88" viewBox="0 0 24 32" aria-hidden="true">
+            <path class="tint" style="fill: rgba(60,170,255,.45)" d="M12 2C12 2 3 13 3 20a9 9 0 0 0 18 0C21 13 12 2 12 2Z"/>
+            <path class="line" stroke-width="1.6" d="M12 2C12 2 3 13 3 20a9 9 0 0 0 18 0C21 13 12 2 12 2Z"/>
+            <path class="line" stroke-width="1.6" style="stroke: #dff5ff" d="M7.5 20.5a4.5 4.5 0 0 0 3.5 4.2"/>
+          </svg>
+        </div>
+        <div class="body">
+          <div class="label">RELATIVE HUMIDITY</div>
+          <div class="value"><svg class="digits" id="humDigits" role="img"></svg><div class="unit pct">%</div></div>
+        </div>
+      </div>
+      <div class="window trend">
+        <div class="span" id="humSpan">&nbsp;</div>
+        <svg class="chart" id="humChart" width="527" height="240" viewBox="0 0 527 240" role="img" aria-label="Relative humidity history"></svg>
+      </div>
+      <svg class="screw tl" aria-hidden="true"><use href="#screw"/></svg><svg class="screw tr" aria-hidden="true"><use href="#screw"/></svg>
+      <svg class="screw bl" aria-hidden="true"><use href="#screw"/></svg><svg class="screw br" aria-hidden="true"><use href="#screw"/></svg>
+    </section>
+  </div>
+
+  <div class="status">
+    <div class="item"><div class="led" id="led" aria-hidden="true"></div><div id="sensorText">WAITING FOR DATA</div></div>
+    <div class="sep" aria-hidden="true"></div>
+    <div class="item">
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 5c0-1.7 3.6-3 8-3s8 1.3 8 3-3.6 3-8 3-8-1.3-8-3ZM4 5v14c0 1.7 3.6 3 8 3s8-1.3 8-3V5M4 12c0 1.7 3.6 3 8 3s8-1.3 8-3"/></svg>
+      <div id="logText">LOGGING</div>
+    </div>
+    <div class="sep" aria-hidden="true"></div>
+    <div class="item">
+      <svg width="24" height="24" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5"/><path d="M12 6.5V12l3.5 2.2"/></svg>
+      <div id="updatedText">NO DATA YET</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---- temperature colour rule -------------------------------------------
+  // red at 78.0 and above, white from 72.0 to 77.9, blue at 71.9 and below
+  function tempColors(f) {
+    var t = Math.round(f * 10) / 10;
+    if (t >= 78) return { c: '#ff4a3d', glow: 'rgba(255,40,30,.9)', off: 'rgba(255,74,61,.1)', area: 'rgba(255,60,40,.24)' };
+    if (t >= 72 || isNaN(t)) return { c: '#f4f7fa', glow: 'rgba(255,255,255,.7)', off: 'rgba(255,255,255,.07)', area: 'rgba(255,255,255,.14)' };
+    return { c: '#5cc8ff', glow: 'rgba(40,160,255,.9)', off: 'rgba(92,200,255,.09)', area: 'rgba(40,150,255,.26)' };
+  }
+
+  // ---- data from the URL --------------------------------------------------
+  // ?s=<start, minutes, base36>&n=<now, minutes after start, base36>&i=<sample minutes>
+  // &d=<7 characters per sample: 3 minutes after start, 2 temperature in tenths of °F, 2 humidity %>
+  var q = new URLSearchParams((location.search || '').slice(1) || (location.hash || '').slice(1));
+  var start = parseInt(q.get('s') || '', 36);
+  var nowOff = parseInt(q.get('n') || '', 36);
+  var every = Number(q.get('i')) || 0;
+  var raw = q.get('d') || '';
+  var rows = [];
+  if (isFinite(start)) {
+    for (var i = 0; i + 7 <= raw.length; i += 7) {
+      var m = parseInt(raw.substr(i, 3), 36), t = parseInt(raw.substr(i + 3, 2), 36) / 10, h = parseInt(raw.substr(i + 5, 2), 36);
+      if (isFinite(m) && isFinite(t) && isFinite(h)) rows.push({ m: m, t: t, h: h });
+    }
+  }
+  var last = rows[rows.length - 1];
+
+  // ---- seven-segment digits ----------------------------------------------
+  function digits(svg, str) {
+    var w = 68, h = 120, t = 13, gap = 16, g = 1.5, on = '', off = '', x = 0;
+    var map = { '0': 'abcdef', '1': 'bc', '2': 'abged', '3': 'abgcd', '4': 'fgbc', '5': 'afgcd', '6': 'afgedc', '7': 'abc', '8': 'abcdefg', '9': 'abcdfg', '-': 'g' };
+    function H(x, y, l) { return 'M' + (x + t / 2) + ' ' + y + 'L' + (x + l - t / 2) + ' ' + y + 'L' + (x + l) + ' ' + (y + t / 2) + 'L' + (x + l - t / 2) + ' ' + (y + t) + 'L' + (x + t / 2) + ' ' + (y + t) + 'L' + x + ' ' + (y + t / 2) + 'Z'; }
+    function V(x, y, l) { return 'M' + (x + t / 2) + ' ' + y + 'L' + (x + t) + ' ' + (y + t / 2) + 'L' + (x + t) + ' ' + (y + l - t / 2) + 'L' + (x + t / 2) + ' ' + (y + l) + 'L' + x + ' ' + (y + l - t / 2) + 'L' + x + ' ' + (y + t / 2) + 'Z'; }
+    var vl = h / 2 - t / 2 - 2 * g, hl = w - t - 2 * g;
+    str.split('').forEach(function (ch) {
+      if (ch === '.') { on += 'M' + x + ' ' + (h - t) + 'h' + t + 'v' + t + 'h-' + t + 'Z'; x += t + gap; return; }
+      var P = {
+        a: H(x + t / 2 + g, 0, hl), g: H(x + t / 2 + g, h / 2 - t / 2, hl), d: H(x + t / 2 + g, h - t, hl),
+        f: V(x, t / 2 + g, vl), b: V(x + w - t, t / 2 + g, vl), e: V(x, h / 2 + g, vl), c: V(x + w - t, h / 2 + g, vl)
+      };
+      var lit = map[ch] || '';
+      for (var k in P) { if (lit.indexOf(k) >= 0) on += P[k]; else off += P[k]; }
+      x += w + gap;
+    });
+    var width = x - gap + 20;
+    svg.setAttribute('width', width);
+    svg.setAttribute('height', 128);
+    svg.setAttribute('viewBox', '-10 -4 ' + width + ' 128');
+    svg.innerHTML = '<path class="off" d="' + off + '"/><path class="on" d="' + on + '"/>';
+  }
+
+  // ---- chart --------------------------------------------------------------
+  var X0 = 44, X1 = 518, Y0 = 204, Y1 = 10;
+  var DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
+
+  // four evenly spaced axis values that cover the data with a little headroom
+  function scale(min, max) {
+    var pad = Math.max((max - min) * 0.15, 1), lo = min - pad, hi = max + pad;
+    var steps = [1, 2, 3, 4, 5, 6, 8, 10, 15, 20, 25, 30, 50, 100];
+    for (var i = 0; i < steps.length; i++) {
+      var base = Math.floor(lo / steps[i]) * steps[i];
+      if (base + 3 * steps[i] >= hi) return { lo: base, step: steps[i], hi: base + 3 * steps[i] };
+    }
+    return { lo: Math.floor(lo), step: Math.ceil((hi - lo) / 3), hi: Math.floor(lo) + 3 * Math.ceil((hi - lo) / 3) };
+  }
+
+  function clock(minutes, withMinutes) {
+    var d = new Date(minutes * 60000), hr = d.getUTCHours(), mn = d.getUTCMinutes();
+    return (hr % 12 || 12) + (withMinutes ? ':' + ('0' + mn).slice(-2) : '') + ' ' + (hr < 12 ? 'AM' : 'PM');
+  }
+
+  function timeTicks(a0, a1) {
+    var steps = [10, 30, 60, 120, 180, 360, 720, 1440, 2880, 5760], step = steps[steps.length - 1], out = [];
+    for (var i = 0; i < steps.length; i++) { if ((a1 - a0) / steps[i] <= 7) { step = steps[i]; break; } }
+    for (var tick = Math.ceil(a0 / step) * step; tick <= a1; tick += step) {
+      var d = new Date(tick * 60000), midnight = d.getUTCHours() === 0 && d.getUTCMinutes() === 0;
+      out.push({ at: tick, day: step >= 1440 || midnight, label: step >= 1440 || midnight ? DAYS[d.getUTCDay()] : clock(tick, step < 60) });
+    }
+    return out;
+  }
+
+  function chart(svg, key) {
+    if (!rows.length) {
+      svg.innerHTML = '<path class="axis" d="M' + X0 + ' ' + Y1 + 'V' + Y0 + 'H' + X1 + '"/><text class="empty" x="' + (X0 + X1) / 2 + '" y="' + (Y0 + Y1) / 2 + '">NO DATA YET</text>';
+      return;
+    }
+    var vals = rows.map(function (r) { return r[key]; });
+    var s = scale(Math.min.apply(null, vals), Math.max.apply(null, vals));
+    var m0 = rows[0].m, span = Math.max(last.m - m0, 1);
+    function px(m) { return rows.length === 1 ? (X0 + X1) / 2 : X0 + (m - m0) / span * (X1 - X0); }
+    function py(v) { return Y0 - (v - s.lo) / (s.hi - s.lo) * (Y0 - Y1); }
+    var grid = '', text = '', i;
+    for (i = 0; i <= 3; i++) {
+      var v = s.lo + i * s.step, y = py(v);
+      if (i) grid += 'M' + X0 + ' ' + y.toFixed(1) + 'H' + X1;
+      text += '<text class="y" x="' + (X0 - 8) + '" y="' + (y + 5).toFixed(1) + '">' + v + '</text>';
+    }
+    if (rows.length > 1) {
+      timeTicks(start + m0, start + last.m).forEach(function (k) {
+        var x = px(k.at - start).toFixed(1);
+        grid += 'M' + x + ' ' + Y1 + 'V' + Y0;
+        text += '<text class="x' + (k.day ? ' day' : '') + '" x="' + x + '" y="228">' + k.label + '</text>';
+      });
+    } else {
+      text += '<text class="x" x="' + px(m0) + '" y="228">' + clock(start + m0, true) + '</text>';
+    }
+    var line = rows.map(function (r, n) { return (n ? 'L' : 'M') + px(r.m).toFixed(1) + ' ' + py(r[key]).toFixed(1); }).join('');
+    svg.innerHTML =
+      '<path class="grid" d="' + grid + '"/>' +
+      (rows.length > 1 ? '<path class="area" d="' + line + 'L' + X1 + ' ' + Y0 + 'L' + X0 + ' ' + Y0 + 'Z"/><path class="curve" d="' + line + '"/>' : '') +
+      '<path class="axis" d="M' + X0 + ' ' + Y1 + 'V' + Y0 + 'H' + X1 + '"/>' +
+      '<circle class="now" cx="' + px(last.m).toFixed(1) + '" cy="' + py(last[key]).toFixed(1) + '" r="5"/>' + text;
+  }
+
+  function spanText() {
+    if (rows.length < 2) return rows.length ? 'FIRST READING' : ' ';
+    var mins = last.m - rows[0].m;
+    if (mins < 90) return 'LAST ' + mins + ' MIN';
+    if (mins < 48 * 60) { var hrs = Math.round(mins / 60); return 'LAST ' + hrs + (hrs === 1 ? ' HOUR' : ' HOURS'); }
+    var days = Math.round(mins / 1440);
+    return 'LAST ' + days + ' DAYS';
+  }
+
+  // ---- render -------------------------------------------------------------
+  var tempPanel = document.getElementById('tempPanel');
+  var col = tempColors(last ? last.t : NaN);
+  tempPanel.style.setProperty('--c', col.c);
+  tempPanel.style.setProperty('--glow', col.glow);
+  tempPanel.style.setProperty('--off', col.off);
+  tempPanel.style.setProperty('--area', col.area);
+
+  var tempStr = last ? last.t.toFixed(1) : '--.-', humStr = last ? String(Math.round(last.h)) : '--';
+  var td = document.getElementById('tempDigits'), hd = document.getElementById('humDigits');
+  digits(td, tempStr);
+  digits(hd, humStr);
+  td.setAttribute('aria-label', last ? tempStr + ' degrees Fahrenheit' : 'No temperature reading yet');
+  hd.setAttribute('aria-label', last ? humStr + ' percent relative humidity' : 'No humidity reading yet');
+
+  chart(document.getElementById('tempChart'), 't');
+  chart(document.getElementById('humChart'), 'h');
+  document.getElementById('tempSpan').textContent = spanText();
+  document.getElementById('humSpan').textContent = spanText();
+
+  if (last) {
+    // "online" means the newest sample is no older than two logging intervals
+    var age = nowOff - last.m, fresh = !isFinite(age) || !every || age <= every * 2 + 1;
+    document.getElementById('led').className = fresh ? 'led' : 'led stale';
+    document.getElementById('sensorText').textContent = fresh ? 'SENSOR ONLINE' : 'NO RECENT DATA';
+    document.getElementById('updatedText').textContent = 'UPDATED ' + clock(start + last.m, true);
+  } else {
+    document.getElementById('led').className = 'led stale';
+  }
+  document.getElementById('logText').textContent = every ? 'LOGGING EVERY ' + every + ' MIN' : 'LOGGING';
+
+  // ---- fit the 1280x720 layout to whatever screen it is shown on ----------
+  var stage = document.getElementById('stage');
+  function fit() {
+    var k = Math.min(window.innerWidth / 1280, window.innerHeight / 720);
+    stage.style.transform = 'translate(-50%, -50%) scale(' + k + ')';
+  }
+  window.addEventListener('resize', fit);
+  fit();
+})();
+</script>
+</body>
+</html>
