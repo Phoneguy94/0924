@@ -235,15 +235,18 @@
   var X0 = 44, X1 = 518, Y0 = 204, Y1 = 10;
   var DAYS = ['SUN', 'MON', 'TUE', 'WED', 'THU', 'FRI', 'SAT'];
 
-  // four evenly spaced axis values that cover the data with a little headroom
+  // the tightest evenly spaced axis (3 to 8 gridlines) that still covers the
+  // data, so the line fills the chart and swings look as big as they are
   function scale(min, max) {
-    var pad = Math.max((max - min) * 0.15, 1), lo = min - pad, hi = max + pad;
-    var steps = [1, 2, 3, 4, 5, 6, 8, 10, 15, 20, 25, 30, 50, 100];
-    for (var i = 0; i < steps.length; i++) {
-      var base = Math.floor(lo / steps[i]) * steps[i];
-      if (base + 3 * steps[i] >= hi) return { lo: base, step: steps[i], hi: base + 3 * steps[i] };
-    }
-    return { lo: Math.floor(lo), step: Math.ceil((hi - lo) / 3), hi: Math.floor(lo) + 3 * Math.ceil((hi - lo) / 3) };
+    var lo = min - 0.1, hi = max + 0.1, best = null;
+    [1, 2, 5, 10, 20, 25, 50].forEach(function (step) {
+      var base = Math.floor(lo / step) * step;
+      var n = Math.max(3, Math.ceil((hi - base) / step - 1e-9));
+      if (n > 8) return;
+      if (!best || n * step <= best.n * best.step + 1e-9) best = { lo: base, step: step, n: n };
+    });
+    if (!best) best = { lo: Math.floor(lo), step: Math.ceil((hi - lo) / 4), n: 4 };
+    return { lo: best.lo, step: best.step, n: best.n, hi: best.lo + best.n * best.step };
   }
 
   function clock(minutes, withMinutes) {
@@ -272,8 +275,8 @@
     function px(m) { return rows.length === 1 ? (X0 + X1) / 2 : X0 + (m - m0) / span * (X1 - X0); }
     function py(v) { return Y0 - (v - s.lo) / (s.hi - s.lo) * (Y0 - Y1); }
     var grid = '', text = '', i;
-    for (i = 0; i <= 3; i++) {
-      var v = s.lo + i * s.step, y = py(v);
+    for (i = 0; i <= s.n; i++) {
+      var v = Math.round((s.lo + i * s.step) * 10) / 10, y = py(v);
       if (i) grid += 'M' + X0 + ' ' + y.toFixed(1) + 'H' + X1;
       text += '<text class="y" x="' + (X0 - 8) + '" y="' + (y + 5).toFixed(1) + '">' + v + '</text>';
     }
