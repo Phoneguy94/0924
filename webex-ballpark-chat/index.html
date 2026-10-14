@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Webex Ballpark Experience</title>
+<meta name="chat-version" content="1.0.4">
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%}
@@ -121,30 +122,51 @@
 
     <script>
 
+/* Ballpark Chat - Version 1.0.4 */
+
+let chatOpening = false;
+
 function openWebexChat() {
+  if (chatOpening) return;
+
+  if (!window.imichatwidget ||
+      typeof imichatwidget.show !== "function" ||
+      typeof imichatwidget.maximizeWindow !== "function") {
+    console.error("Webex Engage widget is not ready.");
+    return;
+  }
+
+  chatOpening = true;
+
   const container = document.getElementById("divicw");
+  const mascot = document.getElementById("custom-chat-button");
 
   if (container) {
     container.style.visibility = "visible";
   }
 
-  if (window.imichatwidget &&
-      typeof imichatwidget.show === "function") {
-
+  try {
+    // Show Cisco's chat widget
     imichatwidget.show();
 
-    setTimeout(function () {
-      imichatwidget.maximizeWindow();
-    }, 500);
+    // Expand the conversation window
+    imichatwidget.maximizeWindow();
 
-  } else {
-    console.error("Webex Engage chat widget is not ready");
-    alert("Webex chat has not loaded. Please refresh the page.");
+    // Hide the mascot while Cisco's widget is active
+    mascot.style.display = "none";
+
+    console.log("Ballpark Chat v1.0.4 - Chat opened");
+  } catch (error) {
+    console.error("Failed to open Webex chat:", error);
+    mascot.style.display = "block";
+  } finally {
+    chatOpening = false;
   }
 }
 
 document.getElementById("custom-chat-button")
   .addEventListener("click", openWebexChat);
+
     </script>
 
   </main>
