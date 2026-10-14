@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Webex Ballpark Experience</title>
-<meta name="chat-version" content="1.0.4">
+<meta name="chat-version" content="1.0.5">
 <style>
   *{margin:0;padding:0;box-sizing:border-box}
   html,body{height:100%}
@@ -63,6 +63,39 @@
   #custom-chat-button:hover{
     transform:scale(1.03);
   }
+
+  /* Vinnie welcome popup - v1.0.5 */
+  #vinnie-welcome{
+    position:fixed;
+    right:24px;
+    bottom:125px;
+    width:310px;
+    max-width:calc(100vw - 48px);
+    padding:18px;
+    background:#fff;
+    color:#333;
+    border-radius:18px;
+    box-shadow:0 4px 18px rgba(0,0,0,.25);
+    z-index:99998;
+    font-size:14px;
+    line-height:1.5;
+    cursor:pointer;
+  }
+  #vinnie-welcome strong{display:block;margin-bottom:8px;font-size:15px}
+  #vinnie-welcome p{margin:0}
+  #vinnie-close{
+    position:absolute;
+    top:-12px;
+    right:-12px;
+    width:30px;
+    height:30px;
+    border:0;
+    border-radius:50%;
+    background:#555;
+    color:white;
+    font-size:22px;
+    cursor:pointer;
+  }
 </style>
 </head>
 <body>
@@ -115,6 +148,13 @@
       i.t();
     </script>
 
+    <!-- VINNIE WELCOME MESSAGE - v1.0.5 -->
+    <div id="vinnie-welcome" role="button" tabindex="0" aria-label="Open chat with Vinnie">
+      <button id="vinnie-close" type="button" aria-label="Dismiss welcome">&times;</button>
+      <strong>Vinnie the Ballpark Assistant</strong>
+      <p>Hey there! I'm Vinnie, your virtual ballpark assistant. Need help with PNC Park, food, parking, or game-day questions?</p>
+    </div>
+
     <!-- YOUR CUSTOM CHAT ICON -->
     <button id="custom-chat-button" type="button" aria-label="Open chat">
       <img src="chat_mascot.png" alt="Open chat">
@@ -122,7 +162,7 @@
 
     <script>
 
-/* Ballpark Chat - Version 1.0.4 */
+/* Ballpark Chat - Version 1.0.5 */
 
 let chatOpening = false;
 
@@ -155,7 +195,7 @@ function openWebexChat() {
     // Hide the mascot while Cisco's widget is active
     mascot.style.display = "none";
 
-    console.log("Ballpark Chat v1.0.4 - Chat opened");
+    console.log("Ballpark Chat v1.0.5 - Chat opened");
   } catch (error) {
     console.error("Failed to open Webex chat:", error);
     mascot.style.display = "block";
@@ -166,6 +206,29 @@ function openWebexChat() {
 
 document.getElementById("custom-chat-button")
   .addEventListener("click", openWebexChat);
+
+/* Welcome message actions - v1.0.5 */
+const welcome = document.getElementById("vinnie-welcome");
+welcome.addEventListener("click", function() {
+  if (typeof window.imichatwidget?.show !== "function") return;
+  openWebexChat();
+  if (document.getElementById("custom-chat-button").style.display === "none") {
+    welcome.style.display = "none";
+  }
+});
+welcome.addEventListener("keydown", function(e) {
+  if (e.target === welcome && (e.key === "Enter" || e.key === " ")) {
+    e.preventDefault();
+    welcome.click();
+  }
+});
+document.getElementById("vinnie-close").addEventListener("click", function(e) {
+  e.stopPropagation();
+  welcome.style.display = "none";
+});
+document.getElementById("custom-chat-button").addEventListener("click", function() {
+  if (this.style.display === "none") welcome.style.display = "none";
+});
 
     </script>
 
