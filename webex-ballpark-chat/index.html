@@ -120,18 +120,31 @@
     </button>
 
     <script>
-      function openWebexChat() {
-        if (window.imichatwidget) {
-          try { imichatwidget.show(); } catch (e) { console.log(e); }
-          setTimeout(function () {
-            try { imichatwidget.maximizeWindow(); } catch (e) { console.log(e); }
-          }, 300);
-        } else {
-          console.log("Webex chat not loaded yet.");
-        }
-      }
 
-      document.getElementById("custom-chat-button").addEventListener("click", openWebexChat);
+function openWebexChat() {
+  const container = document.getElementById("divicw");
+
+  if (container) {
+    container.style.visibility = "visible";
+  }
+
+  if (window.imichatwidget &&
+      typeof imichatwidget.show === "function") {
+
+    imichatwidget.show();
+
+    setTimeout(function () {
+      imichatwidget.maximizeWindow();
+    }, 500);
+
+  } else {
+    console.error("Webex Engage chat widget is not ready");
+    alert("Webex chat has not loaded. Please refresh the page.");
+  }
+}
+
+document.getElementById("custom-chat-button")
+  .addEventListener("click", openWebexChat);
     </script>
 
   </main>
