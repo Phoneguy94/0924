@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webex Ballpark Experience — Default Widget (B)</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{min-height:100%}
+body{
+ min-height:100vh;
+ background-color:#0a1526;
+ background-image:url("chat_background.png");
+ background-size:cover;
+ background-position:center center;
+ background-repeat:no-repeat;
+ background-attachment:fixed;
+ font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;
+ overflow-x:hidden;
+}
+@media (max-aspect-ratio:3/4){
+ body{
+  background-image:url("chat_background_portrait.png");
+  background-size:cover;
+  background-position:center center;
+  background-attachment:scroll;
+ }
+}
+</style>
+</head>
+<body>
+<!-- Version B: Original Webex Engage Livechat embed, with no custom launcher or greeting. -->
+<div id="divicw"
+ data-bind="354C5CE5-097E-46A3-B5A0-99B2A4982409"
+ data-org=""
+ data-guid="cb2cf342-2ee0-454a-810f-8275b0087ca6"></div>
+<script src="https://media.imi.chat/widget/js/imichatinit.js"></script>
+</body>
+</html>
